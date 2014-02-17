@@ -1,6 +1,7 @@
 #ifndef NUM_TASKS
-#include"base_config.h"
+	#include"base_config.h"
 #endif
+#include"set_operations.cpp"
 
 double C[NUM_TASKS];
 long   D[NUM_TASKS];
@@ -27,6 +28,7 @@ enum METHOD_NAMES {
 	STASCHULAT_PRE,
 	PRE_MAX,
 	PRE_MAX_KD,
+	LEE_WODC,
 	NUM_METHODS
 };
 
@@ -168,5 +170,26 @@ long calculate_pre_min_ij( int i, int j)
 		ret_val = 0;
 
 	return ret_val;
+
+}
+
+/*
+ * Function to find set of blocks of this_task that are affected by the execution of hp_task.
+ * Method used is ucb union
+ * TODO: Change method to combined method
+*/
+void f(int this_task, int hp_task, std::set<int> & ret_set){
+	int num_blocks = 0, aff;
+	extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
+
+	std::set<int> workingSet1, workingSet2;
+	workingSet1.clear();
+	workingSet2.clear();
+
+	for(aff = this_task; aff > hp_task; aff--){
+		Set_Union(workingSet1, TASK_UCB[aff], workingSet1);
+	}
+	
+	Set_Intersect(workingSet1, TASK_ECB[hp_task], ret_set);
 
 }

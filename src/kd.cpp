@@ -3,8 +3,7 @@
 #include<stdio.h>
 #include<math.h>
 #include"../lib/lp_solve_ux64/lp_lib.h"
-#include"common.h"
-#include"set_operations.cpp"
+#include"common.c"
 
 double Response_PRE_MAX_KD[NUM_TASKS];
 int nnp_max[NUM_TASKS][NUM_TASKS];
@@ -26,6 +25,7 @@ void Response_time_PRE_MAX_KD(FILE *fp1){
 	int task_no;
 	fp = fp1;
 	bool sched = true;
+	clear_Response();
 
 	fprintf(fp, "                              *******************                                     \n");
 	fprintf(fp, "****************************** PRE MAX KD BEGINS **************************************\n");
@@ -64,7 +64,6 @@ void Response_time_PRE_MAX_KD(FILE *fp1){
 double wcrt(int this_task){
 	double R_new;
 	R_new = C[this_task];
-	Response[this_task] = 0;
 	while(R_new != Response[this_task] && (Response[this_task] = R_new) <= D[this_task]){
 		R_new = C[this_task] + sigma_tda(this_task) + PC(this_task);// Time demand equation
 		fprintf(fp, "--------------------------------------------------------------------------------------\n");
@@ -269,33 +268,13 @@ double solve_constraints(int this_task)
 }
 
 /*
- * Function to find set of blocks of lp_task that are affected by the execution of hp_task.
- * Method used is ucb union
- * TODO: Change method to combined method
-*/
-void f(int this_task, int hp_task, std::set<int> & ret_set){
-	int num_blocks = 0, aff;
-	extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
-
-	std::set<int> workingSet1, workingSet2;
-	workingSet1.clear();
-	workingSet2.clear();
-
-	for(aff = this_task; aff > hp_task; aff--){
-		Set_Union(workingSet1, TASK_UCB[aff], workingSet1);
-	}
-	
-	Set_Intersect(workingSet1, TASK_ECB[hp_task], ret_set);
-
-}
-
-/*
  * Procedure to get cost function:
  * 1. if ip_task != lp_task then cost = f(this,task, hp_task) UNION f(this,task, ip_task)
  *    if ip_task == lp_task then cost = f(this,task, hp_task)
 */
-int get_f(int this_task, int hp_task, int ip_task){
+double get_f(int this_task, int hp_task, int ip_task){
 	std::set<int> workingSet1, workingSet2, workingSet3;
+
 	workingSet1.clear();
 	workingSet2.clear();
 	workingSet3.clear();

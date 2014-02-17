@@ -4,7 +4,8 @@
 #include<time.h>
 #include<math.h>
 #include"base_config.h"
-#include"kd.cpp"
+//#include"kd.cpp"
+#include"lee_wodc.cpp"
 
 using namespace std;
 
@@ -329,7 +330,8 @@ void Set_SizeECBs_UUniFast(void)
 }
 
 void CALL_METHODS(FILE *fp){
-	Response_time_PRE_MAX_KD(fp);
+	//Response_time_PRE_MAX_KD(fp);
+	Response_time_lee_wodc(fp);
 }
 
 void Uniform_Distribution_Benchmark()
@@ -338,7 +340,7 @@ void Uniform_Distribution_Benchmark()
 	int minPeriod = 20;
 	int maxPeriod = 500;
 
-	FILE *fp = fopen("Results_Malardalen.txt", "w");
+	FILE *fp = fopen("out/Results_Malardalen.txt", "w");
 	print_base_config(fp);
 
 	Set_SizeECBs_UUniFast();
