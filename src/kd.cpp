@@ -227,7 +227,7 @@ double solve_constraints(int this_task)
 			for(j = i+1 ; j<= this_task; j++){
 				sprintf(col_name,"%dNNP%d_%d",this_task, i, j);
 				var[var_count] = get_nameindex(lp, col_name, FALSE);
-				coeff[var_count] = BRT * 1e-1 * get_f(this_task, i, j);
+				coeff[var_count] = get_f(this_task, i, j);
 				var_count++;
 			}
 		}
@@ -268,17 +268,48 @@ double solve_constraints(int this_task)
 	return ret == 0 ? obj : 0;
 }
 
-int get_f(int this_task, int hp_task, int ip_task){
-	int Num_Blocks = 0;
+/*
+ * Function to find set of blocks of lp_task that are affected by the execution of hp_task.
+ * Method used is ucb union
+ * TODO: Change method to combined method
+*/
+void f(int this_task, int hp_task, std::set<int> & ret_set){
+	int num_blocks = 0, aff;
 	extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 
 	std::set<int> workingSet1, workingSet2;
 	workingSet1.clear();
 	workingSet2.clear();
-	Set_Union(TASK_ECB[hp_task], TASK_ECB[ip_task], workingSet1);
-	Set_Intersect(workingSet1, TASK_UCB[this_task], workingSet2);
-	Num_Blocks += nnp_max[hp_task][ip_task] * inv_max(ip_task, this_task) * SET_MOD(workingSet2);
-	return Num_Blocks;
+
+	for(aff = this_task; aff > hp_task; aff--){
+		Set_Union(workingSet1, TASK_UCB[aff], workingSet1);
+	}
+	
+	Set_Intersect(workingSet1, TASK_ECB[hp_task], ret_set);
+
+}
+
+/*
+ * Procedure to get cost function:
+ * 1. if ip_task != lp_task then cost = f(this,task, hp_task) UNION f(this,task, ip_task)
+ *    if ip_task == lp_task then cost = f(this,task, hp_task)
+*/
+int get_f(int this_task, int hp_task, int ip_task){
+	std::set<int> workingSet1, workingSet2, workingSet3;
+	workingSet1.clear();
+	workingSet2.clear();
+	workingSet3.clear();
+
+	if(ip_task != this_task){
+		f(this_task, hp_task, workingSet1);
+		f(this_task, ip_task, workingSet2);
+		Set_Union(workingSet1, workingSet2, workingSet3);
+		return BRT * SET_MOD(workingSet3);
+	}
+	else{
+		f(this_task, hp_task, workingSet1);
+		return BRT * SET_MOD(workingSet1);
+	}
 }
 
 /*
@@ -312,232 +343,3 @@ double calc_nnp_min(int hp_task, int lp_task){
 	return ret_val > 0 ? ret_val : 0;
 }
 
-//void PC(FILE *fp){
-//	lprec *lp;
-//	int numVar = 0, *var = NULL, ret = 0, i, j, k, var_count, this_task;
-//	double *coeff = NULL, lhs, rhs, response_time;
-//	char col_name[10];
-//	int hp_task, lp_task;
-//	int flag;
-//	bool sched = true;
-//	int LAST_TASK = NUM_TASKS - 1;
-//
-//
-//	clear_Response();
-//	fprintf(fp, "************** PRE MAX KD ********************* \n\n");
-//	printf     ("************** PRE MAX KD ********************* \n\n");
-//	Response_PRE_MAX_KD[0] = Response[0] = C[0];
-//	Reset_PRE_min();
-//	Reset_PRE_max();
-//
-//	// Select a task 'this_task'
-//	for (this_task = 0; this_task < NUM_TASKS && sched == true; this_task++){
-//		flag = 1;
-//		// Find NNP Values for all pairs {hp_task, this_task}
-//		if (this_task >= 1){
-//			for(hp_task = this_task-1; hp_task >= 0; hp_task--){
-//				PRE_ij_max[hp_task][this_task] = calculate_pre_max_ij(hp_task, this_task);
-//				PRE_ij_min[hp_task][this_task] = calculate_pre_max_ij(hp_task, this_task);
-//			}
-//		}
-//		while(flag){
-//			/* Creating a model */
-//			for(i = 1; i < this_task; i++)
-//				numVar+=i;
-//			lp = make_lp(0, numVar);
-//			if(lp == NULL)
-//				ret = 1; /* Couldn't construct a new model */
-//
-//			if(ret == 0) {
-//				var_count = 1;
-//				for(i = 0 ; i < this_task; i++){
-//					for(j = i+1 ; j <= this_task; j++)
-//					{
-//						sprintf(col_name, "%dNNP%d_%d", this_task, i, j);
-//						set_col_name(lp, var_count, col_name);
-//						var_count++;
-//					}
-//				}
-//				/* create space large enough for one row(i.e. equation) */
-//				var = (int *) malloc(numVar * sizeof(*var));
-//				coeff = (double *) malloc(numVar * sizeof(*coeff));
-//				if((var == NULL) || (coeff == NULL))
-//					ret = 2;
-//			}
-//			// Create equations using NNP values for {hp_task, this_task}
-//			/* add the equations to lpsolve */
-//			if(ret == 0) {
-//				set_add_rowmode(lp, TRUE);
-//				/* --------------------adding EQN-D-------------------- */
-//				for(j = 1; j <= this_task; j++){
-//					var_count = 0;
-//					for(i = 1; i < j; i++){
-//						sprintf(col_name,"%dNNP%d_%d",this_task, i, j);
-//						var[var_count] = get_nameindex(lp, col_name, FALSE);
-//						coeff[var_count] = 1;
-//						var_count++;
-//					}
-//
-//					lhs= 0;
-//					for(i = 0; i < j; i++)
-//						lhs+= PRE_ij_min[i][j];
-//					lhs*= floor(Response[this_task]/T[j]);
-//
-//					rhs = 0;
-//					for(i = 0; i < j; i++)
-//						rhs += PRE_ij_max[i][j];
-//					rhs *= ceil(Response[this_task]/T[j]);
-//
-//					if(!add_constraintex(lp, var_count, coeff, var, GE, lhs))
-//						ret = 3;
-//					if(!add_constraintex(lp, var_count, coeff, var, LE, rhs))
-//						ret = 3;
-//				}
-//			}
-//
-//			if(ret == 0) {
-//				/* --------------------adding EQN-E-------------------- */
-//				for(k = 1;k <= this_task;k++)
-//				{
-//					var_count = 0;
-//					for(j = 1; j <= k; j++){
-//						for(i = 0; i < j; i++){
-//							sprintf(col_name,"%dNNP%d_%d",this_task, i, j);
-//							var[var_count] = get_nameindex(lp, col_name, FALSE);
-//							coeff[var_count] = 1;
-//							var_count++;
-//						}
-//					}
-//
-//					rhs = 0;
-//					for(i = 0; i < k; i++)
-//						rhs += ceil(Response[this_task]/T[i]);
-//					if(!add_constraintex(lp, var_count, coeff, var, LE,rhs))
-//						ret = 3;
-//				}
-//			}
-//
-//			if(ret == 0) {
-//				/* ------------------adding EQN-G & H------------------ */
-//				for(j = 1; j <= this_task ; j++){
-//					for(i = 0; i < j; i++){
-//						lhs= floor(Response[this_task]/T[j]) * PRE_ij_min[i][j];
-//						sprintf(col_name,"%dNNP%d_%d",this_task, i, j);
-//						var[0] = get_nameindex(lp, col_name, FALSE);
-//						coeff[0] = 1;
-//						if(!add_constraintex(lp, 1, coeff, var, GE, lhs))
-//							ret = 3;
-//
-//						rhs = min3(ceil(Response[this_task]/T[i]), ceil(Response[this_task]/T[j]) * ceil(Response[j]/T[i]), ceil(Response[this_task]/T[j]) * PRE_ij_max[i][j]);
-//						if(!add_constraintex(lp, 1, coeff, var, LE,rhs))
-//							ret = 3;
-//					}
-//				}
-//			}
-//
-//			if(ret == 0) {
-//				/* --------------------adding EQN-I-------------------- */
-//				for(i = 0; i < this_task; i++){
-//					var_count = 0;
-//					for(j = i+1; j <= this_task; j++){
-//						sprintf(col_name,"%dNNP%d_%d",this_task, i, j);
-//						var[var_count] = get_nameindex(lp, col_name, FALSE);
-//						coeff[var_count] = 1;
-//						var_count++;
-//					}
-//					rhs = ceil(Response[this_task]/T[i]);
-//					if(!add_constraintex(lp, var_count, coeff, var, LE,rhs))
-//						ret = 3;
-//				}
-//			}
-//			// Create objective function
-//			set_add_rowmode(lp, FALSE);
-//			if(ret == 0) {
-//				/* -----------------set the objective----------------- */
-//				var_count = 0;
-//				for(hp_task = 0 ; hp_task < this_task; hp_task++){
-//					int ip_task;
-//					for(ip_task = hp_task + 1 ; ip_task <= this_task; ip_task++){
-//						fprintf(fp, "***hp_task = %d ip_task = %d this_task = %d\n", hp_task, ip_task, this_task);
-//						sprintf(col_name,"%dNNP%d_%d",this_task, hp_task, ip_task);
-//						var[var_count] = get_nameindex(lp, col_name, FALSE);
-//						coeff[var_count] =  BRT * get_f(this_task, hp_task, ip_task);
-//						var_count++;
-//					}
-//				}
-//				if(!set_obj_fnex(lp, var_count, coeff, var))
-//					ret = 4;
-//				set_maxim(lp);
-//				write_LP(lp, fp);
-//				set_verbose(lp, IMPORTANT);
-//				ret = solve(lp);
-//				if(ret == OPTIMAL)
-//					ret = 0;
-//				else
-//					ret = 5;
-//			}
-//			printf("***ret = %d\n", ret);
-//			fprintf(fp, "***ret = %d\n", ret);
-//			if(ret == 0) {
-//				response_time = get_objective(lp);
-//				printf("***response_time = %g Response[i] = %g\n", response_time, Response[i]);
-//				fprintf(fp, "***response_time = %g Response[i] = %g\n", response_time, Response[i]);
-//				if (response_time <=  Response[i])
-//					flag = 0;
-//				else{
-//					Response_PRE_MAX_KD[i] = Response[i] = response_time;
-//					if (Response[i] > D[i]){
-//						flag = 0;
-//						sched = false;
-//						LAST_TASK = i;
-//					}
-//					// printf("acc =%f, response = %f, going again \n\n", acc, Response[j]);
-//				}
-//			}
-//			flag = 0;
-//		}
-//	}
-//	//flag = 1;
-//	for(i = 0; i < NUM_TASKS; i++)
-//	{
-//		if ( Response[i] > D[i])
-//		{
-//			flag = 0;
-//			sched = false;
-//			printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-//			fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-//		}
-//		else
-//		{
-//			printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-//			fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-//		}
-//	}
-//	if(sched == false)
-//	{
-//		printf("\nTASKSET NOT schedulable under PRE-MAX-KD at TASKSET_UTIL = %f \n", taskSetUtil);
-//		fprintf(fp, "\nTASKSET is NOT schedulable under PRE-MAX-KD at TASKSET_UTIL = %f \n", taskSetUtil);
-//	}
-//	else
-//	{
-//		printf("\nTASKSET IS schedulable under PRE-MAX-KD at TASKSET_UTIL = %f \n", taskSetUtil);
-//		fprintf(fp, "\nTASKSET IS schedulable under PRE-MAX-KD at TASKSET_UTIL = %f \n", taskSetUtil);
-//
-//		Num_Executed_Tasks[PRE_MAX_KD]++;
-//
-//		/*if(BDU_found == false)
-//	             {
-//	                 BDU_found = true;
-//	                 fprintf(BDU_fp, "\t\t PRE MAX  \t\t\t\t %f \t\t %f \n\n", taskSetUtil, multFactor);
-//	             }*/
-//	}
-//	/* free allocated memory */
-//	if(coeff != NULL)
-//		free(coeff);
-//	if(var != NULL)
-//		free(var);
-//	if(lp != NULL)
-//		delete_lp(lp);
-//	fprintf(fp, "************** PRE MAX KD Ends ********************* \n\n" );
-//	std::cout<< "************** PRE MAX KD Ends *********************" << std::endl << std::endl;
-//}

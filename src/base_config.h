@@ -5,5 +5,5 @@
 #define Total_ECBs_CU 10
 #define NUM_TASK_SETS 10
 
-double BRT = 8e-2;				// In MicroSecs
+double BRT = 8e-6;				// In MicroSecs
 double NIPMS = 0.04;		// Number of Insns per Micro Second
