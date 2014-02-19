@@ -36,11 +36,11 @@ void Response_time_PRE_MAX_KD(FILE *fp1){
 		fprintf(fp2, "======================================================================================\n");
 		if(Response[task_no] > D[task_no]){
 			sched = false;
-			printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", task_no, taskSetUtil, Response[task_no], D[task_no]);
+			//printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", task_no, taskSetUtil, Response[task_no], D[task_no]);
 			fprintf(fp2, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", task_no, taskSetUtil, Response[task_no], D[task_no]);
 		}
 		else{
-			printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", task_no, taskSetUtil, Response[task_no], D[task_no]);
+			//printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", task_no, taskSetUtil, Response[task_no], D[task_no]);
 			fprintf(fp2, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", task_no, taskSetUtil, Response[task_no], D[task_no]);			
 		}
 		fprintf(fp2, "======================================================================================\n\n");
@@ -48,12 +48,12 @@ void Response_time_PRE_MAX_KD(FILE *fp1){
 	fprintf(fp2, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
 	if(sched == false)
 	{
-		printf("TASKSET NOT schedulable under PRE-MAX-KD at TASKSET_UTIL = %f \n", taskSetUtil);
+		//printf("TASKSET NOT schedulable under PRE-MAX-KD at TASKSET_UTIL = %f \n", taskSetUtil);
 		fprintf(fp2, "TASKSET is NOT schedulable under PRE-MAX-KD at TASKSET_UTIL = %f \n", taskSetUtil);
 	}
 	else
 	{
-		printf("TASKSET IS schedulable under PRE-MAX-KD at TASKSET_UTIL = %f \n", taskSetUtil);
+		//printf("TASKSET IS schedulable under PRE-MAX-KD at TASKSET_UTIL = %f \n", taskSetUtil);
 		fprintf(fp2, "TASKSET IS schedulable under PRE-MAX-KD at TASKSET_UTIL = %f \n", taskSetUtil);
 		Num_Executed_Tasks[PRE_MAX_KD]++;
 	}
@@ -233,7 +233,7 @@ double solve_constraints_PRE_MAX_KD(int this_task)
 		if(!set_obj_fnex(lp, var_count, coeff, var))
 			ret = 4;
 		set_maxim(lp);
-		write_LP(lp,fp2);
+		//write_LP(lp,fp2);
 		set_verbose(lp, IMPORTANT);
 		ret = solve(lp);
 		if(ret == OPTIMAL)
@@ -246,15 +246,16 @@ double solve_constraints_PRE_MAX_KD(int this_task)
 		obj = get_objective(lp);
 		/* Displaying calculated values */
 		/* variable values */
-		fprintf(fp2, "\nVariable values:\n");
-		get_variables(lp, coeff);
-		fprintf(fp2, "\n");
-		for(j = 0; j < numVar; j++)
-			fprintf(fp2, "%s: %f\n", get_col_name(lp, j+1), coeff[j]);
+		//fprintf(fp2, "\nVariable values:\n");
+		//get_variables(lp, coeff);
+		//fprintf(fp2, "\n");
+		//for(j = 0; j < numVar; j++)
+		//	fprintf(fp2, "%s: %f\n", get_col_name(lp, j+1), coeff[j]);
 		/* objective value */
-		fprintf(fp2, "\nObjective value: %f\n\n", obj);
+		//fprintf(fp2, "\nObjective value: %f\n\n", obj);
 	}
-	fprintf(fp2, "LP ERROR = %d\n\n", ret);
+	if(ret != 0)
+		fprintf(fp2, "LP ERROR = %d\n\n", ret);
 
 	/* free allocated memory */
 	if(coeff != NULL)

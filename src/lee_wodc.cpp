@@ -28,14 +28,15 @@ void Response_time_lee_wodc(FILE *fp1){
 	fprintf(fp, "                              *******************                                     \n");
 
 	for(task_no = 0; task_no < NUM_TASKS && sched; task_no++){		
-		wcrt(task_no);fprintf(fp, "======================================================================================\n");
+		wcrt(task_no);
+	fprintf(fp, "======================================================================================\n");
 		if(Response[task_no] > D[task_no]){
 			sched = false;
-			printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", task_no, taskSetUtil, Response[task_no], D[task_no]);
+			//printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", task_no, taskSetUtil, Response[task_no], D[task_no]);
 			fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", task_no, taskSetUtil, Response[task_no], D[task_no]);
 		}
 		else{
-			printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", task_no, taskSetUtil, Response[task_no], D[task_no]);
+			//printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", task_no, taskSetUtil, Response[task_no], D[task_no]);
 			fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", task_no, taskSetUtil, Response[task_no], D[task_no]);			
 		}
 		fprintf(fp, "======================================================================================\n\n");
@@ -43,12 +44,12 @@ void Response_time_lee_wodc(FILE *fp1){
 	fprintf(fp, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
 	if(sched == false)
 	{
-		printf("TASKSET NOT schedulable under LEE-WODC at TASKSET_UTIL = %f \n", taskSetUtil);
+		//printf("TASKSET NOT schedulable under LEE-WODC at TASKSET_UTIL = %f \n", taskSetUtil);
 		fprintf(fp, "TASKSET is NOT schedulable under LEE-WODC at TASKSET_UTIL = %f \n", taskSetUtil);
 	}
 	else
 	{
-		printf("TASKSET IS schedulable under LEE-WODC at TASKSET_UTIL = %f \n", taskSetUtil);
+		//printf("TASKSET IS schedulable under LEE-WODC at TASKSET_UTIL = %f \n", taskSetUtil);
 		fprintf(fp, "TASKSET IS schedulable under LEE-WODC at TASKSET_UTIL = %f \n", taskSetUtil);
 		Num_Executed_Tasks[LEE_WODC]++;
 	}
@@ -100,7 +101,7 @@ double solve_constraints(int this_task)
 	for(i = 1;i <= this_task; i++)/* Counting the no. of variables for this_task*/
 		numVar+=pow(2,i)-1;	
 	lp = make_lp(0, numVar);
-	fprintf(fp, ">>>>>>>>>>>>>>>>%d\n", numVar);
+	
 	if(lp == NULL)
 		ret = 1; /* Couldn't construct a new model */
 
@@ -192,7 +193,7 @@ double solve_constraints(int this_task)
 		if(!set_obj_fnex(lp, var_count, coeff, var))
 			ret = 4;
 		set_maxim(lp);
-		write_LP(lp, fp);
+		//write_LP(lp, fp);
 		set_verbose(lp, IMPORTANT);
 		ret = solve(lp);
 		if(ret == OPTIMAL)
@@ -204,12 +205,12 @@ double solve_constraints(int this_task)
 		obj = get_objective(lp);
 		/* Displaying calculated values */		
 		/* variable values */
-		fprintf(fp, "\n/* Variable values */\n");
-		get_variables(lp, coeff);
-		for(j = 0; j < numVar; j++)
-			fprintf(fp, "%s: %0.2f\n", get_col_name(lp, j + 1), coeff[j]);		
+		//fprintf(fp, "\n/* Variable values */\n");
+		//get_variables(lp, coeff);
+		//for(j = 0; j < numVar; j++)
+		//	fprintf(fp, "%s: %0.2f\n", get_col_name(lp, j + 1), coeff[j]);		
 		/* objective value */
-		fprintf(fp, "\n/* Objective value */\n%0.2f\n", obj);
+		//fprintf(fp, "\n/* Objective value */\n%0.2f\n", obj);
 	}
 	if(ret != 0)
 		fprintf(fp, "\nLP ERROR = %d\n", ret);

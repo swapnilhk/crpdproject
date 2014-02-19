@@ -72,11 +72,11 @@ void print_SET(std::set<int> & Set1, FILE *fp)
 
      for(it=Set1.begin(); it!= Set1.end(); ++it)
      {
-         std::cout << ' ' << *it;
+         //std::cout << ' ' << *it;
          fprintf(fp, "%d ", *it);
      }
 
-     std::cout << '\n';
+     //std::cout << '\n';
      fprintf(fp, "\n");
 
 }
@@ -105,63 +105,63 @@ int TestMultiSet()
 
   for (int i=1; i<=5; i++) mymultiset.insert(i*10);
 
-  std::cout << "mymultiset contains:";
-  for (it=mymultiset.begin(); it!=mymultiset.end(); ++it)
-    std::cout << ' ' << *it;
-  std::cout << '\n';
+  //std::cout << "mymultiset contains:";
+  //for (it=mymultiset.begin(); it!=mymultiset.end(); ++it)
+  //  std::cout << ' ' << *it;
+  //std::cout << '\n';
 
-  std::cout << "Size of multiset is" << mymultiset.size() << std::endl ;
+  //std::cout << "Size of multiset is" << mymultiset.size() << std::endl ;
 
   for (it=mymultiset.begin(); it!=mymultiset.end(); ++it)
   {
       mySet.insert(*it);
   }
 
-  std::cout << "MySet is " << std::endl;
+  //std::cout << "MySet is " << std::endl;
 
-  for(itSet=mySet.begin(); itSet!=mySet.end(); ++itSet)
-  {
-      std::cout << ' ' << *itSet;
-  }
+  //for(itSet=mySet.begin(); itSet!=mySet.end(); ++itSet)
+  //{
+  //    std::cout << ' ' << *itSet;
+  //}
 
-  std::cout << '\n' << '\n';
-  std::cout << "Size of MySet is" << mySet.size() << std::endl ;
+  //std::cout << '\n' << '\n';
+  //std::cout << "Size of MySet is" << mySet.size() << std::endl ;
 
-  for(i=1; i<10; i++)
-  {
-     yourSet.insert(i*20);
-  }
+  //for(i=1; i<10; i++)
+  //{
+  //   yourSet.insert(i*20);
+  //}
 
-  std::cout << "YourSet is " << std::endl;
+  //std::cout << "YourSet is " << std::endl;
 
-  for(itSet=yourSet.begin(); itSet!=yourSet.end(); ++itSet)
-  {
-      std::cout << ' ' << *itSet;
-  }
+  //for(itSet=yourSet.begin(); itSet!=yourSet.end(); ++itSet)
+  //{
+  //    std::cout << ' ' << *itSet;
+  //}
 
-  std::cout << '\n' << '\n';
-  std::cout << "Size of YourSet is" << yourSet.size() << std::endl ;
+  //std::cout << '\n' << '\n';
+  //std::cout << "Size of YourSet is" << yourSet.size() << std::endl ;
 
   Set_Union(mySet, yourSet, ourSet);
 
-  std::cout << "Union OurSet is " << std::endl;
-  for(itSet=ourSet.begin(); itSet!=ourSet.end(); ++itSet)
-  {
-      std::cout << ' ' << *itSet;
-  }
-  std::cout << '\n' << '\n';
-  std::cout << "Size of OurSet is" << ourSet.size() << std::endl ;
+  //std::cout << "Union OurSet is " << std::endl;
+  //for(itSet=ourSet.begin(); itSet!=ourSet.end(); ++itSet)
+  //{
+  //    std::cout << ' ' << *itSet;
+  //}
+  //std::cout << '\n' << '\n';
+  //std::cout << "Size of OurSet is" << ourSet.size() << std::endl ;
 
   ourSet.clear();
   Set_Intersect(mySet, yourSet, ourSet);
 
-  std::cout << "Intersection OurSet is " << std::endl;
-  for(itSet=ourSet.begin(); itSet!=ourSet.end(); ++itSet)
-  {
-      std::cout << ' ' << *itSet;
-  }
-  std::cout << '\n' << '\n';
-  std::cout << "Size of OurSet is" << SET_MOD(ourSet) << std::endl ;
+  //std::cout << "Intersection OurSet is " << std::endl;
+  //for(itSet=ourSet.begin(); itSet!=ourSet.end(); ++itSet)
+  //{
+  //    std::cout << ' ' << *itSet;
+  //}
+  //std::cout << '\n' << '\n';
+  //std::cout << "Size of OurSet is" << SET_MOD(ourSet) << std::endl ;
 
   return 0;
 

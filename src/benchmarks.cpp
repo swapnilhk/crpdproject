@@ -24,25 +24,25 @@ void print_base_config(FILE *fp){
 }
 
 void print_ecbs(FILE *fp){
-	printf("Printing ECBs\n");
+	//printf("Printing ECBs\n");
 	for(int i = 0; i < NUM_TASKS; i++)
 	{
 		fprintf(fp, "ECB Set %d : \n", i);
 		print_SET(TASK_ECB[i], fp);
 		fprintf(fp, "\n");
 	}
-	printf("Printing ECBs DONE\n");
+	//printf("Printing ECBs DONE\n");
 }
 
 void print_ucbs(FILE *fp){
-	printf("Printing UCBs\n");
+	//printf("Printing UCBs\n");
 	for(int i = 0; i < NUM_TASKS; i++)
 	{
 		fprintf(fp, "UCB Set %d : \n", i);
 		print_SET(TASK_UCB[i], fp);
 		fprintf(fp, "\n");
 	}
-	printf("Printing UCBs Done\n");
+	//printf("Printing UCBs Done\n");
 }
 
 double printTaskInfo(FILE *fp)
@@ -72,11 +72,11 @@ void Print_Task_Execution_Statistics()
            switch(i)
            {
 		case PRE_MAX_KD : 
-				printf("The number of schedulable tasks for PRE_MAX_KD is %d \n", Num_Executed_Tasks[PRE_MAX_KD]);
+				//printf("The number of schedulable tasks for PRE_MAX_KD is %d \n", Num_Executed_Tasks[PRE_MAX_KD]);
                        		fprintf(fp, "The number of schedulable tasks for PRE_MAX_KD is %d \n", Num_Executed_Tasks[PRE_MAX_KD]);
                              	break;
 		case LEE_WODC : 
-				printf("The number of schedulable tasks for LEE_WODC is %d \n", Num_Executed_Tasks[LEE_WODC]);
+				//printf("The number of schedulable tasks for LEE_WODC is %d \n", Num_Executed_Tasks[LEE_WODC]);
                        		fprintf(fp, "The number of schedulable tasks for LEE_WODC is %d \n", Num_Executed_Tasks[LEE_WODC]);
                              	break;
 		default : break;
@@ -322,7 +322,7 @@ void Set_SizeECBs_UUniFast(void)
 
 void CALL_METHODS(FILE *fp){
 	Response_time_PRE_MAX_KD(fp);
-	//Response_time_lee_wodc(fp);
+	Response_time_lee_wodc(fp);
 }
 
 void Uniform_Distribution_Benchmark()
