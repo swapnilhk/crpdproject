@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<math.h>
 #include"../lib/lp_solve_ux64/lp_lib.h"
-#include"common.c"
+#include"common.h"
 
 // Array to store the worst case response times of tasks
 static FILE *fp;
@@ -102,7 +102,7 @@ double solve_constraints(int this_task)
 	lp = make_lp(0, numVar);
 	if(lp == NULL)
 		ret = 1; /* Couldn't construct a new model */
-	fprintf(fp, "^^^^numVar = %d\n", numVar);
+
 	if(ret == 0) {
 		var_count = 1;
 		for(i = 1 ; i <= numVar; i++){
@@ -125,12 +125,11 @@ double solve_constraints(int this_task)
 			var_count = 0;
 			var_no = 1;
 			for(i = 1; i <= j; i++){
-				int end = var_no + pow(2,i) -1;
+				int end = var_no + pow(2,i)-1;
 				for(; var_no < end; var_no++){
 					var[var_count] = var_no;
 					coeff[var_count] = 1;
 					var_count++;
-					var_no++;
 				}
 			}
 			r = 0;
@@ -178,7 +177,7 @@ double solve_constraints(int this_task)
 		for(j = 1; j <= this_task; j++){
 			for(H = 1; H < pow(2,j); H++){
 				var[var_count] = var_no;
-				coeff[var_count] = var_on_to_cost(this_task, var_no);//TODO (original: f[j-2][H-1])
+				coeff[var_count] = var_on_to_cost(this_task, var_no);
 				var_count++;
 				var_no++;
 			}
@@ -198,15 +197,15 @@ double solve_constraints(int this_task)
 		obj = get_objective(lp);
 		/* Displaying calculated values */		
 		/* variable values */
-		printf("/* Variable values */\n");
+		fprintf(fp, "\n/* Variable values */\n");
 		get_variables(lp, coeff);
 		for(j = 0; j < numVar; j++)
-			printf("%s: %0.2f\n", get_col_name(lp, j + 1), coeff[j]);		
+			fprintf(fp, "%s: %0.2f\n", get_col_name(lp, j + 1), coeff[j]);		
 		/* objective value */
-		printf("/* Objective value */\n%0.2f\n", obj);
+		fprintf(fp, "\n/* Objective value */\n%0.2f\n", obj);
 	}
 	if(ret != 0)
-		printf("LP ERROR = %d\n", ret);
+		fprintf(fp, "\nLP ERROR = %d\n", ret);
 	
 	/* free allocated memory */
 	if(coeff != NULL)
@@ -275,28 +274,28 @@ void strrev(char * s){
 	}
 }
 
+/* Returns the cost of cache perrmption as:
+ * UCB[this_task] INTERSECT (UNION(T | T is a set of tasks that execute during this_task's preemption))
+*/
 double var_on_to_cost(const int this_task, const int var_no){
 	int i, lp_task = 1, offset = 0, hp_task;
+	extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 
 	for(i = 1; i < var_no; i += pow(2,lp_task+1)-1, lp_task++)
 		offset = i;
 
-	std::set<int> workingSet2;
+	std::set<int> workingSet1, workingSet2;
+	workingSet1.clear();
 	workingSet2.clear();
 
 	for(hp_task = 0; hp_task < this_task; hp_task++)
 	{
 		int jump = pow(2, hp_task);
 		if(((var_no - offset) / jump) % 2 == 1){
-
-			std::set<int> workingSet1;
-
-			workingSet1.clear();
-
-			f(this_task, hp_task, workingSet1);
-
-			Set_Union(workingSet1, workingSet2, workingSet2);
+			Set_Union(workingSet1, TASK_ECB[hp_task], workingSet1);
 		}
 	}
+	Set_Intersect(workingSet1, TASK_UCB[this_task], workingSet2);
 	return BRT * SET_MOD(workingSet2);
 }
+
