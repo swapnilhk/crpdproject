@@ -100,6 +100,7 @@ double solve_constraints(int this_task)
 	for(i = 1;i <= this_task; i++)/* Counting the no. of variables for this_task*/
 		numVar+=pow(2,i)-1;	
 	lp = make_lp(0, numVar);
+	fprintf(fp, ">>>>>>>>>>>>>>>>%d\n", numVar);
 	if(lp == NULL)
 		ret = 1; /* Couldn't construct a new model */
 
@@ -147,21 +148,27 @@ double solve_constraints(int this_task)
 		for(j = 1; j <= this_task; j++){
 			int offset = 0;// offset => offset i.e. starting place
 			double end;
-			for(i = 0; i < j; i++){
+			for(i = 1; i < j; i++){
 				offset += pow(2,i) - 1;
 			}
-			end = offset + pow(2,j-1);// end => value we want ot reach to
+			end = offset + pow(2,j);// end => value we want ot reach to
 			for(i = 0; i < j; i++){// All higher priority jobs
-				int jump = pow(2,i);// jump => value we want ot jump to
+				int jump = pow(2,i);// jump => value we want ot jump to				
+
 				var_count = 0;
 				for(var_no = offset + jump; var_no < end; var_no += jump){
+
 					int end2 = var_no + jump;
+					
 					for(; var_no < end2; var_no++){//var_no reaching to end2
+						
 						var[var_count] = var_no;
 						coeff[var_count] = 1;
 						var_count++;
 					}
+
 				}
+				
 				r = min(ceil(Response[this_task]/T[j])*ceil(Response[j]/T[i]),ceil(Response[this_task]/T[i]));
 				if(!add_constraintex(lp, var_count, coeff, var, LE, r))
 					ret = 3;
