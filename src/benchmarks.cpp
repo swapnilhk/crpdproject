@@ -4,8 +4,10 @@
 #include<time.h>
 #include<math.h>
 #include"base_config.h"
-//#include"kd.cpp"
+#include"kd.cpp"
 #include"lee_wodc.cpp"
+
+#define VERBOSE 1
 
 using namespace std;
 
@@ -34,41 +36,29 @@ void print_ecbs(FILE *fp){
 
 void print_ucbs(FILE *fp){
 	printf("Printing UCBs\n");
-
 	for(int i = 0; i < NUM_TASKS; i++)
 	{
 		fprintf(fp, "UCB Set %d : \n", i);
 		print_SET(TASK_UCB[i], fp);
 		fprintf(fp, "\n");
 	}
-
 	printf("Printing UCBs Done\n");
 }
 
 double printTaskInfo(FILE *fp)
 {
 	double util = 0;
-
-	printf("**************************************************************************************************\n\n");
-	printf("                                    PRINTING TASK INFO                                            \n\n");
-	printf("**************************************************************************************************\n");
-
 	fprintf(fp, "**************************************************************************************************\n\n");
 	fprintf(fp, "                                    PRINTING TASK INFO                                            \n\n");
 	fprintf(fp, "**************************************************************************************************\n");
 
 	for(int i = 0; i < NUM_TASKS; i++)
 	{
-		printf("TASK = %d   EXEC_TIME = %g  PERIOD = %ld  DEADLINE = %ld \n\n", i, C[i], T[i], D[i]);
 		fprintf(fp, "TASK = %d   EXEC_TIME = %g  PERIOD = %ld  DEADLINE = %ld \n\n", i, C[i], T[i], D[i]);
-
 		util += ( C[i] / T[i]);
 	}
 
-	printf("The Utilization of TASK_SET is %f \n", util);
 	fprintf(fp, "The Utilization of TASK_SET is %f \n", util);
-
-	printf("________________________________PRINTING TASK INFO ENDS___________________________________________\n\n");
 	fprintf(fp, "________________________________PRINTING TASK INFO ENDS___________________________________________\n\n");
 
 	return util;
@@ -81,11 +71,15 @@ void Print_Task_Execution_Statistics()
      {
            switch(i)
            {
-                    case PRE_MAX_KD : 
+		case PRE_MAX_KD : 
 				printf("The number of schedulable tasks for PRE_MAX_KD is %d \n", Num_Executed_Tasks[PRE_MAX_KD]);
                        		fprintf(fp, "The number of schedulable tasks for PRE_MAX_KD is %d \n", Num_Executed_Tasks[PRE_MAX_KD]);
                              	break;
-                    default : break;
+		case LEE_WODC : 
+				printf("The number of schedulable tasks for LEE_WODC is %d \n", Num_Executed_Tasks[LEE_WODC]);
+                       		fprintf(fp, "The number of schedulable tasks for LEE_WODC is %d \n", Num_Executed_Tasks[LEE_WODC]);
+                             	break;
+		default : break;
                              
            }
      }
@@ -159,9 +153,6 @@ void Read_UCBs(void)
 				count++;
 			}
 		}
-
-		printf("The UCBs for task %d is done\n", j);
-
 	}
 }
 
@@ -169,7 +160,7 @@ void UUniSort(float A[], int n, float sumUtil)
 {
 	int i, j; float random_val; float temp;
 
-	printf("The total util is %f\n", sumUtil);
+	//printf("The total util is %f\n", sumUtil);
 
 	srand((unsigned)time(NULL));
 	A[0] = 0.0;
@@ -200,10 +191,10 @@ void UUniSort(float A[], int n, float sumUtil)
 
 	A[n-1] = sumUtil - A[n-1];
 
-	for(i=0; i < n; i++)
-	{
-		printf("The util for element %d is %f\n", i, A[i]);
-	}
+	//for(i=0; i < n; i++)
+	//{
+	//	printf("The util for element %d is %f\n", i, A[i]);
+	//}
 }
 
 // 5 - 500 => 1 - 100 => 0 => log (100)
@@ -242,17 +233,17 @@ void LogUniformPeriods(float A[], int n, int minP, int maxP)
 		}
 	}
 
-	for(i= 0; i < n; i++)
-	{
-		printf("The generated random number is %f\n", A[i]);
-	}
+	//for(i= 0; i < n; i++)
+	//{
+	//	printf("The generated random number is %f\n", A[i]);
+	//}
 }
 
 void UUniFast(float A[], int n, float sumUtil)
 {
 	int i; float nextSumUtil; float random_val;
 
-	printf("The total util is %f\n", sumUtil);
+	//printf("The total util is %f\n", sumUtil);
 
 	srand((unsigned)time(NULL));
 	for (i=1; i < n; i++)
@@ -265,10 +256,10 @@ void UUniFast(float A[], int n, float sumUtil)
 
 	A[i-1] = sumUtil;
 
-	for (i = 0; i < n; i++)
-	{
-		printf("The util for element %d is %f\n", i, A[i]);
-	}
+	//for (i = 0; i < n; i++)
+	//{
+	//	printf("The util for element %d is %f\n", i, A[i]);
+	//}
 }
 
 void CreateTask_Uniform_Distribution(float totalUtil, int minPeriod, int maxPeriod)
@@ -287,20 +278,20 @@ void CreateTask_Uniform_Distribution(float totalUtil, int minPeriod, int maxPeri
 		D[i] = T[i];
 	}
 
-	for(i=0; i < NUM_TASKS; i++)
-	{
-		printf("The utilization of task %d is %f\n", i, utilsArray[i]);
-	}
+	//for(i=0; i < NUM_TASKS; i++)
+	//{
+	//	printf("The utilization of task %d is %f\n", i, utilsArray[i]);
+	//}
 
-	for(i=0; i < NUM_TASKS; i++)
-	{
-		printf("The period of task %d is %ld\n", i, T[i]);
-	}
+	//for(i=0; i < NUM_TASKS; i++)
+	//{
+	//	printf("The period of task %d is %ld\n", i, T[i]);
+	//}
 
-	for(i=0; i < NUM_TASKS; i++)
-	{
-		printf("The execution time for task %d is %f\n", i, C[i]);
-	}
+	//for(i=0; i < NUM_TASKS; i++)
+	//{
+	//	printf("The execution time for task %d is %f\n", i, C[i]);
+	//}
 }
 
 void Set_SizeUCBs_Uniform(void)
@@ -311,7 +302,7 @@ void Set_SizeUCBs_Uniform(void)
 	for(i=0; i < NUM_TASKS; i++)
 	{
 		SIZE_UCB_TASK[i] = (int) ( RF * SIZE_ECB_TASK[i] * ( (double) rand()/ RAND_MAX )) ;
-		printf("The number of UCBs for task %d is %d \n", i, SIZE_UCB_TASK[i]);
+		//printf("The number of UCBs for task %d is %d \n", i, SIZE_UCB_TASK[i]);
 	}
 }
 
@@ -325,13 +316,13 @@ void Set_SizeECBs_UUniFast(void)
 	for(i=0; i < NUM_TASKS; i++)
 	{
 		SIZE_ECB_TASK[i] = (int) (values_uunifast[i] * Total_ECBs_CU * CACHE_SIZE);
-		printf("The number of ECBs for task %d is %d \n", i, SIZE_ECB_TASK[i]);
+		//printf("The number of ECBs for task %d is %d \n", i, SIZE_ECB_TASK[i]);
 	}
 }
 
 void CALL_METHODS(FILE *fp){
-	//Response_time_PRE_MAX_KD(fp);
-	Response_time_lee_wodc(fp);
+	Response_time_PRE_MAX_KD(fp);
+	//Response_time_lee_wodc(fp);
 }
 
 void Uniform_Distribution_Benchmark()
@@ -364,14 +355,14 @@ void Uniform_Distribution_Benchmark()
 			printTaskInfo(fp);
 			CALL_METHODS(fp);
 		}
-		printf("##################################################################################################\n");
+		//printf("##################################################################################################\n");
 		fprintf(fp, "##################################################################################################\n");
-		printf("Printing statistics for %f utilization and %d NUM_TASK_SETS \n", totalUtil, NUM_TASK_SETS);
+		//printf("Printing statistics for %f utilization and %d NUM_TASK_SETS \n", totalUtil, NUM_TASK_SETS);
 	        fprintf(fp, "Printing statistics for %f utilization and %d NUM_TASK_SETS \n", totalUtil, NUM_TASK_SETS);  
 	        Print_Task_Execution_Statistics();
-	        printf("Printing statistics for %f utilization and %d NUM_TASK_SETS complete\n", totalUtil, NUM_TASK_SETS);
+	        //printf("Printing statistics for %f utilization and %d NUM_TASK_SETS complete\n", totalUtil, NUM_TASK_SETS);
 	        fprintf(fp, "Printing statistics for %f utilization and %d NUM_TASK_SETS complete\n", totalUtil, NUM_TASK_SETS);
-		printf("##################################################################################################\n\n");
+		//printf("##################################################################################################\n\n");
 		fprintf(fp, "##################################################################################################\n\n");
 	}		
 }
