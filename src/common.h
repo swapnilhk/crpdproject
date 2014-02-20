@@ -1,3 +1,5 @@
+#ifndef COMMON
+#define COMMON
 #ifndef NUM_TASKS
 	#include"base_config.h"
 #endif
@@ -193,3 +195,4 @@ void f(int this_task, int hp_task, std::set<int> & ret_set){
 	Set_Intersect(workingSet1, TASK_ECB[hp_task], ret_set);
 
 }
+#endif

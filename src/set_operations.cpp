@@ -1,3 +1,5 @@
+#ifndef SET_OPERATIONS
+#define SET_OPERATIONS
 #include<iostream>
 #include<set>
 #include"stdio.h"
@@ -164,3 +166,4 @@ int TestMultiSet()
   return 0;
 
 }
+#endif
