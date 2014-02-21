@@ -29,6 +29,7 @@ enum METHOD_NAMES {
 };
 
 int Num_Executed_Tasks[NUM_METHODS];
+double Response[NUM_TASKS] = {0};
 
 void Clear_Task_Execution_Statistics()
 {
@@ -38,6 +39,15 @@ void Clear_Task_Execution_Statistics()
      {
           Num_Executed_Tasks[i] = 0;
      }
+}
+
+void clear_Response()
+{
+	int i;
+	for(i = 0; i < NUM_TASKS; i++)
+	{
+		Response[i] = 0;
+	}
 }
 
 double printTaskInfo(FILE *fp)

@@ -1,6 +1,5 @@
-#ifndef HEADER_SET_OPERATIONS
-#define HEADER_SET_OPERATIONS
-
+#ifndef SET_OPERATIONS
+#define SET_OPERATIONS
 #include<iostream>
 #include<set>
 #include"stdio.h"

@@ -284,6 +284,7 @@ void Response_time_lee_wodc(){
 		if(message_level >= IMP)
 			fprintf(fp, "T%d(C=%g,T=%ld,D=%ld) is"(sched?" ":" NOT ")"SCEDLABLE\n", task_no, C[task_no], T[task_no], D[task_no]);	
 			
+		}
 	}
 	if(sched)
 		Num_Executed_Tasks[LEE_WODC]++;
