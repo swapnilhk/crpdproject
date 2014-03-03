@@ -3,8 +3,6 @@
 #include"../lib/lp_solve_ux64/lp_lib.h"
 #include"common.h"
 
-enum level {NONE, IMP, ALL};
-
 #define min(a, b) (a) < (b) ? (a) : (b)
 
 void strrev(char * s){
@@ -84,7 +82,7 @@ void var_no_to_name(const int this_task, const int var_no, char * var_name){
 	strcat(var_name,"})");
 }
 
-double solve_constraints(int this_task, double *Response, int message_level, FILE *fp){
+double solve_constraints(int this_task, double *Response, FILE *fp)
 {
 	lprec *lp;
 	int numVar = 0, *var = NULL, ret = 0, i, j, k, var_count, H, var_no;
@@ -94,34 +92,44 @@ double solve_constraints(int this_task, double *Response, int message_level, FIL
 	/* Creating a model */	
 	for(i = 1;i <= this_task; i++)/* Counting the no. of variables for this_task*/
 		numVar+=pow(2,i)-1;	
+
 	lp = make_lp(0, numVar);
 	
 	if(lp == NULL)
 		ret = 1; /* Couldn't construct a new model */
 
 	if(ret == 0) {
+
 		var_count = 1;
+
 		for(i = 1 ; i <= numVar; i++){
 			var_no_to_name(this_task, i, col_name);
 			set_col_name(lp, var_count, col_name);
 			var_count++;
 		}
+
 		/* create space large enough for one row(i.e. equation) */
 		var = (int *) malloc(numVar * sizeof(*var));
 		coeff = (double *) malloc(numVar * sizeof(*coeff));
+
 		if((var == NULL) || (coeff == NULL))
 			ret = 2;
 	}
 	
 	/* add the equations to lpsolve */
 	if(ret == 0) {
+
 		set_add_rowmode(lp, TRUE);
 		/* --------------------adding first constraint-------------------- */
 		for(j = 1; j <= this_task; j++){
+
 			var_count = 0;
 			var_no = 1;
+
 			for(i = 1; i <= j; i++){
+
 				int end = var_no + pow(2,i)-1;
+
 				for(; var_no < end; var_no++){
 					var[var_count] = var_no;
 					coeff[var_count] = 1;
@@ -129,8 +137,10 @@ double solve_constraints(int this_task, double *Response, int message_level, FIL
 				}
 			}
 			r = 0;
+
 			for(i = 0; i <= j ; i++)
 				r += ceil(Response[this_task]/T[i]);
+
 			if(!add_constraintex(lp, var_count, coeff, var, LE, r))
 				ret = 3;
 		}
@@ -141,16 +151,22 @@ double solve_constraints(int this_task, double *Response, int message_level, FIL
 		 * g2({T1}),g3({T1}),g3({T2}),g3({T1,T2}),g4({T1}),g4({T2}),g4({T1,T2}),g4({T3}),g4({T1,T3}),g4({T2,T3}),g4({T1,T2,T3})
 		 */
 		for(j = 1; j <= this_task; j++){
+
 			int offset = 0;// offset => offset i.e. starting place
 			double end;
+
 			for(i = 1; i < j; i++){
 				offset += pow(2,i) - 1;
 			}
+
 			end = offset + pow(2,j);// end => value we want ot reach to
+
 			for(i = 0; i < j; i++){// All higher priority jobs
-				int jump = pow(2,i);// jump => value we want ot jump to				
+
+				int jump = pow(2,i);// jump => value we want ot jump to
 
 				var_count = 0;
+
 				for(var_no = offset + jump; var_no < end; var_no += jump){
 
 					int end2 = var_no + jump;
@@ -164,6 +180,7 @@ double solve_constraints(int this_task, double *Response, int message_level, FIL
 				}
 				
 				r = min(ceil(Response[this_task]/T[j])*ceil(Response[j]/T[i]),ceil(Response[this_task]/T[i]));
+
 				if(!add_constraintex(lp, var_count, coeff, var, LE, r))
 					ret = 3;
 			}
@@ -175,6 +192,7 @@ double solve_constraints(int this_task, double *Response, int message_level, FIL
 		/* -------------------adding objective function------------------- */
 		var_count = 0;
 		var_no = 1;
+
 		for(j = 1; j <= this_task; j++){
 			for(H = 1; H < pow(2,j); H++){
 				var[var_count] = var_no;
@@ -183,21 +201,28 @@ double solve_constraints(int this_task, double *Response, int message_level, FIL
 				var_no++;
 			}
 		}
+
 		if(!set_obj_fnex(lp, var_count, coeff, var))
 			ret = 4;
+
 		set_maxim(lp);
-		if(message_level == ALL)
+
+		if(MESSAGE_LEVEL >= ALL)
 			write_LP(lp, fp);
+
 		set_verbose(lp, IMPORTANT);
 		ret = solve(lp);
+
 		if(ret == OPTIMAL)
 			ret = 0;
 		else
 			ret = 5;
 	}
 	if(ret == 0) {
+
 		obj = get_objective(lp);
-		if(message_level == ALL){
+
+		if(MESSAGE_LEVEL >= ALL){
 			/* Displaying calculated values */		
 			/* variable values */
 			fprintf(fp, "\n/* Variable values */\n");
@@ -208,9 +233,11 @@ double solve_constraints(int this_task, double *Response, int message_level, FIL
 			fprintf(fp, "\n/* Objective value */\n%0.2f\n", obj);
 		}
 	}
-	if(message_level >= IMP)
-		if(ret != 0)
-			printf("\nLP ERROR = %d\n", ret);
+	if(ret != 0){
+		if(MESSAGE_LEVEL >= IMP)
+			fprintf(fp, "\nLP ERROR = %d\n", ret);		
+		printf("\nLP ERROR = %d\n", ret);
+	}
 	
 	/* free allocated memory */
 	if(coeff != NULL)
@@ -224,10 +251,10 @@ double solve_constraints(int this_task, double *Response, int message_level, FIL
 }
 
 // Returns preemption cost for task 'this_task'
-double PC(int this_task, double *Response, int message_level, FILE *fp){
+double PC(int this_task, double *Response, FILE *fp){
 	int hp_task;
 	if (this_task >= 1){
-		return solve_constraints(this_task, Response, message_level, fp);
+		return solve_constraints(this_task, Response, fp);
 	}
 	else return 0;
 }
@@ -243,7 +270,7 @@ double sigma_tda(int this_task, double *Response){
 }
 
 // Returns worst case response time of task 'task_no'
-double wcrt(int this_task, double *Response, int message_level, FILE *fp){	
+double wcrt(int this_task, double *Response, FILE *fp){	
 	double R_new;
 	R_new = C[this_task];
 	Response[this_task] = 0;
@@ -251,10 +278,10 @@ double wcrt(int this_task, double *Response, int message_level, FILE *fp){
 
 		R_new = C[this_task] 
 			+ sigma_tda(this_task, Response)
-			+ PC(this_task, Response, message_level, fp);// Time demand equation
+			+ PC(this_task, Response, fp);// Time demand equation
 
-		if(message_level >= IMP)
-			fprintf(fp, "T%d(C=%g,T=%ld,D=%ld) Response time: Old = %g, New = %g\n", Response[this_task], R_new);
+		if(MESSAGE_LEVEL >= IMP)
+			fprintf(fp, "T%d(D=%ld) Response time: Old = %g, New = %g\n", this_task, D[this_task], Response[this_task], R_new);
 	}
 	return R_new;
 }
@@ -262,30 +289,43 @@ double wcrt(int this_task, double *Response, int message_level, FILE *fp){
 void Response_time_lee_wodc(){
 
 	int task_no;
-	bool sched = true;
-	int message_level = ALL;
+	bool sched = true;	
 	double Response[NUM_TASKS] = {0};
+	static int first_call = 1;
 	FILE *fp = NULL;
 
-	if(message_level > NONE){
-		fopen(fp, "lee_wodc.txt", "w");
+	if(MESSAGE_LEVEL > NONE){
+
+		if(first_call){
+			fp = fopen("out/lee_wodc.txt", "w");
+			first_call = 0;
+		}
+		else
+			fp = fopen("out/lee_wodc.txt", "a");
+
 		if(fp == NULL){
 			printf("***Unable to open file\n");
-			message_level = NONE;
+			MESSAGE_LEVEL = NONE;
 		}
 	}
-	if(message_level >= IMP)
-		printTaskInfo(FILE *fp)
+	if(MESSAGE_LEVEL >= IMP)
+		printTaskInfo(fp);
 
 	for(task_no = 0; task_no < NUM_TASKS && sched; task_no++){		
-		wcrt(task_no, Response, message_level, fp);
+		wcrt(task_no, Response, fp);
+
 		if(Response[task_no] > D[task_no])
-			sched = false;					
-		if(message_level >= IMP)
-			fprintf(fp, "T%d(C=%g,T=%ld,D=%ld) is"(sched?" ":" NOT ")"SCEDLABLE\n", task_no, C[task_no], T[task_no], D[task_no]);	
+			sched = false;	
+				
+		if(MESSAGE_LEVEL >= IMP){
+			fprintf(fp, "T%d(C=%g,T=%ld,D=%ld) is", task_no, C[task_no], T[task_no], D[task_no]);
+			sched ? fprintf(fp,"SCEDLABLE\n") : fprintf(fp,"NOT SCEDLABLE\n");	
+		}
 			
 	}
 	if(sched)
 		Num_Executed_Tasks[LEE_WODC]++;
+	if(fp != NULL)
+		fclose(fp);
 }
 

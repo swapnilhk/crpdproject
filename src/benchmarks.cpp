@@ -5,6 +5,7 @@
 #include<math.h>
 #include"base_config.h"
 #include"set_operations.cpp"
+#include"common.h"
 //#include"kd.cpp"
 #include"lee_wodc.cpp"
 
@@ -23,46 +24,69 @@ void print_base_config(FILE *fp){
 }
 
 void print_ecbs(FILE *fp){
-	for(int i = 0; i < NUM_TASKS; i++)
+	int i;
+
+	if(VERBOSE)
+		printf("Printing ECB sets\n");
+
+	for(i = 0; i < NUM_TASKS; i++)
 	{
 		fprintf(fp, "ECB Set %d : \n", i);
 		print_SET(TASK_ECB[i], fp);
 		fprintf(fp, "\n");
 	}
+
+	if(VERBOSE)
+		printf("Printing ECB sets done\n");
 }
 
 void print_ucbs(FILE *fp){
-	for(int i = 0; i < NUM_TASKS; i++)
+	int i;
+
+	if(VERBOSE)
+		printf("Printing UCB sets\n");
+
+	for(i = 0; i < NUM_TASKS; i++)
 	{
 		fprintf(fp, "UCB Set %d : \n", i);
 		print_SET(TASK_UCB[i], fp);
 		fprintf(fp, "\n");
 	}
+
+	if(VERBOSE)
+		printf("Printing UCB sets done\n");
 }
 
 void Print_Task_Execution_Statistics(FILE *fp)
 {
-     int i;
-     static int heading = 0;
-     if(heading == 0){
-	     fprintf(fp, "Utilization\tMethod\t\tNumber of schedulable tasks\n");
-	     heading = 1;
-     }
-     fprintf(fp, "%g", taskSetUtil);
-     for(i = 0; i < NUM_METHODS; i++)
-     {
-           switch(i)
-           {
-		case PRE_MAX_KD : 
+	int i;
+	static int heading = 0;
+
+	if(VERBOSE)
+		printf("Printing task execution statistics\n");
+
+     	if(heading == 0){
+	     	fprintf(fp, "Utilization\tMethod\t\tNumber of schedulable tasks\n");
+	     	heading = 1;
+     	}
+    	fprintf(fp, "%g", taskSetUtil);
+     	for(i = 0; i < NUM_METHODS; i++)
+     	{
+           	switch(i)
+           	{
+			case PRE_MAX_KD : 
                        		fprintf(fp, "\t\tPRE_MAX_KD\t%d\n", Num_Executed_Tasks[PRE_MAX_KD]);
                              	break;
-		case LEE_WODC : 
+			case LEE_WODC : 
                        		fprintf(fp, "\t\tLEE_WODC\t%d\n", Num_Executed_Tasks[LEE_WODC]);
                              	break;
-		default : break;
+			default : break;
                              
-           }
-     }
+           	}
+     	}
+
+	if(VERBOSE)
+		printf("Printing task execution statistics done\n");
 }
 
 void Read_ECBs(void)
@@ -171,10 +195,12 @@ void UUniSort(float A[], int n, float sumUtil)
 
 	A[n-1] = sumUtil - A[n-1];
 
-	//for(i=0; i < n; i++)
-	//{
-	//	printf("The util for element %d is %f\n", i, A[i]);
-	//}
+	if(VERBOSE){
+		for(i=0; i < n; i++)
+		{
+			printf("The util for element %d is %f\n", i, A[i]);
+		}
+	}
 }
 
 // 5 - 500 => 1 - 100 => 0 => log (100)
@@ -213,17 +239,20 @@ void LogUniformPeriods(float A[], int n, int minP, int maxP)
 		}
 	}
 
-	//for(i= 0; i < n; i++)
-	//{
-	//	printf("The generated random number is %f\n", A[i]);
-	//}
+	if(VERBOSE){	
+		for(i= 0; i < n; i++)
+		{
+			printf("The generated random number is %f\n", A[i]);
+		}
+	}
 }
 
 void UUniFast(float A[], int n, float sumUtil)
 {
 	int i; float nextSumUtil; float random_val;
 
-	//printf("The total util is %f\n", sumUtil);
+	if(VERBOSE)
+		printf("The total util is %f\n", sumUtil);
 
 	srand((unsigned)time(NULL));
 	for (i=1; i < n; i++)
@@ -236,10 +265,12 @@ void UUniFast(float A[], int n, float sumUtil)
 
 	A[i-1] = sumUtil;
 
-	//for (i = 0; i < n; i++)
-	//{
-	//	printf("The util for element %d is %f\n", i, A[i]);
-	//}
+	if(VERBOSE){
+		for (i = 0; i < n; i++)
+		{
+			printf("The util for element %d is %f\n", i, A[i]);
+		}
+	}
 }
 
 void CreateTask_Uniform_Distribution(float totalUtil, int minPeriod, int maxPeriod)
@@ -257,24 +288,20 @@ void CreateTask_Uniform_Distribution(float totalUtil, int minPeriod, int maxPeri
 		C[i] = utilsArray[i] * T[i];
 		D[i] = T[i];
 	}
-
-	//for(i=0; i < NUM_TASKS; i++)
-	//{
-	//	printf("The utilization of task %d is %f\n", i, utilsArray[i]);
-	//}
-
-	//for(i=0; i < NUM_TASKS; i++)
-	//{
-	//	printf("The period of task %d is %ld\n", i, T[i]);
-	//}
-
-	//for(i=0; i < NUM_TASKS; i++)
-	//{
-	//	printf("The execution time for task %d is %f\n", i, C[i]);
-	//}
+	if(VERBOSE)
+	{
+		for(i=0; i < NUM_TASKS; i++)
+			printf("The utilization of task %d is %f\n", i, utilsArray[i]);
+	
+		for(i=0; i < NUM_TASKS; i++)
+			printf("The period of task %d is %ld\n", i, T[i]);
+	
+		for(i=0; i < NUM_TASKS; i++)
+			printf("The execution time for task %d is %f\n", i, C[i]);
+	}
 }
 
-void Set_SizeUCBs_Uniform(void)
+void Set_SizeUCBs_Uniform()
 {
 	int i;
 
@@ -282,11 +309,13 @@ void Set_SizeUCBs_Uniform(void)
 	for(i=0; i < NUM_TASKS; i++)
 	{
 		SIZE_UCB_TASK[i] = (int) ( RF * SIZE_ECB_TASK[i] * ( (double) rand()/ RAND_MAX )) ;
-		//printf("The number of UCBs for task %d is %d \n", i, SIZE_UCB_TASK[i]);
+
+		if(VERBOSE)
+			printf("The number of UCBs for task %d is %d \n", i, SIZE_UCB_TASK[i]);
 	}
 }
 
-void Set_SizeECBs_UUniFast(void)
+void Set_SizeECBs_UUniFast()
 {
 	int i;
 	float values_uunifast[NUM_TASKS];
@@ -296,32 +325,46 @@ void Set_SizeECBs_UUniFast(void)
 	for(i=0; i < NUM_TASKS; i++)
 	{
 		SIZE_ECB_TASK[i] = (int) (values_uunifast[i] * Total_ECBs_CU * CACHE_SIZE);
-		//printf("The number of ECBs for task %d is %d \n", i, SIZE_ECB_TASK[i]);
+
+		if(VERBOSE)
+			printf("The number of ECBs for task %d is %d \n", i, SIZE_ECB_TASK[i]);
 	}
 }
 
-void CALL_METHODS(FILE *fp){
-	//Response_time_PRE_MAX_KD(fp);
-	Response_time_lee_wodc(fp);
+void CALL_METHODS(){
+	//Response_time_PRE_MAX_KD();
+	Response_time_lee_wodc();
 }
 
-void Uniform_Distribution_Benchmark()
+void Clear_Task_Execution_Statistics()
+{
+     int i;
+     
+     for( i = 0; i < NUM_METHODS; i++)
+     {
+          Num_Executed_Tasks[i] = 0;
+     }
+}
+
+void Uniform_Distribution_Benchmark(FILE *fp)
 {
 	float totalUtil = taskSetUtil = 0.05;
 	int minPeriod = 20;
 	int maxPeriod = 500;
 
-	FILE *fp = fopen("out/Results_Malardalen.txt", "w");
-	print_base_config(fp);
-
+	if(MESSAGE_LEVEL >= IMP)
+		print_base_config(fp);
+	
 	Set_SizeECBs_UUniFast();
 	Set_SizeUCBs_Uniform();
 
 	Read_ECBs();
 	Read_UCBs();
 
-	//print_ecbs(fp);
-	//print_ucbs(fp);
+	if(MESSAGE_LEVEL >= ALL){
+		print_ecbs(fp);
+		print_ucbs(fp);
+	}
 
 	for (; totalUtil <= 1.0; totalUtil += 0.05)
 	{
@@ -332,14 +375,30 @@ void Uniform_Distribution_Benchmark()
 		for(int i=1; i <= NUM_TASK_SETS; i++)
 		{
 			CreateTask_Uniform_Distribution(totalUtil, minPeriod, maxPeriod);
-			CALL_METHODS(fp);
+			CALL_METHODS();
 		}
-	        Print_Task_Execution_Statistics(fp);
+		if(MESSAGE_LEVEL >= IMP)
+		        Print_Task_Execution_Statistics(fp);
 	}		
 }
 
 int main() {
+	FILE *fp = NULL;
+
+	if(MESSAGE_LEVEL > NONE){
+
+		fp = fopen("out/Results_Malardalen.txt", "w");
+
+		if(fp == NULL){
+			printf("***Unable to open file\n");
+			MESSAGE_LEVEL = NONE;
+		}
+	}
+
 	//Malardaren_benchmark();
-	//Geometric_execution_times_benchmark();
-	Uniform_Distribution_Benchmark();
+	//Geometric_execution_times_benchmark();	
+	Uniform_Distribution_Benchmark(fp);
+
+	if(fp != NULL)
+		fclose(fp);
 }

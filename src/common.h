@@ -30,21 +30,16 @@ enum METHOD_NAMES {
 
 int Num_Executed_Tasks[NUM_METHODS];
 
-void Clear_Task_Execution_Statistics()
-{
-     int i;
-     
-     for( i = 0; i < NUM_METHODS; i++)
-     {
-          Num_Executed_Tasks[i] = 0;
-     }
-}
+enum level {NONE, IMP, ALL};
+int MESSAGE_LEVEL = IMP;
+const int VERBOSE = 1;
 
 double printTaskInfo(FILE *fp)
 {
 	double util = 0;
 	fprintf(fp, "\n\nPRINTING TASK INFO\n");
 	fprintf(fp, "Task\tExectime\tPeriod\tDeadline\n");
+
 	for(int i = 0; i < NUM_TASKS; i++)
 	{
 		fprintf(fp, "%d\t%8.4g\t%ld\t%ld\n", i, C[i], T[i], D[i]);
