@@ -7,7 +7,7 @@
 #include"set_operations.cpp"
 #include"common.h"
 //#include"kd.cpp"
-#include"lee_wodc.cpp"
+#include"lee_wdc.cpp"
 
 using namespace std;
 
@@ -333,7 +333,9 @@ void Set_SizeECBs_UUniFast()
 
 void CALL_METHODS(){
 	//Response_time_PRE_MAX_KD();
-	Response_time_lee_wodc();
+	int WDC;
+	Response_time_lee_wdc(WDC = 0);
+	Response_time_lee_wdc(WDC = 1);
 }
 
 void Clear_Task_Execution_Statistics()
