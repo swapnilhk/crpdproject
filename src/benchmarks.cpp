@@ -72,17 +72,23 @@ void Print_Task_Execution_Statistics(FILE *fp)
     	fprintf(fp, "%g", taskSetUtil);
      	for(i = 0; i < NUM_METHODS; i++)
      	{
+		char str[20] = "\0";
            	switch(i)
            	{
 			case PRE_MAX_KD : 
-                       		fprintf(fp, "\t\tPRE_MAX_KD\t%d\n", Num_Executed_Tasks[PRE_MAX_KD]);
+                       		sprintf(str, "\t\tPRE_MAX_KD\t%d\n", Num_Executed_Tasks[PRE_MAX_KD]);
                              	break;
 			case LEE_WODC : 
-                       		fprintf(fp, "\t\tLEE_WODC\t%d\n", Num_Executed_Tasks[LEE_WODC]);
+                       		sprintf(str, "\t\tLEE_WODC  \t%d\n", Num_Executed_Tasks[LEE_WODC]);
                              	break;
-			default : break;
-                             
+			case LEE_WDC : 
+                       		sprintf(str, "\t\tLEE_WDC   \t%d\n", Num_Executed_Tasks[LEE_WDC]);
+                             	break;
+			default : break;                             
            	}
+		fprintf(fp, "%s", str);
+		if(VERBOSE)
+			printf("%s", str);
      	}
 
 	if(VERBOSE)
@@ -195,12 +201,12 @@ void UUniSort(float A[], int n, float sumUtil)
 
 	A[n-1] = sumUtil - A[n-1];
 
-	if(VERBOSE){
+	/*if(VERBOSE){
 		for(i=0; i < n; i++)
 		{
 			printf("The util for element %d is %f\n", i, A[i]);
 		}
-	}
+	}*/
 }
 
 // 5 - 500 => 1 - 100 => 0 => log (100)
@@ -239,20 +245,17 @@ void LogUniformPeriods(float A[], int n, int minP, int maxP)
 		}
 	}
 
-	if(VERBOSE){	
+	/*if(VERBOSE){	
 		for(i= 0; i < n; i++)
 		{
 			printf("The generated random number is %f\n", A[i]);
 		}
-	}
+	}*/
 }
 
 void UUniFast(float A[], int n, float sumUtil)
 {
-	int i; float nextSumUtil; float random_val;
-
-	if(VERBOSE)
-		printf("The total util is %f\n", sumUtil);
+	int i; float nextSumUtil; float random_val;	
 
 	srand((unsigned)time(NULL));
 	for (i=1; i < n; i++)
@@ -265,12 +268,12 @@ void UUniFast(float A[], int n, float sumUtil)
 
 	A[i-1] = sumUtil;
 
-	if(VERBOSE){
+	/*if(VERBOSE){
 		for (i = 0; i < n; i++)
 		{
 			printf("The util for element %d is %f\n", i, A[i]);
 		}
-	}
+	}*/
 }
 
 void CreateTask_Uniform_Distribution(float totalUtil, int minPeriod, int maxPeriod)
@@ -288,7 +291,7 @@ void CreateTask_Uniform_Distribution(float totalUtil, int minPeriod, int maxPeri
 		C[i] = utilsArray[i] * T[i];
 		D[i] = T[i];
 	}
-	if(VERBOSE)
+	/*if(VERBOSE)
 	{
 		for(i=0; i < NUM_TASKS; i++)
 			printf("The utilization of task %d is %f\n", i, utilsArray[i]);
@@ -298,7 +301,7 @@ void CreateTask_Uniform_Distribution(float totalUtil, int minPeriod, int maxPeri
 	
 		for(i=0; i < NUM_TASKS; i++)
 			printf("The execution time for task %d is %f\n", i, C[i]);
-	}
+	}*/
 }
 
 void Set_SizeUCBs_Uniform()
@@ -372,6 +375,9 @@ void Uniform_Distribution_Benchmark(FILE *fp)
 	{
 		taskSetUtil = totalUtil;
 
+		if(VERBOSE)
+			printf("The total util is %f\n", totalUtil);
+
 		Clear_Task_Execution_Statistics();
 
 		for(int i=1; i <= NUM_TASK_SETS; i++)
@@ -379,28 +385,25 @@ void Uniform_Distribution_Benchmark(FILE *fp)
 			CreateTask_Uniform_Distribution(totalUtil, minPeriod, maxPeriod);
 			CALL_METHODS();
 		}
-		if(MESSAGE_LEVEL >= IMP)
-		        Print_Task_Execution_Statistics(fp);
+
+	        Print_Task_Execution_Statistics(fp);
 	}		
 }
 
 int main() {
 	FILE *fp = NULL;
 
-	if(MESSAGE_LEVEL > NONE){
-
-		fp = fopen("out/Results_Malardalen.txt", "w");
-
-		if(fp == NULL){
-			printf("***Unable to open file\n");
-			MESSAGE_LEVEL = NONE;
-		}
-	}
-
 	//Malardaren_benchmark();
 	//Geometric_execution_times_benchmark();	
+
+	fp = fopen("out/Uniform_Distribution_Benchmark.txt", "w");
+
+	if(fp == NULL){
+		printf("***Unable to open file\n");
+		exit(0);
+	}
+	
 	Uniform_Distribution_Benchmark(fp);
 
-	if(fp != NULL)
-		fclose(fp);
+	fclose(fp);
 }

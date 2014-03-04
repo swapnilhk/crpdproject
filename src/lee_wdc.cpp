@@ -220,41 +220,40 @@ double solve_constraints(int this_task, double *Response, int WDC, FILE *fp)
 
 	if(WDC){
 		if(ret == 0) {
-	/* --------------------adding constraint related to double-counting------------------- */	
 			int size = 0;
-			for(i = 1;i < this_task; i++){// Finding matrix size
+			for(i = 0;i <= this_task; i++){// Finding matrix size
 				size += ceil((pow(2,i)-1)/2);
 			}
 			{
-				int large_2darray[this_task-1][size];
+				int large_2darray[this_task][size];
 				int hp_task;
 				// Initializing matrix
-				for(i = 0;i < this_task-1; i++){
-					for(j = 0; j < size; j++){
-						large_2darray[i][j] = 0;
-					}
+				for(i = 0;i < this_task; i++){
+				    for(j = 0; j < size; j++){
+					large_2darray[i][j] = 0;
+				    }
 				}
-			
+
 				// Logic to generate sequence of var_no
-				for(k = 1; k < this_task; k++){
-					int jump = pow(2,k-1);
-					int var_count = 0;
-					int end;
-					for(j = 2; j <= this_task; j++){
-						int offset = 0;// offset => starting place
-						for(i = 1; i < j; i++){
-							offset += pow(2,i-1) - 1;
-						}
-						var_no = offset;
-						end = offset + pow(2,j-1);				
-						for(var_no += jump; var_no < end; var_no += jump){
-							int end2 = var_no + jump;
-							for(; var_no < end2; var_no++){//var_no reaching to jump
-								large_2darray[k-1][var_count] = var_no;
-								var_count++;
-							}
-						}
+				for(k = 0; k < this_task; k++){
+				    int jump = pow(2,k);
+				    int var_count = 0;
+				    int end;
+				    for(j = 1; j <= this_task; j++){
+					int offset = 0;// offset => starting place
+					for(i = 0; i < j; i++){
+					    offset += pow(2,i) - 1;
 					}
+					var_no = offset;
+					end = offset + pow(2,j) - 1;               
+					for(var_no += jump; var_no <= end; var_no += jump){
+					    int end2 = var_no + jump - 1;
+					    for(; var_no <= end2; var_no++){//var_no reaching to jump
+						large_2darray[k][var_count] = var_no;
+						var_count++;
+					    }
+					}
+				    }
 				}
 				// Algorithm for following section:
 				// 1. Select next hp task if exists, otherwise exit loop
@@ -263,39 +262,42 @@ double solve_constraints(int this_task, double *Response, int WDC, FILE *fp)
 				// 4. Generate rhs depending on this task and the hp task slected and add equation to lp_solve
 				// 5. Goto 3
 				// 6. Goto 1
-				for(hp_task = 1; hp_task < this_task; hp_task++){
-					// Selecteding a row
-					int * row = large_2darray[hp_task-1];
-					// Creating subsets
-					for(j = hp_task+1; j <= this_task; j++){
-						int subset[size];
-						int offset = 0;
-						// offset : is a number, greater than which 'var_no's are to be selected
-						for(i = 2; i < j; i++){
-							offset += pow(2,i-1) - 1;
-						}
-						for(i = 0; i < size; i++){
-							subset[i] = 0;
-						}
-						k = 0;
-						for(i = 0; i < size && row[i] != 0; i++){
-							if(row[i] > offset)
-								subset[k++] = row[i];
-						}
-						for(i = j; i < this_task; i++){
-							set_difference(subset, large_2darray[i-1], size);
-						}
-						// Now we have the final subset that can be added as an equation to lp_solve
-						for(var_count = 0; subset[var_count] != 0 && var_count < size; var_count++){
-							var[var_count] = subset[var_count];
-							coeff[var_count] = 1;
-						}
-						r = ceil(Response[this_task]/T[hp_task]);
-						if(!add_constraintex(lp, var_count, coeff, var, LE, r))
-							ret = 3;
+				for(hp_task = 0; hp_task < this_task; hp_task++){
+				    // Selecteding a row
+				    int * row = large_2darray[hp_task];
+				    // Creating subsets
+				    for(j = hp_task+1; j <= this_task; j++){
+					int subset[size];
+					int offset = 0;
+					// offset : is a number, greater than which 'var_no's are to be selected
+					for(i = 1; i < j; i++){
+					    offset += pow(2,i) - 1;
 					}
+					for(i = 0; i < size; i++){
+					    subset[i] = 0;
+					}
+					k = 0;
+					for(i = 0; i < size && row[i] != 0; i++){
+					    if(row[i] > offset)
+						subset[k++] = row[i];
+					}
+					for(i = j; i < this_task; i++){
+					    set_difference(subset, large_2darray[i], size);
+					}
+					// Now we have the final subset that can be added as an equation to lp_solve               
+					for(var_count = 0; subset[var_count] != 0 && var_count < size; var_count++){
+					    char tempstr[20];
+					    var[var_count] = subset[var_count];
+					    coeff[var_count] = 1;
+					    var_no_to_name(this_task, subset[var_count], tempstr);
+					}
+					r = ceil(Response[this_task]/T[hp_task]);
+					if(!add_constraintex(lp, var_count, coeff, var, LE, r))
+					    ret = 3;
+				    }
 				}
 			}
+
 		}
 	}
 
@@ -320,8 +322,8 @@ double solve_constraints(int this_task, double *Response, int WDC, FILE *fp)
 
 		set_maxim(lp);
 
-		if(MESSAGE_LEVEL >= ALL)
-			write_LP(lp, fp);
+		if(MESSAGE_LEVEL >= ALL)			
+			write_LP(lp, fp);		
 
 		set_verbose(lp, IMPORTANT);
 		ret = solve(lp);
@@ -338,12 +340,12 @@ double solve_constraints(int this_task, double *Response, int WDC, FILE *fp)
 		if(MESSAGE_LEVEL >= ALL){
 			/* Displaying calculated values */		
 			/* variable values */
-			fprintf(fp, "\n/* Variable values */\n");
+			fprintf(fp, "\nVariable values\n");
 			get_variables(lp, coeff);
-			//for(j = 0; j < numVar; j++)
+			for(j = 0; j < numVar; j++)
 				fprintf(fp, "%s: %0.2f\n", get_col_name(lp, j + 1), coeff[j]);		
 			/* objective value */
-			fprintf(fp, "\n/* Objective value */\n%0.2f\n", obj);
+			fprintf(fp, "\nObjective value\n%0.2f\n", obj);
 		}
 	}
 	if(ret != 0){
@@ -433,19 +435,25 @@ void Response_time_lee_wdc(int WDC){
 		printTaskInfo(fp);
 
 	for(task_no = 0; task_no < NUM_TASKS && sched; task_no++){		
+		
+		if(MESSAGE_LEVEL > NONE)
+			fprintf(fp, "\tT%d\t\n", task_no);
+
 		wcrt(task_no, Response, WDC, fp);
 
 		if(Response[task_no] > D[task_no])
 			sched = false;	
 				
 		if(MESSAGE_LEVEL >= IMP){
-			fprintf(fp, "T%d(C=%g,T=%ld,D=%ld) is", task_no, C[task_no], T[task_no], D[task_no]);
-			sched ? fprintf(fp,"SCEDLABLE\n") : fprintf(fp,"NOT SCEDLABLE\n");	
+			fprintf(fp, "[T%d(C=%g,T=%ld,D=%ld) is %s]\n\n", task_no, C[task_no], T[task_no], D[task_no], sched ? "SCEDLABLE":"NOT SCEDLABLE");
 		}
 			
 	}
 	if(sched)
-		Num_Executed_Tasks[LEE_WODC]++;
+		if(WDC)
+			Num_Executed_Tasks[LEE_WDC]++;
+		else 
+			Num_Executed_Tasks[LEE_WODC]++;
 	if(fp != NULL)
 		fclose(fp);
 }

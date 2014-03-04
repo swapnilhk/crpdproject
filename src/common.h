@@ -25,22 +25,24 @@ enum METHOD_NAMES {
 	PRE_MAX,
 	PRE_MAX_KD,
 	LEE_WODC,
+	LEE_WDC,
 	NUM_METHODS
 };
 
 int Num_Executed_Tasks[NUM_METHODS];
 
 enum level {NONE, IMP, ALL};
-int MESSAGE_LEVEL = IMP;
+int MESSAGE_LEVEL = ALL;
 const int VERBOSE = 1;
 
 double printTaskInfo(FILE *fp)
 {
 	double util = 0;
-	fprintf(fp, "\n\nPRINTING TASK INFO\n");
-	fprintf(fp, "Task\tExectime\tPeriod\tDeadline\n");
+	int i;
 
-	for(int i = 0; i < NUM_TASKS; i++)
+	fprintf(fp, "\n\nPRINTING TASK INFO\nTask\tExectime\tPeriod\tDeadline\n");
+	
+	for(i = 0; i < NUM_TASKS; i++)
 	{
 		fprintf(fp, "%d\t%8.4g\t%ld\t%ld\n", i, C[i], T[i], D[i]);
 		util += ( C[i] / T[i]);
