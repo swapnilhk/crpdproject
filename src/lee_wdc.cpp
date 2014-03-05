@@ -25,7 +25,7 @@ void itoa(int i, char s[10]){
 }
 
 /* Returns the cost of cache perrmption as:
- * UCB[this_task] INTERSECT (UNION(T | T is a set of tasks that execute during this_task's preemption))
+ * UCB[this_task] INTERSECT (UNION( ECB[T] | T is a set of tasks that execute during this_task's preemption))
 */
 double var_no_to_cost(const int this_task, const int var_no){
 	int i, lp_task = 1, offset = 0, hp_task;
@@ -340,12 +340,12 @@ double solve_constraints(int this_task, double *Response, int WDC, FILE *fp)
 		if(MESSAGE_LEVEL >= ALL){
 			/* Displaying calculated values */		
 			/* variable values */
-			fprintf(fp, "\nVariable values\n");
+			fprintf(fp, "\n/* Variable values */\n");
 			get_variables(lp, coeff);
 			for(j = 0; j < numVar; j++)
 				fprintf(fp, "%s: %0.2f\n", get_col_name(lp, j + 1), coeff[j]);		
 			/* objective value */
-			fprintf(fp, "\nObjective value\n%0.2f\n", obj);
+			fprintf(fp, "\n/* Objective value */\n%0.2f\n", obj);
 		}
 	}
 	if(ret != 0){
@@ -396,7 +396,7 @@ double wcrt(int this_task, double *Response, int WDC, FILE *fp){
 			+ PC(this_task, Response, WDC, fp);// Time demand equation
 
 		if(MESSAGE_LEVEL >= IMP)
-			fprintf(fp, "T%d(D=%ld) Response time: Old = %g, New = %g\n", this_task, D[this_task], Response[this_task], R_new);
+			fprintf(fp, "T%d(D=%ld) Response time: Old = %g, New = %g\n\n", this_task, D[this_task], Response[this_task], R_new);
 	}
 	return R_new;
 }
@@ -406,22 +406,24 @@ void Response_time_lee_wdc(int WDC){
 	int task_no;
 	bool sched = true;	
 	double Response[NUM_TASKS] = {0};
-	static int first_call = 1;
+	static int first_call_wdc = 1, first_call_wodc = 1;
 	FILE *fp = NULL;
 
 	if(MESSAGE_LEVEL > NONE){
 
-		if(first_call){
-			if(WDC)
+		if(WDC){
+			if(first_call_wdc){			
 				fp = fopen("out/lee_wdc.txt", "w");
+				first_call_wdc = 0;
+			}
 			else
-				fp = fopen("out/lee_wodc.txt", "w");
-
-			first_call = 0;
+				fp = fopen("out/lee_wdc.txt", "a");			
 		}
 		else{		
-			if(WDC)
-				fp = fopen("out/lee_wdc.txt", "a");
+			if(first_call_wodc){			
+				fp = fopen("out/lee_wodc.txt", "w");
+				first_call_wodc = 0;
+			}
 			else
 				fp = fopen("out/lee_wodc.txt", "a");
 		}
