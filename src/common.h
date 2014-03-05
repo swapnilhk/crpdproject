@@ -31,10 +31,6 @@ enum METHOD_NAMES {
 
 int Num_Executed_Tasks[NUM_METHODS];
 
-enum level {NONE, IMP, ALL};
-int MESSAGE_LEVEL = ALL;
-const int VERBOSE = 1;
-
 double printTaskInfo(FILE *fp)
 {
 	double util = 0;

@@ -6,7 +6,7 @@
 #include"base_config.h"
 #include"set_operations.cpp"
 #include"common.h"
-//#include"kd.cpp"
+#include"kd.cpp"
 #include"lee_wdc.cpp"
 
 using namespace std;
@@ -66,23 +66,26 @@ void Print_Task_Execution_Statistics(FILE *fp)
 		printf("Printing task execution statistics\n");
 
      	if(heading == 0){
-	     	fprintf(fp, "Utilization\tMethod\t\tNumber of schedulable tasks\n");
+	     	fprintf(fp, "%-4s\t%-32s\t%s\n", "Util", "Method", "No. of Sched tasks");
 	     	heading = 1;
      	}
-    	fprintf(fp, "%g", taskSetUtil);
+	else
+		fprintf(fp, "\n");
+
+    	fprintf(fp, "%-4.2g", taskSetUtil);
      	for(i = 0; i < NUM_METHODS; i++)
      	{
-		char str[20] = "\0";
+		char str[50] = "\0";
            	switch(i)
            	{
 			case PRE_MAX_KD : 
-                       		sprintf(str, "\t\tPRE_MAX_KD\t%d\n", Num_Executed_Tasks[PRE_MAX_KD]);
+                       		sprintf(str, "\t%-32s\t%d\n", "PRE_MAX_KD", Num_Executed_Tasks[PRE_MAX_KD]);
                              	break;
 			case LEE_WODC : 
-                       		sprintf(str, "\t\tLEE_WODC  \t%d\n", Num_Executed_Tasks[LEE_WODC]);
+                       		sprintf(str, "\t%-32s\t%d\n", "LEE_WODC", Num_Executed_Tasks[LEE_WODC]);
                              	break;
 			case LEE_WDC : 
-                       		sprintf(str, "\t\tLEE_WDC   \t%d\n", Num_Executed_Tasks[LEE_WDC]);
+                       		sprintf(str, "\t%-32s\t%d\n", "LEE_WDC", Num_Executed_Tasks[LEE_WDC]);
                              	break;
 			default : break;                             
            	}
@@ -335,8 +338,8 @@ void Set_SizeECBs_UUniFast()
 }
 
 void CALL_METHODS(){
-	//Response_time_PRE_MAX_KD();
 	int WDC;
+	Response_time_PRE_MAX_KD();	
 	Response_time_lee_wdc(WDC = 0);
 	Response_time_lee_wdc(WDC = 1);
 }
@@ -353,9 +356,9 @@ void Clear_Task_Execution_Statistics()
 
 void Uniform_Distribution_Benchmark(FILE *fp)
 {
-	float totalUtil = taskSetUtil = 0.05;
-	int minPeriod = 20;
-	int maxPeriod = 500;
+	float totalUtil = taskSetUtil = UTIL_START;
+	int minPeriod = MIN_PERIOD;
+	int maxPeriod = MAX_PERIOD;
 
 	if(MESSAGE_LEVEL >= IMP)
 		print_base_config(fp);
@@ -371,7 +374,7 @@ void Uniform_Distribution_Benchmark(FILE *fp)
 		print_ucbs(fp);
 	}
 
-	for (; totalUtil <= 1.0; totalUtil += 0.05)
+	for (; totalUtil <= 1.0; totalUtil += UTIL_INCREMENT)
 	{
 		taskSetUtil = totalUtil;
 
@@ -380,11 +383,18 @@ void Uniform_Distribution_Benchmark(FILE *fp)
 
 		Clear_Task_Execution_Statistics();
 
+		if(VERBOSE)
+			printf("Task no:     ");
+
 		for(int i=1; i <= NUM_TASK_SETS; i++)
 		{
+			if(VERBOSE)
+				printf("\b\b\b\b%4d",i);
+
 			CreateTask_Uniform_Distribution(totalUtil, minPeriod, maxPeriod);
 			CALL_METHODS();
 		}
+		if(VERBOSE) printf("\n");
 
 	        Print_Task_Execution_Statistics(fp);
 	}		
