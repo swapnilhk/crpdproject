@@ -8,6 +8,7 @@
 #include"common.h"
 #include"kd.cpp"
 #include"lee_wdc.cpp"
+#include"uniform_fixed_tasks_ecb_ucb_schemes.cpp"
 
 using namespace std;
 
@@ -78,6 +79,62 @@ void Print_Task_Execution_Statistics(FILE *fp)
 		char str[50] = "\0";
            	switch(i)
            	{
+			case NO_PREEMPT:
+                       		sprintf(str, "\t%-32s\t%d\n", "NO_PREEMPT", Num_Executed_Tasks[NO_PREEMPT]);
+				break;
+
+			case ECB_ONLY:
+                       		sprintf(str, "\t%-32s\t%d\n", "ECB_ONLY", Num_Executed_Tasks[ECB_ONLY]);
+				break;
+
+			case UCB_ONLY:
+                       		sprintf(str, "\t%-32s\t%d\n", "UCB_ONLY", Num_Executed_Tasks[UCB_ONLY]);
+				break;
+
+			case UCB_UNION:
+                       		sprintf(str, "\t%-32s\t%d\n", "UCB_UNION", Num_Executed_Tasks[UCB_UNION]);
+				break;
+
+			case ECB_UNION:
+                       		sprintf(str, "\t%-32s\t%d\n", "ECB_UNION", Num_Executed_Tasks[ECB_UNION]);
+				break;
+
+			case ECB_UNION_MULTISET:
+                       		sprintf(str, "\t%-32s\t%d\n", "ECB_UNION_MULTISET", Num_Executed_Tasks[ECB_UNION_MULTISET]);
+				break;
+
+			case UCB_UNION_MULTISET:
+                       		sprintf(str, "\t%-32s\t%d\n", "UCB_UNION_MULTISET", Num_Executed_Tasks[UCB_UNION_MULTISET]);
+				break;
+
+			case ECB_UCB_UNION_MULTISET_COMBINED:
+                       		sprintf(str, "\t%-32s\t%d\n", "ECB_UCB_UNION_MULTISET_COMBINED", Num_Executed_Tasks[ECB_UCB_UNION_MULTISET_COMBINED]);
+				break;
+
+			case ECB_UNION_MULTISET_PRE:
+                       		sprintf(str, "\t%-32s\t%d\n", "ECB_UNION_MULTISET_PRE", Num_Executed_Tasks[ECB_UNION_MULTISET_PRE]);
+				break;
+
+			case UCB_UNION_MULTISET_PRE:
+                       		sprintf(str, "\t%-32s\t%d\n", "UCB_UNION_MULTISET_PRE", Num_Executed_Tasks[UCB_UNION_MULTISET_PRE]);
+				break;
+
+			case ECB_UCB_UNION_MULTISET_COMBINED_PRE:
+                       		sprintf(str, "\t%-32s\t%d\n", "ECB_UCB_UNION_MULTISET_COMBINED_PRE", Num_Executed_Tasks[ECB_UCB_UNION_MULTISET_COMBINED_PRE]);
+				break;
+
+			case STASCHULAT:
+                       		sprintf(str, "\t%-32s\t%d\n", "STASCHULAT", Num_Executed_Tasks[STASCHULAT]);
+				break;
+
+			case STASCHULAT_PRE:
+                       		sprintf(str, "\t%-32s\t%d\n", "STASCHULAT_PRE", Num_Executed_Tasks[STASCHULAT_PRE]);
+				break;
+
+			case PRE_MAX:
+                       		sprintf(str, "\t%-32s\t%d\n", "PRE_MAX", Num_Executed_Tasks[PRE_MAX]);
+				break;
+			
 			case PRE_MAX_KD : 
                        		sprintf(str, "\t%-32s\t%d\n", "PRE_MAX_KD", Num_Executed_Tasks[PRE_MAX_KD]);
                              	break;
@@ -339,6 +396,20 @@ void Set_SizeECBs_UUniFast()
 
 void CALL_METHODS(){
 	int WDC;
+	Response_time_NO_PREEMPT();        
+        Response_time_ECB_Only();        
+        Response_time_UCB_Only(); 
+        Response_time_UCB_Union();        
+        Response_time_ECB_Union();        
+        Response_time_ECB_Union_Multiset_PRE();
+        Response_time_UCB_Union_Multiset_PRE();
+        Response_time_ECB_UCB_Union_Multiset_Combined_PRE();          
+        Response_time_ECB_Union_Multiset();
+        Response_time_UCB_Union_Multiset();
+	Response_time_Staschulat();
+        Response_time_ECB_UCB_Union_Multiset_Combined();        
+        Response_time_PRE_MAX();        
+        Response_time_Staschulat_PRE();
 	Response_time_PRE_MAX_KD();	
 	Response_time_lee_wdc(WDC = 0);
 	Response_time_lee_wdc(WDC = 1);
