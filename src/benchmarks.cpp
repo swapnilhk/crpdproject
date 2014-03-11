@@ -396,22 +396,55 @@ void Set_SizeECBs_UUniFast()
 
 void CALL_METHODS(){
 	int WDC;
-	Response_time_NO_PREEMPT();        
-        Response_time_ECB_Only();        
+	printf("\t%s", "NO_PREEMPT\n");		
+	Response_time_NO_PREEMPT();
+
+	printf("\t%s", "ECB_Only\n");
+        Response_time_ECB_Only();    
+
+	printf("\t%s", "UCB_Only\n");    
         Response_time_UCB_Only(); 
+
+	printf("\t%s", "UCB_Union\n");
         Response_time_UCB_Union();        
+
+	printf("\t%s", "ECB_Union\n");
         Response_time_ECB_Union();        
+
+	printf("\t%s", "ECB_Union_Multiset_PRE\n");
         Response_time_ECB_Union_Multiset_PRE();
+
+	printf("\t%s", "UCB_Union_Multiset_PRE\n");
         Response_time_UCB_Union_Multiset_PRE();
+
+	printf("\t%s", "ECB_UCB_Union_Multiset_Combined_PRE\n");
         Response_time_ECB_UCB_Union_Multiset_Combined_PRE();          
+
+	printf("\t%s", "ECB_Union_Multiset\n");
         Response_time_ECB_Union_Multiset();
+
+	printf("\t%s", "UCB_Union_Multiset\n");
         Response_time_UCB_Union_Multiset();
+
+	printf("\t%s", "Staschulat\n");
 	Response_time_Staschulat();
+
+	printf("\t%s", "ECB_UCB_Union_Multiset_Combined\n");
         Response_time_ECB_UCB_Union_Multiset_Combined();        
+
+	printf("\t%s", "PRE_MAX\n");
         Response_time_PRE_MAX();        
+
+	printf("\t%s", "Staschulat_PRE\n");
         Response_time_Staschulat_PRE();
+
+	printf("\t%s", "PRE_MAX_KD\n");
 	Response_time_PRE_MAX_KD();	
+
+	printf("\t%s", "lee_wdoc\n");
 	Response_time_lee_wdc(WDC = 0);
+
+	printf("\t%s", "lee_wdc\n");
 	Response_time_lee_wdc(WDC = 1);
 }
 
@@ -454,13 +487,10 @@ void Uniform_Distribution_Benchmark(FILE *fp)
 
 		Clear_Task_Execution_Statistics();
 
-		if(VERBOSE)
-			printf("Task no:     ");
-
 		for(int i=1; i <= NUM_TASK_SETS; i++)
 		{
 			if(VERBOSE)
-				printf("\b\b\b\b%4d",i);
+				printf("Task set no: %d Util: %.2f\n",i, taskSetUtil);
 
 			CreateTask_Uniform_Distribution(totalUtil, minPeriod, maxPeriod);
 			CALL_METHODS();

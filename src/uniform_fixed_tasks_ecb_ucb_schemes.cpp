@@ -252,7 +252,7 @@ void ResponseMethod1()
                  PRE_ij_max[i][j] = pre_max_ij;
                  PRE_ij_min[i][j] = pre_min_ij;
                  
-                 printf("The pre_max_ij for i=%d j=%d is %d \n\n", i, j, pre_max_ij);
+                 //printf("The pre_max_ij for i=%d j=%d is %d \n\n", i, j, pre_max_ij);
              }
          
              SetPRE_max(j);
@@ -274,7 +274,7 @@ void ResponseMethod1()
                 flag = 0;
              else
              {
-                 printf("acc =%f, response = %f, going again \n\n", acc, Response[j]);
+                 //printf("acc =%f, response = %f, going again \n\n", acc, Response[j]);
              }
              
              Response[j] = acc;
@@ -283,7 +283,7 @@ void ResponseMethod1()
              
          } while (flag);
          
-         printf("For task %d, number of iterations are %d, acc=%f, response = %f \n\n", j, num_iter, acc, Response[j]);   
+         //printf("For task %d, number of iterations are %d, acc=%f, response = %f \n\n", j, num_iter, acc, Response[j]);   
          
      } /* for-j */
      if(fp != NULL)
@@ -338,7 +338,7 @@ void ResponseMethod2()
                  PRE_ij_max[i][j] = pre_max_ij;
                  PRE_ij_min[i][j] = pre_min_ij;
                  
-                 printf("The pre_max_ij for i=%d j=%d is %d \n\n", i, j, pre_max_ij);
+                 //printf("The pre_max_ij for i=%d j=%d is %d \n\n", i, j, pre_max_ij);
              }
          
              SetPRE_max(j);
@@ -367,7 +367,7 @@ void ResponseMethod2()
                 flag = 0;
              else
              {
-                 printf("acc =%f, PRE_max[%d]= %d, pre_acc = %f, response = %f, going again \n\n", acc, j, PRE_max[j], pre_acc, Response[j]);
+                 //printf("acc =%f, PRE_max[%d]= %d, pre_acc = %f, response = %f, going again \n\n", acc, j, PRE_max[j], pre_acc, Response[j]);
              }
              
              Response[j] = acc;
@@ -376,7 +376,7 @@ void ResponseMethod2()
              
          } while (flag);
          
-         printf("For task %d, number of iterations are %d, acc=%f, response = %f, pre_max[%d]=%d \n\n", j, num_iter, acc, Response[j], j, PRE_max[j]);
+         //printf("For task %d, number of iterations are %d, acc=%f, response = %f, pre_max[%d]=%d \n\n", j, num_iter, acc, Response[j], j, PRE_max[j]);
          
      }
      if(fp != NULL)
@@ -403,15 +403,15 @@ void quickCalculate()
                  PRE_ij_max[i][j] = pre_max_ij;
                  PRE_ij_min[i][j] = pre_min_ij;
                  
-                 printf("The pre_max_ij[%d][%d] =  %d \n\n", i, j, pre_max_ij);
-                 printf("The pre_min_ij[%d][%d] =  %d \n\n", i, j, pre_min_ij);
+                 //printf("The pre_max_ij[%d][%d] =  %d \n\n", i, j, pre_max_ij);
+                 //printf("The pre_min_ij[%d][%d] =  %d \n\n", i, j, pre_min_ij);
              }
          
              SetPRE_max(j);
              SetPRE_min(j);
              
-             printf("PRE_max_%d = %d \n\n", j, PRE_max[j]);
-             printf("PRE_min_%d = %d \n\n", j, PRE_min[j]);
+             //printf("PRE_max_%d = %d \n\n", j, PRE_max[j]);
+             //printf("PRE_min_%d = %d \n\n", j, PRE_min[j]);
          }
 }
 
@@ -447,7 +447,7 @@ void Response_time_NO_PREEMPT()
      if (BDU_found == true)
      {
         fprintf(fp, "************** BreakDown Utilization already found for NO PREEMPT*********************\n \n");
-        cout << "************** BreakDown Utilization already found for NO PREEMPT *********************" << endl << endl;
+        ////cout << "************** BreakDown Utilization already found for NO PREEMPT *********************" << endl << endl;
         
         if (BDU_ONLY)
            return;
@@ -456,7 +456,7 @@ void Response_time_NO_PREEMPT()
      clear_Response();
      
      fprintf(fp, "************** NO PREEMPT*********************\n \n");
-     cout << "************** NO PREEMPT *********************" << endl << endl;
+     ////cout << "************** NO PREEMPT *********************" << endl << endl;
      
      Response[0] = C[0];
      Response_NO_PREEMPT[0] = Response[0];
@@ -496,7 +496,7 @@ void Response_time_NO_PREEMPT()
              
          } while (flag);
          
-         printf("For task %d, number of iterations are %d, acc=%f, response = %f \n\n", i, num_iter, acc, Response_NO_PREEMPT[i]);  
+         //printf("For task %d, number of iterations are %d, acc=%f, response = %f \n\n", i, num_iter, acc, Response_NO_PREEMPT[i]);  
          fprintf(fp, "For task %d, number of iterations are %d, acc=%f, response = %f \n\n", i, num_iter, acc, Response_NO_PREEMPT[i]);    
          
      } /* for-i */
@@ -508,23 +508,23 @@ void Response_time_NO_PREEMPT()
            {
                 flag = 0;
                 sched = false;
-                printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                 fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
            else
            {
-               printf("TASK %d  IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d  IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
      }
      if(sched ==false)
      {
-             printf("\nTASKSET is NOT schedulable under NO PREEMPT at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET is NOT schedulable under NO PREEMPT at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET is NOT schedulable under NO PREEMPT at TASKSET_UTIL = %f \n", taskSetUtil);       
      }
      else
      {
-             printf("\nTASKSET IS schedulable under NO PREEMPT at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET IS schedulable under NO PREEMPT at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET IS schedulable under NO PREEMPT at TASKSET_UTIL = %f \n", taskSetUtil);   
              
              Num_Executed_Tasks[NO_PREEMPT]++;
@@ -536,7 +536,7 @@ void Response_time_NO_PREEMPT()
      }
 
 
-     cout << "************** NO PREEMPT Ends *********************" << endl << endl;    
+     ////cout << "************** NO PREEMPT Ends *********************" << endl << endl;    
      fprintf(fp, "************* NO PREEMPT Ends ********************* \n\n");
 
      if(fp != NULL)
@@ -577,7 +577,7 @@ void Response_time_ECB_Only()
      if (BDU_found == true)
      {
         fprintf(fp, "************** BreakDown Utilization already found for ECB Only*********************\n \n");
-        cout << "************** BreakDown Utilization already found for ECB Only *********************" << endl << endl;
+        //cout << "************** BreakDown Utilization already found for ECB Only *********************" << endl << endl;
         
         if (BDU_ONLY)
            return;
@@ -586,7 +586,7 @@ void Response_time_ECB_Only()
      clear_Response();
      
      fprintf(fp, "************** ECB Only *********************\n \n");
-     cout << "************** ECB Only *********************" << endl << endl;
+     //cout << "************** ECB Only *********************" << endl << endl;
      
      Response_ECB_Only[0] = Response[0] = C[0];
      
@@ -615,14 +615,14 @@ void Response_time_ECB_Only()
                  Num_Displaced_Blocks_ECB_Only[i] +=  INTR_max(j, i) * SET_MOD(TASK_ECB[j]);
                  Gamma_i_j_ECB_Only[j][i] = INTR_max(j, i) * BRT * SET_MOD(TASK_ECB[j]); 
                  
-                 /*cout << "INTR_MAX is " << INTR_max(k, j) << endl;
+                 /*//cout << "INTR_MAX is " << INTR_max(k, j) << endl;
                  
-                 cout << "C[k] is " << C[k] << endl; 
-                 cout << "BRT is " << BRT << endl;
-                 cout << "SET_MOD is " << SET_MOD(TASK_ECB[k]) << endl;
+                 //cout << "C[k] is " << C[k] << endl; 
+                 //cout << "BRT is " << BRT << endl;
+                 //cout << "SET_MOD is " << SET_MOD(TASK_ECB[k]) << endl;
                  */
                  
-                 // cout << "Adding " << INTR_max(k, j) * (C[k] + (BRT * SET_MOD(TASK_ECB[k])) ) << endl;
+                 // //cout << "Adding " << INTR_max(k, j) * (C[k] + (BRT * SET_MOD(TASK_ECB[k])) ) << endl;
                  
              }
              
@@ -645,7 +645,7 @@ void Response_time_ECB_Only()
              
          } while (flag);
          
-         printf("For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_ECB_Only[i], Num_Displaced_Blocks_ECB_Only[i]);  
+         //printf("For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_ECB_Only[i], Num_Displaced_Blocks_ECB_Only[i]);  
          fprintf(fp, "For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_ECB_Only[i], Num_Displaced_Blocks_ECB_Only[i]);    
          
      } /* for-i */
@@ -657,23 +657,23 @@ void Response_time_ECB_Only()
            {
                 flag = 0;
                 sched = false;
-                printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                 fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
            else
            {
-               printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
      }
      if(sched == false)
      {
-             printf("\nTASKSET NOT schedulable under ECB Only at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET NOT schedulable under ECB Only at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET is NOT schedulable under ECB Only at TASKSET_UTIL = %f \n", taskSetUtil);       
      }
      else
      {
-             printf("\nTASKSET IS schedulable under ECB Only at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET IS schedulable under ECB Only at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET IS schedulable under ECB Only at TASKSET_UTIL = %f \n", taskSetUtil);
              
              Num_Executed_Tasks[ECB_ONLY]++;
@@ -686,7 +686,7 @@ void Response_time_ECB_Only()
      }
      
 
-     cout << "************** ECB Only Ends *********************" << endl << endl;    
+     //cout << "************** ECB Only Ends *********************" << endl << endl;    
      fprintf(fp, "************* ECB Only Ends ********************* \n\n");
 
      if(fp != NULL)
@@ -727,7 +727,7 @@ void Response_time_UCB_Only()
      if (BDU_found == true)
      {
         fprintf(fp, "************** BreakDown Utilization already found for UCB Only*********************\n \n");
-        cout << "************** BreakDown Utilization already found for UCB Only*********************" << endl << endl;
+        //cout << "************** BreakDown Utilization already found for UCB Only*********************" << endl << endl;
         
         if (BDU_ONLY)
            return;
@@ -736,7 +736,7 @@ void Response_time_UCB_Only()
      clear_Response();
      
      fprintf(fp, "************** UCB Only *********************\n \n");
-     cout << "************** UCB Only *********************" << endl << endl;
+     //cout << "************** UCB Only *********************" << endl << endl;
      
      Response_UCB_Only[0] = Response[0] = C[0];
      
@@ -794,7 +794,7 @@ void Response_time_UCB_Only()
              
          } while (flag);
          
-         printf("For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_UCB_Only[i], Num_Displaced_Blocks_UCB_Only[i]); 
+         //printf("For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_UCB_Only[i], Num_Displaced_Blocks_UCB_Only[i]); 
          fprintf(fp, "For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_UCB_Only[i], Num_Displaced_Blocks_UCB_Only[i]);     
          
      } /* for-i */
@@ -806,23 +806,23 @@ void Response_time_UCB_Only()
            {
                 flag = 0;
                 sched = false;
-                printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                 fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
            else
            {
-               printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
      }
      if(sched == false)
      {
-             printf("\nTASKSET is NOT schedulable under UCB Only at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET is NOT schedulable under UCB Only at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET is NOT schedulable under UCB Only at TASKSET_UTIL = %f \n", taskSetUtil);       
      }
      else
      {
-             printf("\nTASKSET IS schedulable under UCB Only at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET IS schedulable under UCB Only at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET IS schedulable under UCB Only at TASKSET_UTIL = %f \n", taskSetUtil);
              
              Num_Executed_Tasks[UCB_ONLY]++;
@@ -834,7 +834,7 @@ void Response_time_UCB_Only()
              }*/
      }
      
-     cout << "************** UCB Only Ends *********************" << endl << endl;
+     ////cout << "************** UCB Only Ends *********************" << endl << endl;
      fprintf(fp, "************* UCB Only Ends ********************* \n\n");
      
      if(fp != NULL)
@@ -875,7 +875,7 @@ void Response_time_UCB_Union()
      if (BDU_found == true)
      {
         fprintf(fp, "************** BreakDown Utilization already found for UCB Union*********************\n \n");
-        cout << "************** BreakDown Utilization already found for UCB Union *********************" << endl << endl;
+        //cout << "************** BreakDown Utilization already found for UCB Union *********************" << endl << endl;
         
         if (BDU_ONLY)
            return;
@@ -885,7 +885,7 @@ void Response_time_UCB_Union()
      clear_Response();
      
      fprintf(fp, "************** UCB Union ********************* \n\n" );
-     cout << "************** UCB Union *********************" << endl << endl;
+     //cout << "************** UCB Union *********************" << endl << endl;
      
      Response_UCB_Union[0] = Response[0] = C[0];
      
@@ -932,14 +932,14 @@ void Response_time_UCB_Union()
                  Num_Displaced_Blocks_UCB_Union[i] +=  INTR_max(j, i) * Num_Blocks ;
                  Gamma_i_j_UCB_Union[j][i] = INTR_max(j, i) * BRT * Num_Blocks ; 
                  
-                 /*cout << "INTR_MAX is " << INTR_max(k, j) << endl;
+                 /*//cout << "INTR_MAX is " << INTR_max(k, j) << endl;
                  
-                 cout << "C[k] is " << C[k] << endl; 
-                 cout << "BRT is " << BRT << endl;
-                 cout << "SET_MOD is " << SET_MOD(TASK_ECB[k]) << endl;
+                 //cout << "C[k] is " << C[k] << endl; 
+                 //cout << "BRT is " << BRT << endl;
+                 //cout << "SET_MOD is " << SET_MOD(TASK_ECB[k]) << endl;
                  */
                  
-                 // cout << "Adding " << INTR_max(k, j) * (C[k] + (BRT * SET_MOD(TASK_ECB[k])) ) << endl;
+                 // //cout << "Adding " << INTR_max(k, j) * (C[k] + (BRT * SET_MOD(TASK_ECB[k])) ) << endl;
                  
              }
              
@@ -963,7 +963,7 @@ void Response_time_UCB_Union()
              
          } while (flag);
          
-         printf("For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_UCB_Union[i], Num_Displaced_Blocks_UCB_Union[i]); 
+         //printf("For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_UCB_Union[i], Num_Displaced_Blocks_UCB_Union[i]); 
          fprintf(fp, "For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_UCB_Union[i], Num_Displaced_Blocks_UCB_Union[i]);     
          
      } /* for-i */
@@ -975,23 +975,23 @@ void Response_time_UCB_Union()
            {
                 flag = 0;
                 sched = false;
-                printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                 fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
            else
            {
-               printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
      }
      if(sched == false)
      {
-             printf("\nTASKSET is NOT schedulable under UCB Union at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET is NOT schedulable under UCB Union at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET is NOT schedulable under UCB Union at TASKSET_UTIL = %f \n", taskSetUtil);       
      }
      else
      {
-             printf("\nTASKSET IS  schedulable under UCB Union at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET IS  schedulable under UCB Union at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET IS  schedulable under UCB Union at TASKSET_UTIL = %f \n", taskSetUtil); 
              
              Num_Executed_Tasks[UCB_UNION]++;
@@ -1003,7 +1003,7 @@ void Response_time_UCB_Union()
              }*/
      }
      
-     cout << "************** UCB Union Ends *********************" << endl << endl;
+     //cout << "************** UCB Union Ends *********************" << endl << endl;
      fprintf(fp, "************** UCB Union Ends ********************* \n\n");
      
      if(fp != NULL)
@@ -1044,7 +1044,7 @@ void Response_time_ECB_Union()
      if (BDU_found == true)
      {
         fprintf(fp, "************** BreakDown Utilization already found for ECB Union*********************\n \n");
-        cout << "************** BreakDown Utilization already found for ECB Union *********************" << endl << endl;
+        //cout << "************** BreakDown Utilization already found for ECB Union *********************" << endl << endl;
         
         if (BDU_ONLY)
            return;
@@ -1053,7 +1053,7 @@ void Response_time_ECB_Union()
      clear_Response();
      
      fprintf(fp, "************** ECB Union ********************* \n\n"); 
-     cout << "************** ECB Union *********************" << endl << endl;
+     //cout << "************** ECB Union *********************" << endl << endl;
      
      Response_ECB_Union[0] = Response[0] = C[0];
      
@@ -1126,7 +1126,7 @@ void Response_time_ECB_Union()
              
          } while (flag);
          
-         printf("For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_ECB_Union[i], Num_Displaced_Blocks_ECB_Union[i]); 
+         //printf("For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_ECB_Union[i], Num_Displaced_Blocks_ECB_Union[i]); 
          fprintf(fp, "For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_ECB_Union[i], Num_Displaced_Blocks_ECB_Union[i]);     
          
      } /* for-i */
@@ -1138,23 +1138,23 @@ void Response_time_ECB_Union()
            {
                 flag = 0;
                 sched = false;
-                printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                 fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
            else
            {
-               printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
      }
      if(sched == false)
      {
-             printf("\nTASKSET is NOT schedulable under ECB Union at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET is NOT schedulable under ECB Union at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET is NOT schedulable under ECB Union at TASKSET_UTIL = %f \n", taskSetUtil);       
      }
      else
      {
-             printf("\nTASKSET IS  schedulable under ECB Union at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET IS  schedulable under ECB Union at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET IS  schedulable under ECB Union at TASKSET_UTIL = %f \n", taskSetUtil); 
              
              Num_Executed_Tasks[ECB_UNION]++;
@@ -1167,7 +1167,7 @@ void Response_time_ECB_Union()
      }
      
      
-     cout << "************** ECB Union Ends *********************" << endl << endl;
+     ////cout << "************** ECB Union Ends *********************" << endl << endl;
      fprintf(fp, "************** ECB Union Ends ********************* \n\n");
 
      if(fp != NULL)
@@ -1207,7 +1207,7 @@ void Response_time_Staschulat()
      if (BDU_found == true)
      {
         fprintf(fp, "************** BreakDown Utilization already found for Staschulat*********************\n \n");
-        cout << "************** BreakDown Utilization already found for Staschulat *********************" << endl << endl;
+        //cout << "************** BreakDown Utilization already found for Staschulat *********************" << endl << endl;
         
         if (BDU_ONLY)
            return;
@@ -1216,7 +1216,7 @@ void Response_time_Staschulat()
      clear_Response();
      
      fprintf(fp, "************** Staschulat ********************* \n\n");
-     cout << "************** Staschulat *********************" << endl << endl;
+     //cout << "************** Staschulat *********************" << endl << endl;
      
      Response_Staschulat[0] = Response[0] = C[0];
      
@@ -1315,7 +1315,7 @@ void Response_time_Staschulat()
              
          } while (flag);
          
-         printf("For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_Staschulat[i], Num_Displaced_Blocks_Staschulat[i]);
+         //printf("For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_Staschulat[i], Num_Displaced_Blocks_Staschulat[i]);
          fprintf(fp, "For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_Staschulat[i], Num_Displaced_Blocks_Staschulat[i]);      
          
      } /* for-i */
@@ -1327,23 +1327,23 @@ void Response_time_Staschulat()
            {
                 flag = 0;
                 sched = false;
-                printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                 fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
            else
            {
-               printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
      }
      if(sched == false)
      {
-             printf("\nTASKSET NOT schedulable under STASCHULAT at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET NOT schedulable under STASCHULAT at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET is NOT schedulable under STASCHULAT at TASKSET_UTIL = %f \n", taskSetUtil);       
      }
      else
      {
-             printf("\nTASKSET IS  schedulable under STASCHULAT at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET IS  schedulable under STASCHULAT at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET IS schedulable under STASCHULAT at TASKSET_UTIL = %f \n", taskSetUtil); 
              
              Num_Executed_Tasks[STASCHULAT]++;
@@ -1355,14 +1355,14 @@ void Response_time_Staschulat()
              }*/
      }
      
-     cout << "************** Staschulat Ends *********************" << endl << endl;
+     ////cout << "************** Staschulat Ends *********************" << endl << endl;
      fprintf(fp, "************** Staschulat Ends ********************* \n\n");
      
      if(fp != NULL)
 	fclose(fp);
 }
 
-void Response_time_ECB_Union_Multiset(bool display=true)
+void Response_time_ECB_Union_Multiset(bool display=false)
 {
      int i, j, k;
      double acc;
@@ -1394,7 +1394,7 @@ void Response_time_ECB_Union_Multiset(bool display=true)
      if (BDU_found == true)
      {
         fprintf(fp, "************** BreakDown Utilization already found for ECB Union Multiset*********************\n \n");
-        cout << "************** BreakDown Utilization already found for ECB Union Multiset *********************" << endl << endl;
+        ////cout << "************** BreakDown Utilization already found for ECB Union Multiset *********************" << endl << endl;
         
         if (BDU_ONLY)
            return;
@@ -1405,7 +1405,7 @@ void Response_time_ECB_Union_Multiset(bool display=true)
      if (display)
      {
                  fprintf(fp, "************** ECB Union Multiset ********************* \n\n");
-                 cout << "************** ECB Union Multiset *********************" << endl << endl;
+                 ////cout << "************** ECB Union Multiset *********************" << endl << endl;
      }
      
      Response_ECB_Union_Multiset[0] = Response[0] = C[0];
@@ -1570,14 +1570,14 @@ void Response_time_ECB_Union_Multiset(bool display=true)
         }
         
         fprintf(fp, "************** ECB Union Multiset Ends ********************* \n\n" ); 
-        cout << "************** ECB Union Multiset Ends *********************" << endl << endl;
+        //cout << "************** ECB Union Multiset Ends *********************" << endl << endl;
      }
      if(fp != NULL)
 	fclose(fp);
      
 }
 
-void Response_time_UCB_Union_Multiset(bool display=true)
+void Response_time_UCB_Union_Multiset(bool display=false)
 {
      int i, j, k;
      double acc;
@@ -1611,7 +1611,7 @@ void Response_time_UCB_Union_Multiset(bool display=true)
      if (BDU_found == true)
      {
         fprintf(fp, "************** BreakDown Utilization already found for UCB Union Multiset*********************\n \n");
-        cout << "************** BreakDown Utilization already found for UCB Union Multiset *********************" << endl << endl;
+        ////cout << "************** BreakDown Utilization already found for UCB Union Multiset *********************" << endl << endl;
         
         if (BDU_ONLY)
            return;
@@ -1622,7 +1622,7 @@ void Response_time_UCB_Union_Multiset(bool display=true)
      if (display)
      {    
           fprintf(fp, "************** UCB Union Multiset ********************* \n\n");
-          cout << "************** UCB Union Multiset *********************" << endl << endl;
+          //cout << "************** UCB Union Multiset *********************" << endl << endl;
      }
      
      Response_UCB_Union_Multiset[0] = Response[0] = C[0];
@@ -1767,7 +1767,7 @@ void Response_time_UCB_Union_Multiset(bool display=true)
         }
         
         fprintf(fp, "************** UCB Union Multiset Ends ********************* \n\n" ); 
-        cout << "************** UCB Union Multiset Ends *********************" << endl << endl;
+        //cout << "************** UCB Union Multiset Ends *********************" << endl << endl;
      }
      if(fp != NULL)
 	fclose(fp);
@@ -1802,7 +1802,7 @@ void Response_time_ECB_UCB_Union_Multiset_Combined()
      if (BDU_found == true)
      {
         fprintf(fp, "************** BreakDown Utilization already found for ECB-UCB-Union-Multiset-Combined*********************\n \n");
-        cout << "************** BreakDown Utilization already found for ECB Union Multiset-Combined*********************" << endl << endl;
+        ////cout << "************** BreakDown Utilization already found for ECB Union Multiset-Combined*********************" << endl << endl;
         
         if (BDU_ONLY)
            return;
@@ -1811,7 +1811,7 @@ void Response_time_ECB_UCB_Union_Multiset_Combined()
      // Response_time_ECB_Union_Multiset(false);
      // Response_time_UCB_Union_Multiset(false);
      
-     printf("************** ECB UCB Union Multiset Combined ********************* \n\n" );
+     //printf("************** ECB UCB Union Multiset Combined ********************* \n\n" );
      fprintf(fp, "************** ECB UCB Union Multiset Combined ********************* \n\n" );
      for (int i = 0; (i < NUM_TASKS) && (sched == true); i++)
      {
@@ -1832,7 +1832,7 @@ void Response_time_ECB_UCB_Union_Multiset_Combined()
                 LAST_TASK = i;
            } 
          
-         printf("For task %d, response = %f Num_Displaced_Blocks = %d \n\n", i, Response_ECB_UCB_Union_Multiset_Combined[i], Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined[i]);
+         //printf("For task %d, response = %f Num_Displaced_Blocks = %d \n\n", i, Response_ECB_UCB_Union_Multiset_Combined[i], Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined[i]);
          fprintf(fp, "For task %d, response = %f Num_Displaced_Blocks = %d \n\n", i, Response_ECB_UCB_Union_Multiset_Combined[i], Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined[i]);     
      }
      
@@ -1843,23 +1843,23 @@ void Response_time_ECB_UCB_Union_Multiset_Combined()
            {
                 flag = 0;
                 sched = false;
-                printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                 fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
            else
            {
-               printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
      }
      if(sched==false)
      {
-             printf("\nTASKSET is NOT schedulable under ECB-UCB-Union-MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET is NOT schedulable under ECB-UCB-Union-MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET is NOT schedulable under ECB-UCB-Union-MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);       
      }
      else
      {
-             printf("\nTASKSET IS  schedulable under ECB-UCB-Union-MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET IS  schedulable under ECB-UCB-Union-MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET IS schedulable under-ECB-UCB-Union MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);
              
              Num_Executed_Tasks[ECB_UCB_UNION_MULTISET_COMBINED]++; 
@@ -1871,7 +1871,7 @@ void Response_time_ECB_UCB_Union_Multiset_Combined()
              }*/
      }
      
-     printf("************** ECB UCB Union Multiset Combined Ends ********************* \n\n" );
+     //printf("************** ECB UCB Union Multiset Combined Ends ********************* \n\n" );
      fprintf(fp, "************** ECB UCB Union Multiset Combined Ends ********************* \n\n" );
 
      if(fp != NULL)
@@ -1912,7 +1912,7 @@ void Response_time_Staschulat_PRE()
      if (BDU_found == true)
      {
         fprintf(fp, "************** BreakDown Utilization already found for Staschulat with PRE*********************\n \n");
-        cout << "************** BreakDown Utilization already found for Staschulat with PRE *********************" << endl << endl;
+        ////cout << "************** BreakDown Utilization already found for Staschulat with PRE *********************" << endl << endl;
         
         if (BDU_ONLY)
            return;
@@ -1921,7 +1921,7 @@ void Response_time_Staschulat_PRE()
      clear_Response();
      
      fprintf(fp, "************** Staschulat with PRE ********************* \n\n");
-     printf("************** Staschulat with PRE ********************* \n\n");
+     //printf("************** Staschulat with PRE ********************* \n\n");
      
      
      Response_Staschulat_PRE[0] = Response[0] = C[0];
@@ -2041,7 +2041,7 @@ void Response_time_Staschulat_PRE()
              
          } while (flag);
          
-         printf("For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_Staschulat_PRE[i], Num_Displaced_Blocks_Staschulat_PRE[i]);
+         //printf("For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_Staschulat_PRE[i], Num_Displaced_Blocks_Staschulat_PRE[i]);
          fprintf(fp, "For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_Staschulat_PRE[i], Num_Displaced_Blocks_Staschulat_PRE[i]);      
          
      } // for-i 
@@ -2054,23 +2054,23 @@ void Response_time_Staschulat_PRE()
            {
                 flag = 0;
                 sched = false;
-                printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                 fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
            else
            {
-               printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
      }
      if(sched == false)
      {
-             printf("\nTASKSET  NOT schedulable under Staschulat-with-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET  NOT schedulable under Staschulat-with-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET  NOT schedulable under Staschulat-with-PRE at TASKSET_UTIL = %f \n", taskSetUtil);       
      }
      else
      {
-             printf("\nTASKSET IS schedulable under Staschulat-with-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET IS schedulable under Staschulat-with-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET IS schedulable under Staschulat-with-PRE at TASKSET_UTIL = %f \n", taskSetUtil); 
              
              Num_Executed_Tasks[STASCHULAT_PRE]++; 
@@ -2083,14 +2083,14 @@ void Response_time_Staschulat_PRE()
      }
      
      
-     cout << "************** Staschulat with PRE Ends *********************" << endl << endl;
+     ////cout << "************** Staschulat with PRE Ends *********************" << endl << endl;
      fprintf(fp,"************** Staschulat with PRE Ends ********************* \n\n");
  
      if(fp != NULL)
 	fclose(fp);    
 }
 
-void Response_time_ECB_Union_Multiset_PRE(bool display=true)
+void Response_time_ECB_Union_Multiset_PRE(bool display=false)
 {
      int i, j, k;
      double acc;
@@ -2122,7 +2122,7 @@ void Response_time_ECB_Union_Multiset_PRE(bool display=true)
      if (BDU_found == true)
      {
         fprintf(fp, "************** BreakDown Utilization already found for ECB Union Multiset PRE*********************\n \n");
-        cout << "************** BreakDown Utilization already found for ECB Union Multiset PRE*********************" << endl << endl;
+        ////cout << "************** BreakDown Utilization already found for ECB Union Multiset PRE*********************" << endl << endl;
         
         if (BDU_ONLY)
            return;
@@ -2133,7 +2133,7 @@ void Response_time_ECB_Union_Multiset_PRE(bool display=true)
      if (display)
      {
                  fprintf(fp, "************** ECB Union Multiset PRE********************* \n\n");
-                 cout << "************** ECB Union Multiset PRE*********************" << endl << endl;
+                 //cout << "************** ECB Union Multiset PRE*********************" << endl << endl;
      }
      
      Response_ECB_Union_Multiset_PRE[0] = Response[0] = C[0];
@@ -2317,14 +2317,14 @@ void Response_time_ECB_Union_Multiset_PRE(bool display=true)
         }
         
         fprintf(fp, "************** ECB Union Multiset PRE Ends ********************* \n\n" ); 
-        cout << "************** ECB Union Multiset PRE Ends *********************" << endl << endl;
+        ////cout << "************** ECB Union Multiset PRE Ends *********************" << endl << endl;
      }
 
      if(fp != NULL)
 	fclose(fp);
 }
 
-void Response_time_UCB_Union_Multiset_PRE(bool display=true)
+void Response_time_UCB_Union_Multiset_PRE(bool display=false)
 {
      int i, j, k;
      double acc;
@@ -2358,7 +2358,7 @@ void Response_time_UCB_Union_Multiset_PRE(bool display=true)
      if (BDU_found == true)
      {
         fprintf(fp, "************** BreakDown Utilization already found for UCB Union Multiset PRE*********************\n \n");
-        cout << "************** BreakDown Utilization already found for UCB Union Multiset PRE*********************" << endl << endl;
+        ////cout << "************** BreakDown Utilization already found for UCB Union Multiset PRE*********************" << endl << endl;
         
         if (BDU_ONLY)
            return;
@@ -2369,7 +2369,7 @@ void Response_time_UCB_Union_Multiset_PRE(bool display=true)
      if (display)
      {    
           fprintf(fp, "************** UCB Union Multiset PRE ********************* \n\n");
-          cout << "************** UCB Union Multiset PRE *********************" << endl << endl;
+          ////cout << "************** UCB Union Multiset PRE *********************" << endl << endl;
      }
      
      Response_UCB_Union_Multiset_PRE[0] = Response[0] = C[0];
@@ -2535,7 +2535,7 @@ void Response_time_UCB_Union_Multiset_PRE(bool display=true)
          }
          
          fprintf(fp, "************** UCB Union Multiset PRE Ends ********************* \n\n" ); 
-         cout << "************** UCB Union Multiset PRE Ends *********************" << endl << endl;
+         ////cout << "************** UCB Union Multiset PRE Ends *********************" << endl << endl;
      }
      if(fp != NULL)
 	fclose(fp);
@@ -2570,7 +2570,7 @@ void Response_time_ECB_UCB_Union_Multiset_Combined_PRE()
      if (BDU_found == true)
      {
         fprintf(fp, "************** BreakDown Utilization already found for ECB UCB Union Multiset Combined PRE*********************\n \n");
-        cout << "************** BreakDown Utilization already found for ECB UCB Union Multiset Combined PRE*********************" << endl << endl;
+        //cout << "************** BreakDown Utilization already found for ECB UCB Union Multiset Combined PRE*********************" << endl << endl;
         
         if (BDU_ONLY)
            return;
@@ -2579,7 +2579,7 @@ void Response_time_ECB_UCB_Union_Multiset_Combined_PRE()
      // Response_time_ECB_Union_Multiset_PRE(false);
      // Response_time_UCB_Union_Multiset_PRE(false);
      
-     printf("************** ECB UCB Union Multiset Combined PRE ********************* \n\n" );
+     //printf("************** ECB UCB Union Multiset Combined PRE ********************* \n\n" );
      fprintf(fp, "************** ECB UCB Union Multiset Combined PRE ********************* \n\n" );
      for (int i = 0; (i < NUM_TASKS) && (sched == true); i++)
      {
@@ -2600,7 +2600,7 @@ void Response_time_ECB_UCB_Union_Multiset_Combined_PRE()
                 LAST_TASK = i;
          }  
          
-         printf("For task %d, response = %f Num_Displaced_Blocks = %d \n\n", i, Response_ECB_UCB_Union_Multiset_Combined_PRE[i], Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined_PRE[i]);
+         //printf("For task %d, response = %f Num_Displaced_Blocks = %d \n\n", i, Response_ECB_UCB_Union_Multiset_Combined_PRE[i], Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined_PRE[i]);
          fprintf(fp, "For task %d, response = %f Num_Displaced_Blocks = %d \n\n", i, Response_ECB_UCB_Union_Multiset_Combined_PRE[i], Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined_PRE[i]);     
      }
      
@@ -2611,23 +2611,23 @@ void Response_time_ECB_UCB_Union_Multiset_Combined_PRE()
            {
                 flag = 0;
                 sched = false;
-                printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                 fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
            else
            {
-               printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
      }
      if(sched == false)
      {
-             printf("\nTASKSET NOT schedulable under ECB-UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET NOT schedulable under ECB-UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET  NOT schedulable under ECB-UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);       
      }
      else
      {
-             printf("\nTASKSET IS schedulable under ECB-UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET IS schedulable under ECB-UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET IS schedulable under ECB-UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil); 
              
              Num_Executed_Tasks[ECB_UCB_UNION_MULTISET_COMBINED_PRE]++;
@@ -2639,7 +2639,7 @@ void Response_time_ECB_UCB_Union_Multiset_Combined_PRE()
              }*/
      }
      
-     printf("************** ECB UCB Union Multiset Combined PRE Ends ********************* \n\n" );
+     //printf("************** ECB UCB Union Multiset Combined PRE Ends ********************* \n\n" );
      fprintf(fp, "************** ECB UCB Union Multiset Combined PRE Ends ********************* \n\n" );
      
      if(fp != NULL)
@@ -2680,7 +2680,7 @@ void Response_time_PRE_MAX()
      if (BDU_found == true)
      {
         fprintf(fp, "************** BreakDown Utilization already found for PRE MAX*********************\n \n");
-        cout << "************** BreakDown Utilization already found for PRE MAX*********************" << endl << endl;
+        //cout << "************** BreakDown Utilization already found for PRE MAX*********************" << endl << endl;
         
         if (BDU_ONLY)
            return;
@@ -2689,7 +2689,7 @@ void Response_time_PRE_MAX()
      clear_Response();
      
      fprintf(fp, "************** PRE MAX ********************* \n\n");
-     printf("************** PRE MAx *********************\n\n"); 
+     //printf("************** PRE MAx *********************\n\n"); 
      
      Response_PRE_MAX[0] = Response[0] = C[0];
      
@@ -2775,7 +2775,7 @@ void Response_time_PRE_MAX()
          } while (flag);
          
          
-         printf("For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_PRE_MAX[i], Num_Displaced_Blocks_PRE_MAX[i]); 
+         //printf("For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_PRE_MAX[i], Num_Displaced_Blocks_PRE_MAX[i]); 
          fprintf(fp, "For task %d, number of iterations are %d, acc=%f, response = %f Num_Displaced_Blocks = %ld \n\n", i, num_iter, acc, Response_PRE_MAX[i], Num_Displaced_Blocks_PRE_MAX[i]);     
          
          
@@ -2788,23 +2788,23 @@ void Response_time_PRE_MAX()
            {
                 flag = 0;
                 sched = false;
-                printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                 fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
            else
            {
-               printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
                fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
            }
      }
      if(sched == false)
      {
-             printf("\nTASKSET NOT schedulable under PRE-MAX at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET NOT schedulable under PRE-MAX at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET is NOT schedulable under PRE-MAX at TASKSET_UTIL = %f \n", taskSetUtil);       
      }
      else
      {
-             printf("\nTASKSET IS schedulable under PRE-MAX at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET IS schedulable under PRE-MAX at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET IS schedulable under PRE-MAX at TASKSET_UTIL = %f \n", taskSetUtil);
              
              Num_Executed_Tasks[PRE_MAX]++; 
@@ -2817,7 +2817,7 @@ void Response_time_PRE_MAX()
      }
      
      fprintf(fp, "************** PRE MAX Ends ********************* \n\n" ); 
-     cout << "************** PRE MAX Ends *********************" << endl << endl;
+     //cout << "************** PRE MAX Ends *********************" << endl << endl;
 
      if(fp != NULL)
 	fclose(fp);
