@@ -325,6 +325,7 @@ double sigma_tda_PRE_MAX_KD(int this_task, double Response[]){
 double wcrt_PRE_MAX_KD(int this_task, double Response[], FILE *fp){
 	double R_new;
 	R_new = C[this_task];
+	Response[this_task] = 0;
 	while(R_new != Response[this_task] && (Response[this_task] = R_new) <= D[this_task]){
 		R_new = C[this_task] 
 			+ sigma_tda_PRE_MAX_KD(this_task, Response) 
