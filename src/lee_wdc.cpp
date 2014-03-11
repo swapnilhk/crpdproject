@@ -77,7 +77,7 @@ void var_no_to_name(const int this_task, const int var_no, char * var_name){
 			sprintf(temp, "T%d", hp_task);
 			strcat(var_name, temp);
 		}
-	}	
+	}
 	// Append closing brackets '})' to var_name
 	strcat(var_name,"})");
 }
@@ -115,7 +115,8 @@ double solve_constraints(int this_task, double *Response, int WDC, FILE *fp)
 	lprec *lp;
 	int numVar = 0, *var = NULL, ret = 0, i, j, k, var_count, H, var_no;
 	double *coeff = NULL, r, obj;
-	char col_name[20];
+	char col_name[7+3*this_task]; /*con_name contains variable name. eg 8g8({T0,T1,T2,T3,T4,T5,T6,T7}).
+					Max size a variable name can occupy depends upon this_task.*/
 
 	/* Creating a model */	
 	for(i = 1;i <= this_task; i++)/* Counting the no. of variables for this_task*/
@@ -228,11 +229,7 @@ double solve_constraints(int this_task, double *Response, int WDC, FILE *fp)
 				int large_2darray[this_task][size];
 				int hp_task;
 				// Initializing matrix
-				for(i = 0;i < this_task; i++){
-				    for(j = 0; j < size; j++){
-					large_2darray[i][j] = 0;
-				    }
-				}
+				memset(large_2darray, 0, this_task * size *sizeof(**large_2darray));
 
 				// Logic to generate sequence of var_no
 				for(k = 0; k < this_task; k++){
@@ -286,10 +283,8 @@ double solve_constraints(int this_task, double *Response, int WDC, FILE *fp)
 					}
 					// Now we have the final subset that can be added as an equation to lp_solve               
 					for(var_count = 0; subset[var_count] != 0 && var_count < size; var_count++){
-					    char tempstr[20];
 					    var[var_count] = subset[var_count];
 					    coeff[var_count] = 1;
-					    var_no_to_name(this_task, subset[var_count], tempstr);
 					}
 					r = ceil(Response[this_task]/T[hp_task]);
 					if(!add_constraintex(lp, var_count, coeff, var, LE, r))
