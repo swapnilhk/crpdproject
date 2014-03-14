@@ -5,13 +5,13 @@
 #include"../lib/lp_solve_ux64/lp_lib.h"
 #include"common.h"
 
-int nnp_max[NUM_TASKS][NUM_TASKS];
-int nnp_min[NUM_TASKS][NUM_TASKS];
+/*int nnp_max[NUM_TASKS][NUM_TASKS];
+int nnp_min[NUM_TASKS][NUM_TASKS];*/
 
 /*
  * Returns minimum of three numbers
  * */
-double min3(double a, double b, double c){
+/*double min3(double a, double b, double c){
 	return a < b ? (a < c ? a : c) : (b < c ? b : c);
 }
 
@@ -38,7 +38,7 @@ double calc_nnp_min(int hp_task, int lp_task, double Response[]){
 		ret_val -= nnp_max[hp_task][i] * inv_max(i, lp_task, Response);
 	return ret_val > 0 ? ret_val : 0;
 }
-
+*/
 /*
 
  * Function to find set of blocks of this_task that are affected by the execution of hp_task.
@@ -89,7 +89,7 @@ double calc_nnp_min(int hp_task, int lp_task, double Response[]){
 
 
 
-double get_f(int this_task, int hp_task, int lp_task, double Response[])
+/*double get_f(int this_task, int hp_task, int lp_task, double Response[])
 {
 	std::set<int> workingSet1, workingSet2, workingSet3;
 	extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
@@ -105,13 +105,13 @@ double get_f(int this_task, int hp_task, int lp_task, double Response[])
 	Set_Intersect(workingSet1, TASK_UCB[lp_task], workingSet2);
 
 	return BRT * ceil(Response[this_task]/T[lp_task]) * SET_MOD(workingSet2);
-}
+}*/
 
 
 
 
 
-double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
+double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], FILE *fp)
 {
 	lprec *lp;
 	int numVar = 0, *var = NULL, ret = 0, i, j, k, var_count;
@@ -130,7 +130,7 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 		for(i = 0 ; i < this_task; i++){
 			for(j = i+1 ; j <= this_task; j++)
 			{
-				sprintf(col_name, "NNP%d_%d", i, j);
+				sprintf(col_name, "%dNNP%d_%d", this_task, i, j);
 				set_col_name(lp, var_count, col_name);
 				var_count++;
 			}
@@ -149,9 +149,9 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 		for(j = 1;j <= this_task;j++){
 			var_count = 0;
 			for(i = 0; i < j; i++){
-				sprintf(col_name,"NNP%d_%d",this_task, i, j);
+				sprintf(col_name,"%dNNP%d_%d",this_task, i, j);
 				var[var_count] = get_nameindex(lp, col_name, FALSE);
-				coeff[var_count] = ceil(Response[this_task] / T[j]);
+				coeff[var_count] = 1;
 				var_count++;
 			}
 
@@ -165,8 +165,8 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 				rhs += nnp_max[i][j];
 			rhs *= ceil(Response[this_task]/T[j]);
 
-			//if(!add_constraintex(lp, var_count, coeff, var, GE, lhs))
-			//	ret = 3;
+			if(!add_constraintex(lp, var_count, coeff, var, GE, lhs))
+				ret = 3;
 			if(!add_constraintex(lp, var_count, coeff, var, LE, rhs))
 				ret = 3;
 		}
@@ -179,9 +179,9 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 			var_count = 0;
 			for(j = 1; j <= k; j++){
 				for(i = 0; i < j; i++){
-					sprintf(col_name,"NNP%d_%d", i, j);
+					sprintf(col_name,"%dNNP%d_%d", this_task, i, j);
 					var[var_count] = get_nameindex(lp, col_name, FALSE);
-					coeff[var_count] = ceil(Response[this_task] / T[j]);
+					coeff[var_count] = 1;
 					var_count++;
 				}
 			}
@@ -199,11 +199,11 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 		for(j = 1; j <= this_task ; j++){
 			for(i = 0; i < j; i++){
 				lhs= floor(Response[this_task]/T[j]) * nnp_min[i][j];
-				sprintf(col_name,"NNP%d_%d", i, j);
+				sprintf(col_name,"%dNNP%d_%d", this_task, i, j);
 				var[0] = get_nameindex(lp, col_name, FALSE);
-				coeff[0] = ceil(Response[this_task] / T[j]);
-				//if(!add_constraintex(lp, 1, coeff, var, GE, lhs))
-				//	ret = 3;
+				coeff[0] = 1;
+				if(!add_constraintex(lp, 1, coeff, var, GE, lhs))
+					ret = 3;
 
 				rhs = min3(
 						ceil(Response[this_task]/T[i]),
@@ -221,9 +221,9 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 		for(i = 0; i < this_task; i++){
 			var_count = 0;
 			for(j = i+1; j <= this_task; j++){
-				sprintf(col_name,"NNP%d_%d", i, j);
+				sprintf(col_name,"%dNNP%d_%d", this_task, i, j);
 				var[var_count] = get_nameindex(lp, col_name, FALSE);
-				coeff[var_count] = ceil(Response[this_task] / T[j]);
+				coeff[var_count] = 1;
 				var_count++;
 			}
 			rhs = ceil(Response[this_task]/T[i]);
@@ -238,9 +238,9 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 		var_count = 0;
 		for(i = 0 ; i < this_task; i++){
 			for(j = i+1 ; j<= this_task; j++){
-				sprintf(col_name,"NNP%d_%d", i, j);
+				sprintf(col_name,"%dNNP%d_%d",this_task, i, j);
 				var[var_count] = get_nameindex(lp, col_name, FALSE);
-				coeff[var_count] = get_f(this_task, i, j, Response) * ceil(Response[this_task] / T[j]);
+				coeff[var_count] = get_f(this_task, i, j, Response);
 				var_count++;
 			}
 		}
@@ -293,7 +293,7 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 
 
 // Returns preemption cost for task 'this_task'
-double PC_PRE_MAX_KD(int this_task, double Response[], FILE *fp){
+double PC_PRE_MAX_KD2(int this_task, double Response[], FILE *fp){
 	int hp_task;
 	if (this_task >= 1){
 		for(hp_task = this_task-1; hp_task >= 0; hp_task--){
@@ -301,7 +301,7 @@ double PC_PRE_MAX_KD(int this_task, double Response[], FILE *fp){
 			nnp_min[hp_task][this_task] = calc_nnp_min(hp_task, this_task, Response);
 		}
 		// Define constraints
-		return solve_constraints_PRE_MAX_KD(this_task, Response, fp);
+		return solve_constraints_PRE_MAX_KD2(this_task, Response, fp);
 	}
 	else return 0;
 }
@@ -309,7 +309,7 @@ double PC_PRE_MAX_KD(int this_task, double Response[], FILE *fp){
 
 
 
-double sigma_tda_PRE_MAX_KD(int this_task, double Response[]){
+/*double sigma_tda_PRE_MAX_KD(int this_task, double Response[]){
 	double R_new = 0;
 	int hp_task = this_task - 1;
 	while(hp_task >= 0){
@@ -317,19 +317,19 @@ double sigma_tda_PRE_MAX_KD(int this_task, double Response[]){
 		hp_task = hp_task - 1;
 	}
 	return R_new;
-}
+}*/
 
 
 
 
-double wcrt_PRE_MAX_KD(int this_task, double Response[], FILE *fp){
+double wcrt_PRE_MAX_KD2(int this_task, double Response[], FILE *fp){
 	double R_new;
 	R_new = C[this_task];
 	Response[this_task] = 0;
 	while(R_new != Response[this_task] && (Response[this_task] = R_new) <= D[this_task]){
 		R_new = C[this_task] 
 			+ sigma_tda_PRE_MAX_KD(this_task, Response) 
-			+ PC_PRE_MAX_KD(this_task, Response, fp);// Time demand equation
+			+ PC_PRE_MAX_KD2(this_task, Response, fp);// Time demand equation
 		if(MESSAGE_LEVEL >= IMP)
 			fprintf(fp, "T%d(D=%ld) Response time: Old = %g, New = %g\n\n", this_task, D[this_task], Response[this_task], R_new);
 	}
@@ -339,7 +339,7 @@ double wcrt_PRE_MAX_KD(int this_task, double Response[], FILE *fp){
 
 
 
-void Response_time_PRE_MAX_KD(){
+void Response_time_PRE_MAX_KD2(){
 	int task_no;
 	bool sched = true;
 	FILE *fp;
@@ -349,11 +349,11 @@ void Response_time_PRE_MAX_KD(){
 	if(MESSAGE_LEVEL > NONE){
 
 		if(first_call){			
-			fp = fopen("out/kd.txt", "w");
+			fp = fopen("out/kd2.txt", "w");
 			first_call = 0;
 		}
 		else
-			fp = fopen("out/kd.txt", "a");
+			fp = fopen("out/kd2.txt", "a");
 
 		if(fp == NULL){
 			printf("***Unable to open file\n");
@@ -370,7 +370,7 @@ void Response_time_PRE_MAX_KD(){
 		if(MESSAGE_LEVEL > NONE)
 			fprintf(fp, "\tT%d\t\n", task_no);
 
-		wcrt_PRE_MAX_KD(task_no, Response, fp);
+		wcrt_PRE_MAX_KD2(task_no, Response, fp);
 		
 		if(Response[task_no] > D[task_no])
 			sched = false;
@@ -381,7 +381,7 @@ void Response_time_PRE_MAX_KD(){
 
 	}
 	if(sched)
-		Num_Executed_Tasks[PRE_MAX_KD]++;
+		Num_Executed_Tasks[PRE_MAX_KD2]++;
 
 	if(fp != NULL)
 		fclose(fp);
