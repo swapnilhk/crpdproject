@@ -7,6 +7,7 @@
 #include"set_operations.cpp"
 #include"common.h"
 #include"kd.cpp"
+#include"kd2.cpp"
 #include"lee_wdc.cpp"
 #include"uniform_fixed_tasks_ecb_ucb_schemes.cpp"
 
@@ -138,6 +139,21 @@ void Print_Task_Execution_Statistics(FILE *fp)
 			case PRE_MAX_KD : 
                        		sprintf(str, "\t%-32s\t%d\n", "PRE_MAX_KD", Num_Executed_Tasks[PRE_MAX_KD]);
                              	break;
+
+
+
+
+
+			/*TODO Case to be deleted*/
+			case PRE_MAX_KD2 : 
+                       		sprintf(str, "\t%-32s\t%d\n", "PRE_MAX_KD2", Num_Executed_Tasks[PRE_MAX_KD2]);
+                             	break;
+
+
+
+
+
+
 			case LEE_WODC : 
                        		sprintf(str, "\t%-32s\t%d\n", "LEE_WODC", Num_Executed_Tasks[LEE_WODC]);
                              	break;
@@ -396,7 +412,7 @@ void Set_SizeECBs_UUniFast()
 
 void CALL_METHODS(){
 	int WDC;
-	printf("\t%s", "NO_PREEMPT\n");		
+/*	printf("\t%s", "NO_PREEMPT\n");		
 	Response_time_NO_PREEMPT();
 
 	printf("\t%s", "ECB_Only\n");
@@ -437,16 +453,23 @@ void CALL_METHODS(){
 
 	printf("\t%s", "Staschulat_PRE\n");
         Response_time_Staschulat_PRE();
-
+*/
 	printf("\t%s", "PRE_MAX_KD\n");
 	Response_time_PRE_MAX_KD();	
 
-	printf("\t%s", "lee_wdoc\n");
+
+	printf("\t%s", "PRE_MAX_KD2\n");
+	Response_time_PRE_MAX_KD2();	
+
+
+
+
+/*	printf("\t%s", "lee_wdoc\n");
 	Response_time_lee_wdc(WDC = 0);
 
 	printf("\t%s", "lee_wdc\n");
 	Response_time_lee_wdc(WDC = 1);
-}
+*/}
 
 void Clear_Task_Execution_Statistics()
 {
