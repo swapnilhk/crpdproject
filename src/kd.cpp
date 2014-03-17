@@ -135,6 +135,7 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 				var_count++;
 			}
 		}
+
 		/* create space large enough for one row(i.e. equation) */
 		var = (int *) malloc(numVar * sizeof(*var));
 		coeff = (double *) malloc(numVar * sizeof(*coeff));
@@ -149,12 +150,11 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 		for(j = 1;j <= this_task;j++){
 			var_count = 0;
 			for(i = 0; i < j; i++){
-				sprintf(col_name,"NNP%d_%d",this_task, i, j);
+				sprintf(col_name,"NNP%d_%d", i, j);
 				var[var_count] = get_nameindex(lp, col_name, FALSE);
 				coeff[var_count] = ceil(Response[this_task] / T[j]);
 				var_count++;
 			}
-
 			lhs= 0;
 			for(i = 0; i < j; i++)
 				lhs+= nnp_min[i][j];
@@ -165,8 +165,8 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 				rhs += nnp_max[i][j];
 			rhs *= ceil(Response[this_task]/T[j]);
 
-			//if(!add_constraintex(lp, var_count, coeff, var, GE, lhs))
-			//	ret = 3;
+			if(!add_constraintex(lp, var_count, coeff, var, GE, lhs))
+				ret = 3;
 			if(!add_constraintex(lp, var_count, coeff, var, LE, rhs))
 				ret = 3;
 		}
@@ -202,8 +202,8 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 				sprintf(col_name,"NNP%d_%d", i, j);
 				var[0] = get_nameindex(lp, col_name, FALSE);
 				coeff[0] = ceil(Response[this_task] / T[j]);
-				//if(!add_constraintex(lp, 1, coeff, var, GE, lhs))
-				//	ret = 3;
+				if(!add_constraintex(lp, 1, coeff, var, GE, lhs))
+					ret = 3;
 
 				rhs = min3(
 						ceil(Response[this_task]/T[i]),
