@@ -119,7 +119,7 @@ double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], FILE *fp)
 	char col_name[10];
 	
 	/* Creating a model */
-	numVar = this_task * (this_task + 1);
+	numVar = this_task * (this_task + 1) / 2;
 
 	lp = make_lp(0, numVar);
 	if(lp == NULL)
