@@ -339,7 +339,7 @@ double wcrt_PRE_MAX_KD2(int this_task, double Response[], FILE *fp){
 
 
 
-void Response_time_PRE_MAX_KD2(){
+int Response_time_PRE_MAX_KD2(){
 	int task_no;
 	bool sched = true;
 	FILE *fp;
@@ -385,4 +385,6 @@ void Response_time_PRE_MAX_KD2(){
 
 	if(fp != NULL)
 		fclose(fp);
+
+	return sched ? 1 : 0;
 }

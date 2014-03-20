@@ -396,7 +396,7 @@ double wcrt(int this_task, double *Response, int WDC, FILE *fp){
 	return R_new;
 }
 
-void Response_time_lee_wdc(int WDC){
+int Response_time_lee_wdc(int WDC){
 
 	int task_no;
 	bool sched = true;	
@@ -453,5 +453,7 @@ void Response_time_lee_wdc(int WDC){
 			Num_Executed_Tasks[LEE_WODC]++;
 	if(fp != NULL)
 		fclose(fp);
+
+	return sched ? 1 : 0;
 }
 
