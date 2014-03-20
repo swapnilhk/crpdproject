@@ -411,65 +411,97 @@ void Set_SizeECBs_UUniFast()
 }
 
 void CALL_METHODS(){
-	int WDC;
-/*	printf("\t%s", "NO_PREEMPT\n");		
+	int WDC, sched;
+
+	if(VERBOSE)
+		printf("\t%s", "NO_PREEMPT\n");		
 	Response_time_NO_PREEMPT();
 
-	printf("\t%s", "ECB_Only\n");
+	if(VERBOSE)		
+		printf("\t%s", "ECB_Only\n");
         Response_time_ECB_Only();    
 
-	printf("\t%s", "UCB_Only\n");    
+	if(VERBOSE)		
+		printf("\t%s", "UCB_Only\n");    
         Response_time_UCB_Only(); 
 
-	printf("\t%s", "UCB_Union\n");
+	if(VERBOSE)		
+		printf("\t%s", "UCB_Union\n");
         Response_time_UCB_Union();        
 
-	printf("\t%s", "ECB_Union\n");
+	if(VERBOSE)		
+		printf("\t%s", "ECB_Union\n");
         Response_time_ECB_Union();        
 
-	printf("\t%s", "ECB_Union_Multiset_PRE\n");
+	if(VERBOSE)		
+		printf("\t%s", "ECB_Union_Multiset_PRE\n");
         Response_time_ECB_Union_Multiset_PRE();
 
-	printf("\t%s", "UCB_Union_Multiset_PRE\n");
+	if(VERBOSE)		
+		printf("\t%s", "UCB_Union_Multiset_PRE\n");
         Response_time_UCB_Union_Multiset_PRE();
 
-	printf("\t%s", "ECB_UCB_Union_Multiset_Combined_PRE\n");
+	if(VERBOSE)		
+		printf("\t%s", "ECB_UCB_Union_Multiset_Combined_PRE\n");
         Response_time_ECB_UCB_Union_Multiset_Combined_PRE();          
 
-	printf("\t%s", "ECB_Union_Multiset\n");
+	if(VERBOSE)		
+		printf("\t%s", "ECB_Union_Multiset\n");
         Response_time_ECB_Union_Multiset();
 
-	printf("\t%s", "UCB_Union_Multiset\n");
+	if(VERBOSE)		
+		printf("\t%s", "UCB_Union_Multiset\n");
         Response_time_UCB_Union_Multiset();
 
-	printf("\t%s", "Staschulat\n");
+	if(VERBOSE)		
+		printf("\t%s", "Staschulat\n");
 	Response_time_Staschulat();
 
-	printf("\t%s", "ECB_UCB_Union_Multiset_Combined\n");
+	if(VERBOSE)		
+		printf("\t%s", "ECB_UCB_Union_Multiset_Combined\n");
         Response_time_ECB_UCB_Union_Multiset_Combined();        
 
-	printf("\t%s", "PRE_MAX\n");
+	if(VERBOSE)		
+		printf("\t%s", "PRE_MAX\n");
         Response_time_PRE_MAX();        
 
-	printf("\t%s", "Staschulat_PRE\n");
+	if(VERBOSE)		
+		printf("\t%s", "Staschulat_PRE\n");
         Response_time_Staschulat_PRE();
-*/
-	printf("\t%s", "PRE_MAX_KD\n");
-	Response_time_PRE_MAX_KD();	
+
+	if(VERBOSE)		
+		printf("\t%s", "PRE_MAX_KD...");
+	sched = Response_time_PRE_MAX_KD();	
+	if(VERBOSE)		
+		printf("%sSCHEDULABLE\n", sched?"":"NOT ");
 
 
-	printf("\t%s", "PRE_MAX_KD2\n");
-	Response_time_PRE_MAX_KD2();	
+
+
+	if(VERBOSE)		
+		printf("\t%s", "PRE_MAX_KD2...");
+	sched = Response_time_PRE_MAX_KD2();	
+	if(VERBOSE)		
+		printf("%sSCHEDULABLE\n", sched?"":"NOT ");
 
 
 
 
-/*	printf("\t%s", "lee_wdoc\n");
-	Response_time_lee_wdc(WDC = 0);
+	if(VERBOSE)		
+		printf("\t%s", "lee_wdoc...");
+	sched = Response_time_lee_wdc(WDC = 0);
+	if(VERBOSE)		
+		printf("%sSCHEDULABLE\n", sched?"":"NOT ");
 
-	printf("\t%s", "lee_wdc\n");
-	Response_time_lee_wdc(WDC = 1);
-*/}
+
+	if(VERBOSE)		
+		printf("\t%s", "lee_wdc...");
+	sched = Response_time_lee_wdc(WDC = 1);
+	if(VERBOSE)		
+		printf("%sSCHEDULABLE\n", sched?"":"NOT ");
+
+
+}
 
 void Clear_Task_Execution_Statistics()
 {
