@@ -501,7 +501,7 @@ void Uniform_Distribution_Benchmark(FILE *fp)
 		print_ucbs(fp);
 	}
 
-	for (; totalUtil <= 1.0; totalUtil += UTIL_INCREMENT)
+	for (; totalUtil <= UTIL_END; totalUtil += UTIL_INCREMENT)
 	{
 		taskSetUtil = totalUtil;
 
