@@ -1560,7 +1560,7 @@ void Response_time_ECB_Union_Multiset(bool display=false)
              printf("\nTASKSET IS schedulable under ECB-Union-MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET IS  schedulable under-ECB-Union MULTISET at TASKSET_UTIL = %f \n", taskSetUtil); 
              
-             Num_Executed_Tasks[ECB_UNION_MULTISET]++;
+             
              
              /*if(BDU_found == false)
              {
@@ -1572,6 +1572,8 @@ void Response_time_ECB_Union_Multiset(bool display=false)
         fprintf(fp, "************** ECB Union Multiset Ends ********************* \n\n" ); 
         //cout << "************** ECB Union Multiset Ends *********************" << endl << endl;
      }
+     if(sched)
+	Num_Executed_Tasks[ECB_UNION_MULTISET]++;
      if(fp != NULL)
 	fclose(fp);
      
@@ -1757,7 +1759,7 @@ void Response_time_UCB_Union_Multiset(bool display=false)
              printf("\nTASKSET IS schedulable under UCB-Union-MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET IS schedulable under-UCB-Union MULTISET at TASKSET_UTIL = %f \n", taskSetUtil); 
              
-             Num_Executed_Tasks[UCB_UNION_MULTISET]++;
+             
              
              /*if(BDU_found == false)
              {
@@ -1769,6 +1771,8 @@ void Response_time_UCB_Union_Multiset(bool display=false)
         fprintf(fp, "************** UCB Union Multiset Ends ********************* \n\n" ); 
         //cout << "************** UCB Union Multiset Ends *********************" << endl << endl;
      }
+     if(sched)
+	Num_Executed_Tasks[UCB_UNION_MULTISET]++;
      if(fp != NULL)
 	fclose(fp);
      
@@ -2307,7 +2311,7 @@ void Response_time_ECB_Union_Multiset_PRE(bool display=false)
              printf("\nTASKSET IS schedulable under ECB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET IS schedulable under ECB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
              
-             Num_Executed_Tasks[ECB_UNION_MULTISET_PRE]++; 
+             
              
              /*if(BDU_found == false)
              {
@@ -2319,7 +2323,8 @@ void Response_time_ECB_Union_Multiset_PRE(bool display=false)
         fprintf(fp, "************** ECB Union Multiset PRE Ends ********************* \n\n" ); 
         ////cout << "************** ECB Union Multiset PRE Ends *********************" << endl << endl;
      }
-
+     if(sched)
+	Num_Executed_Tasks[ECB_UNION_MULTISET_PRE]++; 
      if(fp != NULL)
 	fclose(fp);
 }
@@ -2524,7 +2529,7 @@ void Response_time_UCB_Union_Multiset_PRE(bool display=false)
              printf("\nTASKSET IS schedulable under UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
              fprintf(fp, "\nTASKSET IS schedulable under UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil); 
              
-             Num_Executed_Tasks[UCB_UNION_MULTISET_PRE]++;
+             
              
              /*if(BDU_found == false)
              {
@@ -2537,6 +2542,8 @@ void Response_time_UCB_Union_Multiset_PRE(bool display=false)
          fprintf(fp, "************** UCB Union Multiset PRE Ends ********************* \n\n" ); 
          ////cout << "************** UCB Union Multiset PRE Ends *********************" << endl << endl;
      }
+     if(sched)
+	Num_Executed_Tasks[UCB_UNION_MULTISET_PRE]++;
      if(fp != NULL)
 	fclose(fp);
 }

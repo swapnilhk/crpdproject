@@ -145,10 +145,10 @@ void Print_Task_Execution_Statistics(FILE *fp)
 
 
 			/*TODO Case to be deleted*/
-			case PRE_MAX_KD2 : 
+			/*case PRE_MAX_KD2 : 
                        		sprintf(str, "\t%-32s\t%d\n", "PRE_MAX_KD2", Num_Executed_Tasks[PRE_MAX_KD2]);
                              	break;
-
+			*/
 
 
 
@@ -478,12 +478,12 @@ void CALL_METHODS(){
 
 
 
-	if(VERBOSE)		
+	/*if(VERBOSE)		
 		printf("\t%s", "PRE_MAX_KD2...");
 	sched = Response_time_PRE_MAX_KD2();	
 	if(VERBOSE)		
 		printf("%sSCHEDULABLE\n", sched?"":"NOT ");
-
+	*/
 
 
 
