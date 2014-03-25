@@ -383,7 +383,7 @@ int Response_time_PRE_MAX_KD(){
 	if(sched)
 		Num_Executed_Tasks[PRE_MAX_KD]++;
 
-	if(fp != NULL)
+	if(MESSAGE_LEVEL > NONE && fp != NULL)
 		fclose(fp);
 	
 	return sched ? 1 : 0;
