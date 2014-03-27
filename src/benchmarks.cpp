@@ -163,6 +163,7 @@ void Print_Task_Execution_Statistics(FILE *fp)
 			default : break;                             
            	}
 		fprintf(fp, "%s", str);
+		fflush(fp);
 		if(VERBOSE)
 			printf("%s", str);
      	}
@@ -542,15 +543,23 @@ void Uniform_Distribution_Benchmark(FILE *fp)
 
 		Clear_Task_Execution_Statistics();
 
-		for(int i=1; i <= NUM_TASK_SETS; i++)
+		for(int i = 1; i <= NUM_TASK_SETS; i++)
 		{
+
+			/* Following code is added to reduce the number of messages printed on the screen.
+			   Method output is printed only of current task set number is one of 1, 101, 201, 301, ...*/
+			VERBOSE = 0;
+			if(i % 100 == 1)
+				VERBOSE = 1;	
+
+
 			if(VERBOSE)
 				printf("Task set no: %d Util: %.2f\n",i, taskSetUtil);
 
 			CreateTask_Uniform_Distribution(totalUtil, minPeriod, maxPeriod);
 			CALL_METHODS();
 		}
-		if(VERBOSE) printf("\n");
+		if(VERBOSE) printf("\n");		
 
 	        Print_Task_Execution_Statistics(fp);
 	}		
