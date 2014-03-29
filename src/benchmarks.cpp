@@ -64,7 +64,7 @@ void Print_Task_Execution_Statistics(FILE *fp)
 	int i;
 	static int heading = 0;
 
-	if(VERBOSE)
+	if(VERBOSE) 
 		printf("Printing task execution statistics\n");
 
      	if(heading == 0){
@@ -75,93 +75,10 @@ void Print_Task_Execution_Statistics(FILE *fp)
 		fprintf(fp, "\n");
 
     	fprintf(fp, "%-4.2g", taskSetUtil);
-     	for(i = 0; i < NUM_METHODS; i++)
+     	for(int method_name = NO_PREEMPT; method_name < NUM_METHODS; method_name++)
      	{
 		char str[50] = "\0";
-           	switch(i)
-           	{
-			case NO_PREEMPT:
-                       		sprintf(str, "\t%-32s\t%d\n", "NO_PREEMPT", Num_Executed_Tasks[NO_PREEMPT]);
-				break;
-
-			case ECB_ONLY:
-                       		sprintf(str, "\t%-32s\t%d\n", "ECB_ONLY", Num_Executed_Tasks[ECB_ONLY]);
-				break;
-
-			case UCB_ONLY:
-                       		sprintf(str, "\t%-32s\t%d\n", "UCB_ONLY", Num_Executed_Tasks[UCB_ONLY]);
-				break;
-
-			case UCB_UNION:
-                       		sprintf(str, "\t%-32s\t%d\n", "UCB_UNION", Num_Executed_Tasks[UCB_UNION]);
-				break;
-
-			case ECB_UNION:
-                       		sprintf(str, "\t%-32s\t%d\n", "ECB_UNION", Num_Executed_Tasks[ECB_UNION]);
-				break;
-
-			case ECB_UNION_MULTISET:
-                       		sprintf(str, "\t%-32s\t%d\n", "ECB_UNION_MULTISET", Num_Executed_Tasks[ECB_UNION_MULTISET]);
-				break;
-
-			case UCB_UNION_MULTISET:
-                       		sprintf(str, "\t%-32s\t%d\n", "UCB_UNION_MULTISET", Num_Executed_Tasks[UCB_UNION_MULTISET]);
-				break;
-
-			case ECB_UCB_UNION_MULTISET_COMBINED:
-                       		sprintf(str, "\t%-32s\t%d\n", "ECB_UCB_UNION_MULTISET_COMBINED", Num_Executed_Tasks[ECB_UCB_UNION_MULTISET_COMBINED]);
-				break;
-
-			case ECB_UNION_MULTISET_PRE:
-                       		sprintf(str, "\t%-32s\t%d\n", "ECB_UNION_MULTISET_PRE", Num_Executed_Tasks[ECB_UNION_MULTISET_PRE]);
-				break;
-
-			case UCB_UNION_MULTISET_PRE:
-                       		sprintf(str, "\t%-32s\t%d\n", "UCB_UNION_MULTISET_PRE", Num_Executed_Tasks[UCB_UNION_MULTISET_PRE]);
-				break;
-
-			case ECB_UCB_UNION_MULTISET_COMBINED_PRE:
-                       		sprintf(str, "\t%-32s\t%d\n", "ECB_UCB_UNION_MULTISET_COMBINED_PRE", Num_Executed_Tasks[ECB_UCB_UNION_MULTISET_COMBINED_PRE]);
-				break;
-
-			case STASCHULAT:
-                       		sprintf(str, "\t%-32s\t%d\n", "STASCHULAT", Num_Executed_Tasks[STASCHULAT]);
-				break;
-
-			case STASCHULAT_PRE:
-                       		sprintf(str, "\t%-32s\t%d\n", "STASCHULAT_PRE", Num_Executed_Tasks[STASCHULAT_PRE]);
-				break;
-
-			case PRE_MAX:
-                       		sprintf(str, "\t%-32s\t%d\n", "PRE_MAX", Num_Executed_Tasks[PRE_MAX]);
-				break;
-			
-			case PRE_MAX_KD : 
-                       		sprintf(str, "\t%-32s\t%d\n", "PRE_MAX_KD", Num_Executed_Tasks[PRE_MAX_KD]);
-                             	break;
-
-
-
-
-
-			/*TODO Case to be deleted*/
-			/*case PRE_MAX_KD2 : 
-                       		sprintf(str, "\t%-32s\t%d\n", "PRE_MAX_KD2", Num_Executed_Tasks[PRE_MAX_KD2]);
-                             	break;
-			*/
-
-
-
-
-
-			case LEE_WODC : 
-                       		sprintf(str, "\t%-32s\t%d\n", "LEE_WODC", Num_Executed_Tasks[LEE_WODC]);
-                             	break;
-			case LEE_WDC : 
-                       		sprintf(str, "\t%-32s\t%d\n", "LEE_WDC", Num_Executed_Tasks[LEE_WDC]);
-                             	break;
-			default : break;                             
-           	}
+		sprintf(str, "\t%-32s\t%d\n", method_names_map[method_name] , Num_Executed_Tasks[method_name]);           	
 		fprintf(fp, "%s", str);
 		if(VERBOSE)
 			printf("%s", str);
@@ -410,10 +327,11 @@ void Set_SizeECBs_UUniFast()
 	}
 }
 
-void CALL_METHODS(){
+int CALL_METHODS(){
 	int WDC, sched;
+	int sched_vector = 0;
 
-	if(VERBOSE)
+	/*if(VERBOSE)
 		printf("\t%s", "NO_PREEMPT\n");		
 	Response_time_NO_PREEMPT();
 
@@ -468,28 +386,32 @@ void CALL_METHODS(){
 	if(VERBOSE)		
 		printf("\t%s", "Staschulat_PRE\n");
         Response_time_Staschulat_PRE();
-
+*/
 	if(VERBOSE)		
 		printf("\t%s", "PRE_MAX_KD...");
-	sched = Response_time_PRE_MAX_KD();	
+	sched = Response_time_PRE_MAX_KD();
+	sched_vector |= sched << PRE_MAX_KD;	
 	if(VERBOSE)		
 		printf("%sSCHEDULABLE\n", sched?"":"NOT ");
+	
 
 
 
 
-	/*if(VERBOSE)		
+	if(VERBOSE)		
 		printf("\t%s", "PRE_MAX_KD2...");
 	sched = Response_time_PRE_MAX_KD2();	
+	sched_vector |= sched << PRE_MAX_KD2;	
 	if(VERBOSE)		
 		printf("%sSCHEDULABLE\n", sched?"":"NOT ");
-	*/
+	
 
 
 
 	if(VERBOSE)		
 		printf("\t%s", "lee_wdoc...");
-	sched = Response_time_lee_wdc(WDC = 0);
+	sched = Response_time_lee_wdc(WDC = 0);	
+	sched_vector |= sched << LEE_WODC;		
 	if(VERBOSE)		
 		printf("%sSCHEDULABLE\n", sched?"":"NOT ");
 
@@ -497,10 +419,11 @@ void CALL_METHODS(){
 	if(VERBOSE)		
 		printf("\t%s", "lee_wdc...");
 	sched = Response_time_lee_wdc(WDC = 1);
+	sched_vector |= sched << LEE_WDC;		
 	if(VERBOSE)		
-		printf("%sSCHEDULABLE\n", sched?"":"NOT ");
-
-
+		printf("%sSCHEDULABLE\n", sched?"":"NOT ");		
+	
+	return sched_vector;
 }
 
 void Clear_Task_Execution_Statistics()
@@ -518,6 +441,7 @@ void Uniform_Distribution_Benchmark(FILE *fp)
 	float totalUtil = taskSetUtil = UTIL_START;
 	int minPeriod = MIN_PERIOD;
 	int maxPeriod = MAX_PERIOD;
+	int dom[NUM_METHODS] = {0};
 
 	if(MESSAGE_LEVEL >= IMP)
 		print_base_config(fp);
@@ -542,18 +466,40 @@ void Uniform_Distribution_Benchmark(FILE *fp)
 
 		Clear_Task_Execution_Statistics();
 
-		for(int i=1; i <= NUM_TASK_SETS; i++)
+		for(int task_set_no = 1; task_set_no <= NUM_TASK_SETS; task_set_no++)
 		{
+			int sched_vector;//vector of bits with each bit corresponding to each method
 			if(VERBOSE)
-				printf("Task set no: %d Util: %.2f\n",i, taskSetUtil);
+				printf("Task set no: %d Util: %.2f\n",task_set_no, taskSetUtil);
 
 			CreateTask_Uniform_Distribution(totalUtil, minPeriod, maxPeriod);
-			CALL_METHODS();
-		}
+			sched_vector = CALL_METHODS();
+			for(int method_name = NO_PREEMPT; method_name < NUM_METHODS; method_name++){
+				if(sched_vector >> method_name & 1)// if(sched_vectpr has bit corresponding to the method set)
+					dom[method_name] |= ~sched_vector; // Add to dom[this_method] all methods that this_method domonates, ie are zero
+			}			
+		}		
+		
 		if(VERBOSE) printf("\n");
 
 	        Print_Task_Execution_Statistics(fp);
-	}		
+	}	
+	
+	for(int method1 = PRE_MAX_KD; method1 < NUM_METHODS - 1; method1++){
+		for(int method2 = method1 + 1; method2 < NUM_METHODS; method2++){
+			//Checking if method_name1 dominates method_name2
+			if((dom[method1] >> method2 & 1) && !(dom[method2] >> method1 & 1))
+				fprintf(fp, "%s dominates %s\n", method_names_map[method1], method_names_map[method2]);
+			//Checking if method_name2 dominates method_name1
+			else if((dom[method2] >> method1 & 1) && !(dom[method1] >> method2 & 1))
+				fprintf(fp, "%s dominates %s\n", method_names_map[method2], method_names_map[method1]);
+			//Checking if method_name1 and method_name2 are equal
+			else if(!(dom[method2] >> method1 & 1) && !(dom[method1] >> method2 & 1))
+				fprintf(fp, "%s and %s are equal\n", method_names_map[method2], method_names_map[method1]);
+			//Checking if method_name1 and method_name2 are comparable
+			else fprintf(fp, "%s and %s are not comparable\n", method_names_map[method2], method_names_map[method1]);
+		}
+	}	
 }
 
 int main() {
