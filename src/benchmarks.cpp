@@ -331,97 +331,107 @@ int CALL_METHODS(){
 	int WDC, sched;
 	int sched_vector = 0;
 
-	/*if(VERBOSE)
+	if(VERBOSE)
 		printf("\t%s", "NO_PREEMPT\n");		
-	Response_time_NO_PREEMPT();
+	sched = Response_time_NO_PREEMPT();
+	sched_vector |= sched << NO_PREEMPT;
 
 	if(VERBOSE)		
 		printf("\t%s", "ECB_Only\n");
-        Response_time_ECB_Only();    
+        sched = Response_time_ECB_Only();    
+        sched_vector |= sched << ECB_ONLY;
 
 	if(VERBOSE)		
 		printf("\t%s", "UCB_Only\n");    
-        Response_time_UCB_Only(); 
+        sched = Response_time_UCB_Only(); 
+        sched_vector |= sched << UCB_ONLY;
 
 	if(VERBOSE)		
 		printf("\t%s", "UCB_Union\n");
-        Response_time_UCB_Union();        
+        sched = Response_time_UCB_Union();        
+        sched_vector |= sched << UCB_UNION;
 
 	if(VERBOSE)		
 		printf("\t%s", "ECB_Union\n");
-        Response_time_ECB_Union();        
+        sched = Response_time_ECB_Union();        
+        sched_vector |= sched << ECB_UNION;
 
 	if(VERBOSE)		
 		printf("\t%s", "ECB_Union_Multiset_PRE\n");
-        Response_time_ECB_Union_Multiset_PRE();
+        sched = Response_time_ECB_Union_Multiset_PRE();
+        sched_vector |= sched << ECB_UNION_MULTISET_PRE;
 
 	if(VERBOSE)		
 		printf("\t%s", "UCB_Union_Multiset_PRE\n");
-        Response_time_UCB_Union_Multiset_PRE();
+        sched = Response_time_UCB_Union_Multiset_PRE();
+        sched_vector |= sched << UCB_UNION_MULTISET_PRE;
 
 	if(VERBOSE)		
 		printf("\t%s", "ECB_UCB_Union_Multiset_Combined_PRE\n");
-        Response_time_ECB_UCB_Union_Multiset_Combined_PRE();          
+        sched = Response_time_ECB_UCB_Union_Multiset_Combined_PRE();          
+        sched_vector |= sched << ECB_UCB_UNION_MULTISET_COMBINED_PRE;
 
 	if(VERBOSE)		
 		printf("\t%s", "ECB_Union_Multiset\n");
-        Response_time_ECB_Union_Multiset();
+        sched = Response_time_ECB_Union_Multiset();
+        sched_vector |= sched << ECB_UNION_MULTISET;
 
 	if(VERBOSE)		
 		printf("\t%s", "UCB_Union_Multiset\n");
-        Response_time_UCB_Union_Multiset();
+        sched = Response_time_UCB_Union_Multiset();
+        sched_vector |= sched << UCB_UNION_MULTISET;
 
 	if(VERBOSE)		
 		printf("\t%s", "Staschulat\n");
-	Response_time_Staschulat();
+	sched = Response_time_Staschulat();
+	sched_vector |= sched << STASCHULAT;
 
 	if(VERBOSE)		
 		printf("\t%s", "ECB_UCB_Union_Multiset_Combined\n");
-        Response_time_ECB_UCB_Union_Multiset_Combined();        
+        sched = Response_time_ECB_UCB_Union_Multiset_Combined();        
+        sched_vector |= sched << ECB_UCB_UNION_MULTISET_COMBINED;
 
 	if(VERBOSE)		
 		printf("\t%s", "PRE_MAX\n");
-        Response_time_PRE_MAX();        
+        sched = Response_time_PRE_MAX();        
+        sched_vector |= sched << PRE_MAX;
 
 	if(VERBOSE)		
 		printf("\t%s", "Staschulat_PRE\n");
-        Response_time_Staschulat_PRE();
-*/
+        sched = Response_time_Staschulat_PRE();
+        sched_vector |= sched << STASCHULAT_PRE;
+
 	if(VERBOSE)		
-		printf("\t%s", "PRE_MAX_KD...");
+		printf("\t%s", "PRE_MAX_KD\n");
 	sched = Response_time_PRE_MAX_KD();
 	sched_vector |= sched << PRE_MAX_KD;	
-	if(VERBOSE)		
-		printf("%sSCHEDULABLE\n", sched?"":"NOT ");
+	
 	
 
 
 
 
 	if(VERBOSE)		
-		printf("\t%s", "PRE_MAX_KD2...");
+		printf("\t%s", "PRE_MAX_KD2\n");
 	sched = Response_time_PRE_MAX_KD2();	
 	sched_vector |= sched << PRE_MAX_KD2;	
-	if(VERBOSE)		
-		printf("%sSCHEDULABLE\n", sched?"":"NOT ");
+	
 	
 
 
 
 	if(VERBOSE)		
-		printf("\t%s", "lee_wdoc...");
+		printf("\t%s", "lee_wdoc\n");
 	sched = Response_time_lee_wdc(WDC = 0);	
 	sched_vector |= sched << LEE_WODC;		
-	if(VERBOSE)		
-		printf("%sSCHEDULABLE\n", sched?"":"NOT ");
+	
 
 
 	if(VERBOSE)		
-		printf("\t%s", "lee_wdc...");
+		printf("\t%s", "lee_wdc\n");
 	sched = Response_time_lee_wdc(WDC = 1);
 	sched_vector |= sched << LEE_WDC;		
-	if(VERBOSE)		
-		printf("%sSCHEDULABLE\n", sched?"":"NOT ");		
+	
 	
 	return sched_vector;
 }
@@ -485,19 +495,19 @@ void Uniform_Distribution_Benchmark(FILE *fp)
 	        Print_Task_Execution_Statistics(fp);
 	}	
 	
-	for(int method1 = PRE_MAX_KD; method1 < NUM_METHODS - 1; method1++){
+	for(int method1 = NO_PREEMPT; method1 < NUM_METHODS - 1; method1++){
 		for(int method2 = method1 + 1; method2 < NUM_METHODS; method2++){
 			//Checking if method_name1 dominates method_name2
 			if((dom[method1] >> method2 & 1) && !(dom[method2] >> method1 & 1))
 				fprintf(fp, "%s dominates %s\n", method_names_map[method1], method_names_map[method2]);
 			//Checking if method_name2 dominates method_name1
 			else if((dom[method2] >> method1 & 1) && !(dom[method1] >> method2 & 1))
-				fprintf(fp, "%s dominates %s\n", method_names_map[method2], method_names_map[method1]);
+				fprintf(fp, "%s is dominated by %s\n", method_names_map[method1], method_names_map[method2]);
 			//Checking if method_name1 and method_name2 are equal
 			else if(!(dom[method2] >> method1 & 1) && !(dom[method1] >> method2 & 1))
-				fprintf(fp, "%s and %s are equal\n", method_names_map[method2], method_names_map[method1]);
+				fprintf(fp, "%s and %s are equal\n", method_names_map[method1], method_names_map[method2]);
 			//Checking if method_name1 and method_name2 are comparable
-			else fprintf(fp, "%s and %s are not comparable\n", method_names_map[method2], method_names_map[method1]);
+			else fprintf(fp, "%s and %s are not comparable\n", method_names_map[method1], method_names_map[method2]);
 		}
 	}	
 }
