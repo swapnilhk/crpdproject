@@ -1837,7 +1837,7 @@ void Response_time_ECB_UCB_Union_Multiset_Combined()
            } 
          
          //printf("For task %d, response = %f Num_Displaced_Blocks = %d \n\n", i, Response_ECB_UCB_Union_Multiset_Combined[i], Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined[i]);
-         fprintf(fp, "For task %d, response = %f Num_Displaced_Blocks = %d \n\n", i, Response_ECB_UCB_Union_Multiset_Combined[i], Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined[i]);     
+         fprintf(fp, "For task %d, response = %f Num_Displaced_Blocks = %ld \n\n", i, Response_ECB_UCB_Union_Multiset_Combined[i], Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined[i]);     
      }
      
      flag = 1;
@@ -2608,7 +2608,7 @@ void Response_time_ECB_UCB_Union_Multiset_Combined_PRE()
          }  
          
          //printf("For task %d, response = %f Num_Displaced_Blocks = %d \n\n", i, Response_ECB_UCB_Union_Multiset_Combined_PRE[i], Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined_PRE[i]);
-         fprintf(fp, "For task %d, response = %f Num_Displaced_Blocks = %d \n\n", i, Response_ECB_UCB_Union_Multiset_Combined_PRE[i], Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined_PRE[i]);     
+         fprintf(fp, "For task %d, response = %f Num_Displaced_Blocks = %ld \n\n", i, Response_ECB_UCB_Union_Multiset_Combined_PRE[i], Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined_PRE[i]);     
      }
      
      flag = 1;
