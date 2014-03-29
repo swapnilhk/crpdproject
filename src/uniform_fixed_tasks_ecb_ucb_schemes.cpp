@@ -418,7 +418,7 @@ void quickCalculate()
 
 
 
-void Response_time_NO_PREEMPT()
+int Response_time_NO_PREEMPT()
 {
      int i, j, k;
      float acc;
@@ -450,7 +450,7 @@ void Response_time_NO_PREEMPT()
         ////cout << "************** BreakDown Utilization already found for NO PREEMPT *********************" << endl << endl;
         
         if (BDU_ONLY)
-           return;
+           return 0;
      }
             
      clear_Response();
@@ -541,12 +541,14 @@ void Response_time_NO_PREEMPT()
 
      if(fp != NULL)
 	fclose(fp);
+	
+     return sched;
      
 }
 
 
 
-void Response_time_ECB_Only()
+int Response_time_ECB_Only()
 {
      int i, j, k;
      double acc;
@@ -580,7 +582,7 @@ void Response_time_ECB_Only()
         //cout << "************** BreakDown Utilization already found for ECB Only *********************" << endl << endl;
         
         if (BDU_ONLY)
-           return;
+           return 0;
      }
      
      clear_Response();
@@ -691,11 +693,11 @@ void Response_time_ECB_Only()
 
      if(fp != NULL)
 	fclose(fp);
-     
+     return sched;
 }
 
 
-void Response_time_UCB_Only()
+int Response_time_UCB_Only()
 {
      int i, j, k;
      double acc;
@@ -730,7 +732,7 @@ void Response_time_UCB_Only()
         //cout << "************** BreakDown Utilization already found for UCB Only*********************" << endl << endl;
         
         if (BDU_ONLY)
-           return;
+           return 0;
      }
      
      clear_Response();
@@ -839,11 +841,12 @@ void Response_time_UCB_Only()
      
      if(fp != NULL)
 	fclose(fp);
+     return sched;
 }
 
 
 
-void Response_time_UCB_Union()
+int Response_time_UCB_Union()
 {
      int i, j, k;
      double acc;
@@ -878,7 +881,7 @@ void Response_time_UCB_Union()
         //cout << "************** BreakDown Utilization already found for UCB Union *********************" << endl << endl;
         
         if (BDU_ONLY)
-           return;
+           return 0;
      }
      
      
@@ -1008,11 +1011,12 @@ void Response_time_UCB_Union()
      
      if(fp != NULL)
 	fclose(fp);
+     return sched;
 }
 
 
 
-void Response_time_ECB_Union()
+int Response_time_ECB_Union()
 {
      int i, j, k;
      double acc;
@@ -1047,7 +1051,7 @@ void Response_time_ECB_Union()
         //cout << "************** BreakDown Utilization already found for ECB Union *********************" << endl << endl;
         
         if (BDU_ONLY)
-           return;
+           return 0;
      }
      
      clear_Response();
@@ -1172,10 +1176,12 @@ void Response_time_ECB_Union()
 
      if(fp != NULL)
 	fclose(fp);
+	
+     return sched;
      
 }
 
-void Response_time_Staschulat()
+int Response_time_Staschulat()
 {
      int i, j, k;
      double acc;
@@ -1210,7 +1216,7 @@ void Response_time_Staschulat()
         //cout << "************** BreakDown Utilization already found for Staschulat *********************" << endl << endl;
         
         if (BDU_ONLY)
-           return;
+           return 0;
      }
      
      clear_Response();
@@ -1360,9 +1366,11 @@ void Response_time_Staschulat()
      
      if(fp != NULL)
 	fclose(fp);
+	
+     return sched;
 }
 
-void Response_time_ECB_Union_Multiset(bool display=false)
+int Response_time_ECB_Union_Multiset(bool display=false)
 {
      int i, j, k;
      double acc;
@@ -1397,7 +1405,7 @@ void Response_time_ECB_Union_Multiset(bool display=false)
         ////cout << "************** BreakDown Utilization already found for ECB Union Multiset *********************" << endl << endl;
         
         if (BDU_ONLY)
-           return;
+           return 0;
      }
      
      clear_Response();
@@ -1576,10 +1584,12 @@ void Response_time_ECB_Union_Multiset(bool display=false)
 	Num_Executed_Tasks[ECB_UNION_MULTISET]++;
      if(fp != NULL)
 	fclose(fp);
+	
+     return sched;
      
 }
 
-void Response_time_UCB_Union_Multiset(bool display=false)
+int Response_time_UCB_Union_Multiset(bool display=false)
 {
      int i, j, k;
      double acc;
@@ -1616,7 +1626,7 @@ void Response_time_UCB_Union_Multiset(bool display=false)
         ////cout << "************** BreakDown Utilization already found for UCB Union Multiset *********************" << endl << endl;
         
         if (BDU_ONLY)
-           return;
+           return 0;
      }
      
      clear_Response();
@@ -1775,10 +1785,12 @@ void Response_time_UCB_Union_Multiset(bool display=false)
 	Num_Executed_Tasks[UCB_UNION_MULTISET]++;
      if(fp != NULL)
 	fclose(fp);
+	
+     return sched;
      
 }
 
-void Response_time_ECB_UCB_Union_Multiset_Combined()
+int Response_time_ECB_UCB_Union_Multiset_Combined()
 {
      int flag;
      int LAST_TASK = NUM_TASKS - 1;
@@ -1809,7 +1821,7 @@ void Response_time_ECB_UCB_Union_Multiset_Combined()
         ////cout << "************** BreakDown Utilization already found for ECB Union Multiset-Combined*********************" << endl << endl;
         
         if (BDU_ONLY)
-           return;
+           return 0;
      }
      
      // Response_time_ECB_Union_Multiset(false);
@@ -1881,10 +1893,11 @@ void Response_time_ECB_UCB_Union_Multiset_Combined()
      if(fp != NULL)
 	fclose(fp);
      
+     return sched;
 }
 
 
-void Response_time_Staschulat_PRE()
+int Response_time_Staschulat_PRE()
 {
      int i, j, k;
      double acc;
@@ -1919,7 +1932,7 @@ void Response_time_Staschulat_PRE()
         ////cout << "************** BreakDown Utilization already found for Staschulat with PRE *********************" << endl << endl;
         
         if (BDU_ONLY)
-           return;
+           return 0;
      }
      
      clear_Response();
@@ -2091,10 +2104,12 @@ void Response_time_Staschulat_PRE()
      fprintf(fp,"************** Staschulat with PRE Ends ********************* \n\n");
  
      if(fp != NULL)
-	fclose(fp);    
+	fclose(fp);
+	
+     return sched;    
 }
 
-void Response_time_ECB_Union_Multiset_PRE(bool display=false)
+int Response_time_ECB_Union_Multiset_PRE(bool display=false)
 {
      int i, j, k;
      double acc;
@@ -2129,7 +2144,7 @@ void Response_time_ECB_Union_Multiset_PRE(bool display=false)
         ////cout << "************** BreakDown Utilization already found for ECB Union Multiset PRE*********************" << endl << endl;
         
         if (BDU_ONLY)
-           return;
+           return 0;
      }
      
      clear_Response();
@@ -2327,9 +2342,11 @@ void Response_time_ECB_Union_Multiset_PRE(bool display=false)
 	Num_Executed_Tasks[ECB_UNION_MULTISET_PRE]++; 
      if(fp != NULL)
 	fclose(fp);
+	
+     return sched;
 }
 
-void Response_time_UCB_Union_Multiset_PRE(bool display=false)
+int Response_time_UCB_Union_Multiset_PRE(bool display=false)
 {
      int i, j, k;
      double acc;
@@ -2366,7 +2383,7 @@ void Response_time_UCB_Union_Multiset_PRE(bool display=false)
         ////cout << "************** BreakDown Utilization already found for UCB Union Multiset PRE*********************" << endl << endl;
         
         if (BDU_ONLY)
-           return;
+           return 0;
      }
      
      clear_Response();
@@ -2546,10 +2563,12 @@ void Response_time_UCB_Union_Multiset_PRE(bool display=false)
 	Num_Executed_Tasks[UCB_UNION_MULTISET_PRE]++;
      if(fp != NULL)
 	fclose(fp);
+	
+     return sched;
 }
 
 
-void Response_time_ECB_UCB_Union_Multiset_Combined_PRE()
+int Response_time_ECB_UCB_Union_Multiset_Combined_PRE()
 {
      int flag;
      int LAST_TASK = NUM_TASKS - 1;
@@ -2580,7 +2599,7 @@ void Response_time_ECB_UCB_Union_Multiset_Combined_PRE()
         //cout << "************** BreakDown Utilization already found for ECB UCB Union Multiset Combined PRE*********************" << endl << endl;
         
         if (BDU_ONLY)
-           return;
+           return 0;
      }
      
      // Response_time_ECB_Union_Multiset_PRE(false);
@@ -2651,11 +2670,13 @@ void Response_time_ECB_UCB_Union_Multiset_Combined_PRE()
      
      if(fp != NULL)
 	fclose(fp);
+	
+     return sched;
 }
 
 
 
-void Response_time_PRE_MAX()
+int Response_time_PRE_MAX()
 {
      int i, j, k;
      double acc;
@@ -2690,7 +2711,7 @@ void Response_time_PRE_MAX()
         //cout << "************** BreakDown Utilization already found for PRE MAX*********************" << endl << endl;
         
         if (BDU_ONLY)
-           return;
+           return 0;
      }
      
      clear_Response();
@@ -2828,7 +2849,8 @@ void Response_time_PRE_MAX()
 
      if(fp != NULL)
 	fclose(fp);
-     
+
+     return sched;     
 }
 
 
