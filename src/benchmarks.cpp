@@ -497,16 +497,16 @@ void Uniform_Distribution_Benchmark(FILE *fp)
 	
 	for(int method1 = NO_PREEMPT; method1 < NUM_METHODS - 1; method1++){
 		for(int method2 = method1 + 1; method2 < NUM_METHODS; method2++){
-			//Checking if method_name1 dominates method_name2
+			//Checking if method1 dominates method2
 			if((dom[method1] >> method2 & 1) && !(dom[method2] >> method1 & 1))
 				fprintf(fp, "%s dominates %s\n", method_names_map[method1], method_names_map[method2]);
-			//Checking if method_name2 dominates method_name1
+			//Checking if method2 dominates method1
 			else if((dom[method2] >> method1 & 1) && !(dom[method1] >> method2 & 1))
 				fprintf(fp, "%s is dominated by %s\n", method_names_map[method1], method_names_map[method2]);
-			//Checking if method_name1 and method_name2 are equal
+			//Checking if method1 and method2 are equal
 			else if(!(dom[method2] >> method1 & 1) && !(dom[method1] >> method2 & 1))
 				fprintf(fp, "%s and %s are equal\n", method_names_map[method1], method_names_map[method2]);
-			//Checking if method_name1 and method_name2 are comparable
+			//If all above conditions fail, method1 and method2 are not comparable
 			else fprintf(fp, "%s and %s are not comparable\n", method_names_map[method1], method_names_map[method2]);
 		}
 	}	
