@@ -357,7 +357,7 @@ double solve_constraints(int this_task, double *Response, int WDC, FILE *fp)
 	if(lp != NULL) 
 		delete_lp(lp);
 
-	return ret == 0 ? obj : 0;
+	return ret == 0 ? obj : INFINITY;
 }
 
 // Returns preemption cost for task 'this_task'

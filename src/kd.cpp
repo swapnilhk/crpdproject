@@ -386,5 +386,5 @@ int Response_time_PRE_MAX_KD(){
 	if(fp != NULL)
 		fclose(fp);
 	
-	return sched ? 1 : 0;
+	return sched ? 1 : INFINITY;
 }
