@@ -83,6 +83,7 @@ void Print_Task_Execution_Statistics(FILE *fp)
 		if(VERBOSE)
 			printf("%s", str);
      	}
+	fflush(fp);
 
 	if(VERBOSE)
 		printf("Printing task execution statistics done\n");
@@ -479,6 +480,11 @@ void Uniform_Distribution_Benchmark(FILE *fp)
 		for(int task_set_no = 1; task_set_no <= NUM_TASK_SETS; task_set_no++)
 		{
 			int sched_vector;//vector of bits with each bit corresponding to each method
+
+			VERBOSE = 0;
+			if(NUM_TASK_SETS > 10 && task_set_no % (NUM_TASK_SETS/10) == 0)
+				VERBOSE = 1;
+
 			if(VERBOSE)
 				printf("Task set no: %d Util: %.2f\n",task_set_no, taskSetUtil);
 
