@@ -451,7 +451,7 @@ int Response_time_lee_wdc(int WDC){
 			Num_Executed_Tasks[LEE_WDC]++;
 		else 
 			Num_Executed_Tasks[LEE_WODC]++;
-	if(fp != NULL)
+	if(MESSAGE_LEVEL > NONE && fp != NULL)
 		fclose(fp);
 
 	return sched ? 1 : 0;
