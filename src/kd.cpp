@@ -111,12 +111,47 @@ double get_f(int this_task, int hp_task, int lp_task, double Response[])
 
 
 
+
+
+void get_hp_task_set(const int this_task, const int hp_task_set_no, char * hp_task_set){
+	int i, lp_task = 1, offset = 0, hp_task;
+	char temp[10];
+
+	strcpy(hp_task_set, "");
+	
+	for(i = 1; i < hp_task_set_no; i += pow(2,lp_task+1)-1, lp_task++)
+		offset = i;	
+
+	// Genereting hp task set
+	for(hp_task = 0; hp_task < this_task; hp_task++)
+	{
+		int jump = pow(2, hp_task);
+		if(((hp_task_set_no - offset) / jump) % 2 == 1){			
+			sprintf(temp, "%d", hp_task);
+			strcat(hp_task_set, temp);
+		}
+	}
+	sprintf(temp, "%d", lp_task);
+	strcat(hp_task_set, temp);
+}
+
+
+
+
+
+
+
+
+
+
 double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 {
 	lprec *lp;
 	int numVar = 0, *var = NULL, ret = 0, i, j, k, var_count;
 	double *coeff = NULL, lhs,rhs, obj;
 	char col_name[10];
+	int hp_task_set_no;
+	char hp_task_set[50];
 	
 	/* Creating a model */
 	numVar = this_task * (this_task + 1) / 2;
@@ -130,7 +165,7 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 		for(i = 0 ; i < this_task; i++){
 			for(j = i+1 ; j <= this_task; j++)
 			{
-				sprintf(col_name, "NNP%d_%d", i, j);
+				sprintf(col_name, "%dNNP%d_%d", this_task, i, j);
 				set_col_name(lp, var_count, col_name);
 				var_count++;
 			}
@@ -150,9 +185,9 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 		for(j = 1;j <= this_task;j++){
 			var_count = 0;
 			for(i = 0; i < j; i++){
-				sprintf(col_name,"NNP%d_%d", i, j);
+				sprintf(col_name,"%dNNP%d_%d", this_task, i, j);
 				var[var_count] = get_nameindex(lp, col_name, FALSE);
-				coeff[var_count] = ceil(Response[this_task] / T[j]);
+				coeff[var_count] = 1;
 				var_count++;
 			}
 			lhs= 0;
@@ -179,9 +214,9 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 			var_count = 0;
 			for(j = 1; j <= k; j++){
 				for(i = 0; i < j; i++){
-					sprintf(col_name,"NNP%d_%d", i, j);
+					sprintf(col_name,"%dNNP%d_%d", this_task, i, j);
 					var[var_count] = get_nameindex(lp, col_name, FALSE);
-					coeff[var_count] = ceil(Response[this_task] / T[j]);
+					coeff[var_count] = 1;
 					var_count++;
 				}
 			}
@@ -199,9 +234,9 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 		for(j = 1; j <= this_task ; j++){
 			for(i = 0; i < j; i++){
 				lhs= floor(Response[this_task]/T[j]) * nnp_min[i][j];
-				sprintf(col_name,"NNP%d_%d", i, j);
+				sprintf(col_name,"%dNNP%d_%d", this_task, i, j);
 				var[0] = get_nameindex(lp, col_name, FALSE);
-				coeff[0] = ceil(Response[this_task] / T[j]);
+				coeff[0] = 1;
 				if(!add_constraintex(lp, 1, coeff, var, GE, lhs))
 					ret = 3;
 
@@ -221,9 +256,9 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 		for(i = 0; i < this_task; i++){
 			var_count = 0;
 			for(j = i+1; j <= this_task; j++){
-				sprintf(col_name,"NNP%d_%d", i, j);
+				sprintf(col_name,"%dNNP%d_%d", this_task, i, j);
 				var[var_count] = get_nameindex(lp, col_name, FALSE);
-				coeff[var_count] = ceil(Response[this_task] / T[j]);
+				coeff[var_count] = 1;
 				var_count++;
 			}
 			rhs = ceil(Response[this_task]/T[i]);
@@ -235,7 +270,7 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 	set_add_rowmode(lp, FALSE);
 	if(ret == 0) {
 		/* -----------------set the objective----------------- */
-		var_count = 0;
+		/*var_count = 0;
 		for(i = 0 ; i < this_task; i++){
 			for(j = i+1 ; j<= this_task; j++){
 				sprintf(col_name,"NNP%d_%d", i, j);
@@ -243,8 +278,29 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 				coeff[var_count] = get_f(this_task, i, j, Response) * ceil(Response[this_task] / T[j]);
 				var_count++;
 			}
+		}*/
+				
+		int var1[500];
+		double coeff1[500];
+		var_count = 0;
+		for(hp_task_set_no = 1 ; hp_task_set_no <= numVar; hp_task_set_no++){
+			get_hp_task_set(this_task, hp_task_set_no, hp_task_set);
+			for(i = 0; i < strlen(hp_task_set)-1; i++){
+				for(j = i+1; j < strlen(hp_task_set); j++){
+					sprintf(col_name, "%dNNP%c_%c", this_task, hp_task_set[i], hp_task_set[j]);
+					var1[var_count] = get_nameindex(lp, col_name, FALSE);
+					coeff1[var_count] = var_no_to_cost(this_task, hp_task_set_no) /*/ (strlen(hp_task_set)-1)*/;
+					var_count++;
+				}
+			}
+			//sprintf(col_name, "%dNNP%c_%c", this_task, hp_task_set[j-1], hp_task_set[strlen(hp_task_set)-1]);
+			//var1[var_count] = get_nameindex(lp, col_name, FALSE);
+			//coeff1[var_count] = var_no_to_cost(this_task, hp_task_set_no)/* / (strlen(hp_task_set)-1)*/;
+			//var_count++;
 		}
-		if(!set_obj_fnex(lp, var_count, coeff, var))
+		
+		
+		if(!set_obj_fnex(lp, var_count, coeff1, var1))
 			ret = 4;
 		set_maxim(lp);
 
@@ -286,7 +342,7 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 	if(lp != NULL);
 		delete_lp(lp);
 
-	return ret == 0 ? obj : 0;
+	return ret == 0 ? obj : INFINITY;
 }
 
 
