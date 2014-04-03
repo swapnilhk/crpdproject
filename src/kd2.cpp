@@ -286,7 +286,7 @@ double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], FILE *fp)
 	if(lp != NULL);
 		delete_lp(lp);
 
-	return ret == 0 ? obj : 0;
+	return ret == 0 ? obj : INFINITY;
 }
 
 
@@ -383,7 +383,7 @@ int Response_time_PRE_MAX_KD2(){
 	if(sched)
 		Num_Executed_Tasks[PRE_MAX_KD2]++;
 
-	if(fp != NULL)
+	if(MESSAGE_LEVEL > NONE && fp != NULL)
 		fclose(fp);
 
 	return sched ? 1 : 0;
