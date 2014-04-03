@@ -286,7 +286,7 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 	if(lp != NULL);
 		delete_lp(lp);
 
-	return ret == 0 ? obj : 0;
+	return ret == 0 ? obj : INFINITY;
 }
 
 

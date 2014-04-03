@@ -481,9 +481,9 @@ void Uniform_Distribution_Benchmark(FILE *fp)
 		{
 			int sched_vector;//vector of bits with each bit corresponding to each method
 
-			VERBOSE = 0;
-			if(NUM_TASK_SETS > 10 && task_set_no % (NUM_TASK_SETS/10) == 0)
-				VERBOSE = 1;
+			VERBOSE = 1;
+			if(NUM_TASK_SETS >= 10 && task_set_no % (NUM_TASK_SETS/10) != 0)
+				VERBOSE = 0;
 
 			if(VERBOSE)
 				printf("Task set no: %d Util: %.2f\n",task_set_no, taskSetUtil);
