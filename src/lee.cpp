@@ -1,7 +1,11 @@
 #include<stdio.h>
 #include<math.h>
 #include"../lib/lp_solve_ux64/lp_lib.h"
-#include"common.h"
+#include"global.h"
+#include"tda.h"
+#include"costFunctions.h"
+
+static int WDC;
 
 #define min(a, b) (a) < (b) ? (a) : (b)
 
@@ -22,31 +26,6 @@ void itoa(int i, char s[10]){
 	}while((i /= 10) != 0);
 	s[j] = '\0';
 	strrev(s);
-}
-
-/* Returns the cost of cache perrmption as:
- * UCB[this_task] INTERSECT (UNION( ECB[T] | T is a set of tasks that execute during this_task's preemption))
-*/
-double var_no_to_cost(const int this_task, const int var_no){
-	int i, lp_task = 1, offset = 0, hp_task;
-	extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
-
-	for(i = 1; i < var_no; i += pow(2,lp_task+1)-1, lp_task++)
-		offset = i;
-
-	std::set<int> workingSet1, workingSet2;
-	workingSet1.clear();
-	workingSet2.clear();
-
-	for(hp_task = 0; hp_task < this_task; hp_task++)
-	{
-		int jump = pow(2, hp_task);
-		if(((var_no - offset) / jump) % 2 == 1){
-			Set_Union(workingSet1, TASK_ECB[hp_task], workingSet1);
-		}
-	}
-	Set_Intersect(workingSet1, TASK_UCB[this_task], workingSet2);
-	return BRT * SET_MOD(workingSet2);
 }
 
 /* Example: For this task = T4, variables have been nubmered from 1 to 11 as follows:
@@ -110,7 +89,7 @@ void set_difference(int a[],int b[], int n){
 	}
 }
 
-double solve_constraints(int this_task, double *Response, int WDC, FILE *fp)
+double solve_constraints_lee(int this_task, double *Response, FILE *fp)
 {
 	lprec *lp;
 	int numVar = 0, *var = NULL, ret = 0, i, j, k, var_count, H, var_no;
@@ -306,7 +285,7 @@ double solve_constraints(int this_task, double *Response, int WDC, FILE *fp)
 		for(j = 1; j <= this_task; j++){
 			for(H = 1; H < pow(2,j); H++){
 				var[var_count] = var_no;
-				coeff[var_count] = var_no_to_cost(this_task, var_no);
+				coeff[var_count] = varNoToCost(this_task, var_no);
 				var_count++;
 				var_no++;
 			}
@@ -361,68 +340,69 @@ double solve_constraints(int this_task, double *Response, int WDC, FILE *fp)
 }
 
 // Returns preemption cost for task 'this_task'
-double PC(int this_task, double *Response, int WDC, FILE *fp){
+double PC_LEE(int this_task, double *Response, FILE *fp){
 	int hp_task;
 	if (this_task >= 1){
-		return solve_constraints(this_task, Response, WDC, fp);
+		return solve_constraints_lee(this_task, Response, fp);
 	}
 	else return 0;
 }
 
-double sigma_tda(int this_task, double *Response){
-	double R_new = 0;
-	int hp_task = this_task - 1;
-	while(hp_task >= 0){
-		R_new += ceil(Response[this_task]/T[hp_task]) * C[hp_task];
-		hp_task = hp_task - 1;
-	}
-	return R_new;
-}
-
-// Returns worst case response time of task 'task_no'
-double wcrt(int this_task, double *Response, int WDC, FILE *fp){	
-	double R_new;
-	R_new = C[this_task];
-	Response[this_task] = 0;
-	while(R_new != Response[this_task] && (Response[this_task] = R_new) <= D[this_task]){
-
-		R_new = C[this_task] 
-			+ sigma_tda(this_task, Response)
-			+ PC(this_task, Response, WDC, fp);// Time demand equation
-
-		if(MESSAGE_LEVEL >= IMP)
-			fprintf(fp, "T%d(D=%ld) Response time: Old = %g, New = %g\n\n", this_task, D[this_task], Response[this_task], R_new);
-	}
-	return R_new;
-}
-
-int Response_time_lee_wdc(int WDC){
+int ResponseTimeLeeWdc(){
 
 	int task_no;
 	bool sched = true;	
 	double Response[NUM_TASKS] = {0};
-	static int first_call_wdc = 1, first_call_wodc = 1;
+	static int first_call = 1;
 	FILE *fp = NULL;
 
+	WDC = 1;
 	if(MESSAGE_LEVEL > NONE){
-
-		if(WDC){
-			if(first_call_wdc){			
-				fp = fopen("out/lee_wdc.txt", "w");
-				first_call_wdc = 0;
-			}
-			else
-				fp = fopen("out/lee_wdc.txt", "a");			
+		if(first_call){			
+			fp = fopen("out/lee_wdc.txt", "w");
+			first_call = 0;
 		}
-		else{		
-			if(first_call_wodc){			
-				fp = fopen("out/lee_wodc.txt", "w");
-				first_call_wodc = 0;
-			}
-			else
-				fp = fopen("out/lee_wodc.txt", "a");
+		else
+			fp = fopen("out/lee_wdc.txt", "a");			
+		if(fp == NULL){
+			printf("***Unable to open file\n");
+			MESSAGE_LEVEL = NONE;
 		}
+	}
+	if(MESSAGE_LEVEL >= IMP)
+		printTaskInfo(fp);
+	for(task_no = 0; task_no < NUM_TASKS && sched; task_no++){				
+		if(MESSAGE_LEVEL > NONE)
+			fprintf(fp, "\tT%d\t\n", task_no);
+		wcrt(task_no, Response, fp, PC_LEE);
+		if(Response[task_no] > D[task_no])
+			sched = false;					
+		if(MESSAGE_LEVEL >= IMP)
+			fprintf(fp, "[T%d(C=%g,T=%ld,D=%ld) is %s]\n\n", task_no, C[task_no], T[task_no], D[task_no], sched ? "SCEDLABLE":"NOT SCEDLABLE");
+	}
+	if(sched)
+		Num_Executed_Tasks[LEE_WDC]++;		
+	if(MESSAGE_LEVEL > NONE && fp != NULL)
+		fclose(fp);
+	return sched ? 1 : 0;
+}
 
+int ResponseTimeLeeWodc(){
+
+	int task_no;
+	bool sched = true;	
+	double Response[NUM_TASKS] = {0};
+	static int first_call = 1;
+	FILE *fp = NULL;
+
+	WDC = 0;
+	if(MESSAGE_LEVEL > NONE){
+		if(first_call){			
+			fp = fopen("out/lee_wodc.txt", "w");
+			first_call= 0;
+		}
+		else
+			fp = fopen("out/lee_wodc.txt", "a");
 		if(fp == NULL){
 			printf("***Unable to open file\n");
 			MESSAGE_LEVEL = NONE;
@@ -431,29 +411,20 @@ int Response_time_lee_wdc(int WDC){
 	if(MESSAGE_LEVEL >= IMP)
 		printTaskInfo(fp);
 
-	for(task_no = 0; task_no < NUM_TASKS && sched; task_no++){		
-		
+	for(task_no = 0; task_no < NUM_TASKS && sched; task_no++){				
 		if(MESSAGE_LEVEL > NONE)
 			fprintf(fp, "\tT%d\t\n", task_no);
-
-		wcrt(task_no, Response, WDC, fp);
-
+		wcrt(task_no, Response, fp, PC_LEE);
 		if(Response[task_no] > D[task_no])
-			sched = false;	
-				
-		if(MESSAGE_LEVEL >= IMP){
+			sched = false;				
+		if(MESSAGE_LEVEL >= IMP)
 			fprintf(fp, "[T%d(C=%g,T=%ld,D=%ld) is %s]\n\n", task_no, C[task_no], T[task_no], D[task_no], sched ? "SCEDLABLE":"NOT SCEDLABLE");
-		}
 			
 	}
 	if(sched)
-		if(WDC)
-			Num_Executed_Tasks[LEE_WDC]++;
-		else 
-			Num_Executed_Tasks[LEE_WODC]++;
+		Num_Executed_Tasks[LEE_WODC]++;
 	if(MESSAGE_LEVEL > NONE && fp != NULL)
 		fclose(fp);
-
 	return sched ? 1 : 0;
 }
 
