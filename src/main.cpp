@@ -8,7 +8,7 @@
 #include"global.h"
 #include"lee.cpp"
 #include"kd.cpp"
-//#include"kd2.cpp"
+#include"kd2.cpp"
 #include"uniformDistribution.cpp"
 #include"kd3.cpp"
 //#include"uniform_fixed_tasks_ecb_ucb_schemes.cpp"
@@ -35,7 +35,7 @@ void init(){
 	methodsMap[STASCHULAT_PRE] = (struct map){"STASCHULAT_PRE", NULL};
 	methodsMap[PRE_MAX] = (struct map){"PRE_MAX", NULL};
 	methodsMap[PRE_MAX_KD] = (struct map){"PRE_MAX_KD", ResponseTimePreMaxKd};
-	methodsMap[PRE_MAX_KD2] = (struct map){"PRE_MAX_KD2", NULL};
+	methodsMap[PRE_MAX_KD2] = (struct map){"PRE_MAX_KD2", ResponseTimePreMaxKd2};
 	methodsMap[PRE_MAX_KD3] = (struct map){"PRE_MAX_KD3", ResponseTimePreMaxKd3};
 	methodsMap[LEE_WODC] = (struct map){"LEE_WODC", ResponseTimeLeeWodc};
 	methodsMap[LEE_WDC] = (struct map){"LEE_WDC", ResponseTimeLeeWdc};

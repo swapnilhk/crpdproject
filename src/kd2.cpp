@@ -3,9 +3,11 @@
 #include<stdio.h>
 #include<math.h>
 #include"../lib/lp_solve_ux64/lp_lib.h"
-#include"common.h"
+#include"global.h"
+#include"tda.h"
+#include"nnp.h"
 
-double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], FILE *fp)
+double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], int nnp_max[NUM_TASKS][NUM_TASKS], int nnp_min[NUM_TASKS][NUM_TASKS], FILE *fp)
 {
 	lprec *lp;
 	int numVar = 0, *var = NULL, ret = 0, i, j, k, var_count;
@@ -134,7 +136,7 @@ double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], FILE *fp)
 			for(j = i+1 ; j<= this_task; j++){
 				sprintf(col_name,"%dNNP%d_%d",this_task, i, j);
 				var[var_count] = get_nameindex(lp, col_name, FALSE);
-				coeff[var_count] = get_f(this_task, i, j, Response);
+				coeff[var_count] = costEcbUnion(i, j, Response) * ceil(Response[this_task] / T[j]);
 				var_count++;
 			}
 		}
@@ -186,32 +188,17 @@ double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], FILE *fp)
 // Returns preemption cost for task 'this_task'
 double PC_PRE_MAX_KD2(int this_task, double Response[], FILE *fp){
 	int hp_task;
+	int nnpMax[NUM_TASKS][NUM_TASKS];
+	int nnpMin[NUM_TASKS][NUM_TASKS];	
 	if (this_task >= 1){
-		for(hp_task = this_task-1; hp_task >= 0; hp_task--){
-			nnp_max[hp_task][this_task] = calc_nnp_max(hp_task, this_task, Response);
-			nnp_min[hp_task][this_task] = calc_nnp_min(hp_task, this_task, Response);
-		}
+		getNnp(this_task, Response, nnpMax, nnpMin);
 		// Define constraints
-		return solve_constraints_PRE_MAX_KD2(this_task, Response, fp);
+		return solve_constraints_PRE_MAX_KD2(this_task, Response, nnpMax, nnpMin, fp);
 	}
 	else return 0;
 }
 
-double wcrt_PRE_MAX_KD2(int this_task, double Response[], FILE *fp){
-	double R_new;
-	R_new = C[this_task];
-	Response[this_task] = 0;
-	while(R_new != Response[this_task] && (Response[this_task] = R_new) <= D[this_task]){
-		R_new = C[this_task] 
-			+ sigma_tda_PRE_MAX_KD(this_task, Response) 
-			+ PC_PRE_MAX_KD2(this_task, Response, fp);// Time demand equation
-		if(MESSAGE_LEVEL >= IMP)
-			fprintf(fp, "T%d(D=%ld) Response time: Old = %g, New = %g\n\n", this_task, D[this_task], Response[this_task], R_new);
-	}
-	return R_new;
-}
-
-int Response_time_PRE_MAX_KD2(){
+int ResponseTimePreMaxKd2(){
 	int task_no;
 	bool sched = true;
 	FILE *fp;
@@ -234,7 +221,7 @@ int Response_time_PRE_MAX_KD2(){
 	for(task_no = 0; task_no < NUM_TASKS && sched; task_no++){
 		if(MESSAGE_LEVEL > NONE)
 			fprintf(fp, "\tT%d\t\n", task_no);
-		wcrt_PRE_MAX_KD2(task_no, Response, fp);		
+		wcrt(task_no, Response, fp, PC_PRE_MAX_KD2);		
 		if(Response[task_no] > D[task_no])
 			sched = false;		
 		if(MESSAGE_LEVEL >= IMP)
