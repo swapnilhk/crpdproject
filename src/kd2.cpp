@@ -5,112 +5,6 @@
 #include"../lib/lp_solve_ux64/lp_lib.h"
 #include"common.h"
 
-/*int nnp_max[NUM_TASKS][NUM_TASKS];
-int nnp_min[NUM_TASKS][NUM_TASKS];*/
-
-/*
- * Returns minimum of three numbers
- * */
-/*double min3(double a, double b, double c){
-	return a < b ? (a < c ? a : c) : (b < c ? b : c);
-}
-
-double inv_max(int hp_task, int lp_task, double Response[]){
-	return ceil(Response[lp_task] / T[hp_task]);
-}
-
-double inv_min(int hp_task, int lp_task, double Response[]){
-	return floor(Response[lp_task] / T[hp_task]);
-}
-
-double calc_nnp_max(int hp_task, int lp_task, double Response[]){
-	int i;
-	double ret_val = inv_max(hp_task, lp_task, Response);
-	for(i = hp_task + 1;i < lp_task; i++)
-		ret_val -= nnp_min[hp_task][i] * inv_min(i, lp_task, Response);
-	return ret_val > 0 ? ret_val : 0;
-}
-
-double calc_nnp_min(int hp_task, int lp_task, double Response[]){
-	int i;
-	double ret_val = inv_min(hp_task, lp_task, Response);
-	for(i = hp_task + 1;i < lp_task; i++)
-		ret_val -= nnp_max[hp_task][i] * inv_max(i, lp_task, Response);
-	return ret_val > 0 ? ret_val : 0;
-}
-*/
-/*
-
- * Function to find set of blocks of this_task that are affected by the execution of hp_task.
- * Method used is ucb union
- * TODO: Change method to combined method
-*/
-/*void f(int this_task, int hp_task, std::set<int> & ret_set){
-	int num_blocks = 0, aff;
-	extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
-
-	std::set<int> workingSet1, workingSet2;
-	workingSet1.clear();
-	workingSet2.clear();
-
-	for(aff = this_task; aff > hp_task; aff--){
-		Set_Union(workingSet1, TASK_UCB[aff], workingSet1);
-	}
-	
-	Set_Intersect(workingSet1, TASK_ECB[hp_task], ret_set);
-
-}*/
-
-/*
- * Procedure to get cost function:
- * 1. if ip_task != lp_task then cost = f(this,task, hp_task) UNION f(this,task, ip_task)
- *    if ip_task == lp_task then cost = f(this,task, hp_task)
-*/
-/*double get_f(int this_task, int hp_task, int ip_task){
-	std::set<int> workingSet1, workingSet2, workingSet3;
-
-	workingSet1.clear();
-	workingSet2.clear();
-	workingSet3.clear();
-
-	if(ip_task != this_task){
-		f(this_task, hp_task, workingSet1);
-		f(this_task, ip_task, workingSet2);
-		Set_Union(workingSet1, workingSet2, workingSet3);
-		return BRT * SET_MOD(workingSet3);
-	}
-	else{
-		f(this_task, hp_task, workingSet1);
-		return BRT * SET_MOD(workingSet1);
-	}
-}*/
-
-
-
-
-
-/*double get_f(int this_task, int hp_task, int lp_task, double Response[])
-{
-	std::set<int> workingSet1, workingSet2, workingSet3;
-	extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
-	int i;
-	
-	workingSet1.clear();
-	workingSet2.clear();
-
-	for(i = 0; i <= hp_task; i++){
-		Set_Union(workingSet1, TASK_ECB[i], workingSet1);
-	}
-
-	Set_Intersect(workingSet1, TASK_UCB[lp_task], workingSet2);
-
-	return BRT * ceil(Response[this_task]/T[lp_task]) * SET_MOD(workingSet2);
-}*/
-
-
-
-
-
 double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], FILE *fp)
 {
 	lprec *lp;
@@ -289,9 +183,6 @@ double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], FILE *fp)
 	return ret == 0 ? obj : INFINITY;
 }
 
-
-
-
 // Returns preemption cost for task 'this_task'
 double PC_PRE_MAX_KD2(int this_task, double Response[], FILE *fp){
 	int hp_task;
@@ -305,22 +196,6 @@ double PC_PRE_MAX_KD2(int this_task, double Response[], FILE *fp){
 	}
 	else return 0;
 }
-
-
-
-
-/*double sigma_tda_PRE_MAX_KD(int this_task, double Response[]){
-	double R_new = 0;
-	int hp_task = this_task - 1;
-	while(hp_task >= 0){
-		R_new += ceil(Response[this_task]/T[hp_task]) * C[hp_task];
-		hp_task = hp_task - 1;
-	}
-	return R_new;
-}*/
-
-
-
 
 double wcrt_PRE_MAX_KD2(int this_task, double Response[], FILE *fp){
 	double R_new;
@@ -336,9 +211,6 @@ double wcrt_PRE_MAX_KD2(int this_task, double Response[], FILE *fp){
 	return R_new;
 }
 
-
-
-
 int Response_time_PRE_MAX_KD2(){
 	int task_no;
 	bool sched = true;
@@ -347,44 +219,30 @@ int Response_time_PRE_MAX_KD2(){
 	static int first_call = 1;
 
 	if(MESSAGE_LEVEL > NONE){
-
 		if(first_call){			
 			fp = fopen("out/kd2.txt", "w");
 			first_call = 0;
 		}
-		else
-			fp = fopen("out/kd2.txt", "a");
-
+		else fp = fopen("out/kd2.txt", "a");
 		if(fp == NULL){
 			printf("***Unable to open file\n");
 			MESSAGE_LEVEL = NONE;
 		}		
 	}
-
 	if(MESSAGE_LEVEL >= IMP)
 		printTaskInfo(fp);
-
-
-	for(task_no = 0; task_no < NUM_TASKS && sched; task_no++)
-	{
+	for(task_no = 0; task_no < NUM_TASKS && sched; task_no++){
 		if(MESSAGE_LEVEL > NONE)
 			fprintf(fp, "\tT%d\t\n", task_no);
-
-		wcrt_PRE_MAX_KD2(task_no, Response, fp);
-		
+		wcrt_PRE_MAX_KD2(task_no, Response, fp);		
 		if(Response[task_no] > D[task_no])
-			sched = false;
-		
-		if(MESSAGE_LEVEL >= IMP){
+			sched = false;		
+		if(MESSAGE_LEVEL >= IMP)
 			fprintf(fp, "[T%d(C=%g,T=%ld,D=%ld) is %s]\n\n", task_no, C[task_no], T[task_no], D[task_no], sched ? "SCEDLABLE":"NOT SCEDLABLE");
-		}
-
 	}
 	if(sched)
 		Num_Executed_Tasks[PRE_MAX_KD2]++;
-
 	if(MESSAGE_LEVEL > NONE && fp != NULL)
 		fclose(fp);
-
 	return sched ? 1 : 0;
 }
