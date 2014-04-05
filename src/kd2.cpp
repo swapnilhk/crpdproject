@@ -188,8 +188,8 @@ double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], int nnp_m
 // Returns preemption cost for task 'this_task'
 double PC_PRE_MAX_KD2(int this_task, double Response[], FILE *fp){
 	int hp_task;
-	int nnpMax[NUM_TASKS][NUM_TASKS];
-	int nnpMin[NUM_TASKS][NUM_TASKS];	
+	static int nnpMax[NUM_TASKS][NUM_TASKS];
+	static int nnpMin[NUM_TASKS][NUM_TASKS];	
 	if (this_task >= 1){
 		getNnp(this_task, Response, nnpMax, nnpMin);
 		// Define constraints
