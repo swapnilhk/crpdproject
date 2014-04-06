@@ -136,7 +136,7 @@ double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], int nnp_m
 			for(j = i+1 ; j<= this_task; j++){
 				sprintf(col_name,"%dNNP%d_%d",this_task, i, j);
 				var[var_count] = get_nameindex(lp, col_name, FALSE);
-				coeff[var_count] = costEcbUnion(i, j, Response) * ceil(Response[this_task] / T[j]);
+				coeff[var_count] = costEcbUnion(i, j, Response);
 				var_count++;
 			}
 		}
