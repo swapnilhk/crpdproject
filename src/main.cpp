@@ -146,8 +146,9 @@ int main() {
 	if(fp == NULL){
 		printf("***Unable to open file\n");
 		exit(0);
-	}	
+	}
 	if(MESSAGE_LEVEL >= IMP) printBaseConfig(fp);
+	printBaseConfig(fp);
 	uniformDistributionBenchmark(fp);
 	fclose(fp);
 }
