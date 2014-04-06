@@ -1,0 +1,14 @@
+
+Base Config
+CACHE SIZE = 256
+BRT = 0.008
+BRT = 0.8
+NUM_TASKS = 4
+
+Uniform Distribution Benchmark
+Util	Method                          	No. of Sched tasks
+0.5 	PRE_MAX_KD                      	10
+	PRE_MAX_KD2                     	10
+	PRE_MAX_KD3                     	10
+	LEE_WODC                        	10
+	LEE_WDC                         	10
