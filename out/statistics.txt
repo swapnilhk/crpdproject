@@ -3,12 +3,130 @@ Base Config
 CACHE SIZE = 256
 BRT = 0.008
 BRT = 0.8
-NUM_TASKS = 4
+NUM_TASKS = 10
 
 Uniform Distribution Benchmark
 Util	Method                          	No. of Sched tasks
-0.5 	PRE_MAX_KD                      	10
-	PRE_MAX_KD2                     	10
-	PRE_MAX_KD3                     	10
-	LEE_WODC                        	10
-	LEE_WDC                         	10
+0.05	PRE_MAX_KD                      	500
+	PRE_MAX_KD2                     	500
+	PRE_MAX_KD3                     	500
+	LEE_WODC                        	500
+	LEE_WDC                         	500
+
+0.1 	PRE_MAX_KD                      	500
+	PRE_MAX_KD2                     	500
+	PRE_MAX_KD3                     	500
+	LEE_WODC                        	500
+	LEE_WDC                         	500
+
+0.15	PRE_MAX_KD                      	500
+	PRE_MAX_KD2                     	500
+	PRE_MAX_KD3                     	500
+	LEE_WODC                        	500
+	LEE_WDC                         	500
+
+0.2 	PRE_MAX_KD                      	500
+	PRE_MAX_KD2                     	500
+	PRE_MAX_KD3                     	500
+	LEE_WODC                        	500
+	LEE_WDC                         	500
+
+0.25	PRE_MAX_KD                      	500
+	PRE_MAX_KD2                     	500
+	PRE_MAX_KD3                     	500
+	LEE_WODC                        	500
+	LEE_WDC                         	500
+
+0.3 	PRE_MAX_KD                      	500
+	PRE_MAX_KD2                     	500
+	PRE_MAX_KD3                     	500
+	LEE_WODC                        	500
+	LEE_WDC                         	500
+
+0.35	PRE_MAX_KD                      	500
+	PRE_MAX_KD2                     	500
+	PRE_MAX_KD3                     	500
+	LEE_WODC                        	500
+	LEE_WDC                         	500
+
+0.4 	PRE_MAX_KD                      	500
+	PRE_MAX_KD2                     	500
+	PRE_MAX_KD3                     	500
+	LEE_WODC                        	500
+	LEE_WDC                         	500
+
+0.45	PRE_MAX_KD                      	500
+	PRE_MAX_KD2                     	500
+	PRE_MAX_KD3                     	500
+	LEE_WODC                        	500
+	LEE_WDC                         	500
+
+0.5 	PRE_MAX_KD                      	500
+	PRE_MAX_KD2                     	500
+	PRE_MAX_KD3                     	500
+	LEE_WODC                        	500
+	LEE_WDC                         	500
+
+0.55	PRE_MAX_KD                      	500
+	PRE_MAX_KD2                     	500
+	PRE_MAX_KD3                     	500
+	LEE_WODC                        	500
+	LEE_WDC                         	500
+
+0.6 	PRE_MAX_KD                      	500
+	PRE_MAX_KD2                     	500
+	PRE_MAX_KD3                     	500
+	LEE_WODC                        	500
+	LEE_WDC                         	500
+
+0.65	PRE_MAX_KD                      	500
+	PRE_MAX_KD2                     	500
+	PRE_MAX_KD3                     	496
+	LEE_WODC                        	500
+	LEE_WDC                         	500
+
+0.7 	PRE_MAX_KD                      	500
+	PRE_MAX_KD2                     	500
+	PRE_MAX_KD3                     	490
+	LEE_WODC                        	500
+	LEE_WDC                         	500
+
+0.75	PRE_MAX_KD                      	499
+	PRE_MAX_KD2                     	499
+	PRE_MAX_KD3                     	473
+	LEE_WODC                        	489
+	LEE_WDC                         	499
+
+0.8 	PRE_MAX_KD                      	377
+	PRE_MAX_KD2                     	377
+	PRE_MAX_KD3                     	342
+	LEE_WODC                        	334
+	LEE_WDC                         	382
+
+0.85	PRE_MAX_KD                      	93
+	PRE_MAX_KD2                     	93
+	PRE_MAX_KD3                     	86
+	LEE_WODC                        	52
+	LEE_WDC                         	98
+
+0.9 	PRE_MAX_KD                      	5
+	PRE_MAX_KD2                     	5
+	PRE_MAX_KD3                     	9
+	LEE_WODC                        	0
+	LEE_WDC                         	5
+
+0.95	PRE_MAX_KD                      	0
+	PRE_MAX_KD2                     	0
+	PRE_MAX_KD3                     	0
+	LEE_WODC                        	0
+	LEE_WDC                         	0
+PRE_MAX_KD and PRE_MAX_KD2 are equal
+PRE_MAX_KD and PRE_MAX_KD3 are not comparable
+PRE_MAX_KD and LEE_WODC are not comparable
+PRE_MAX_KD and LEE_WDC are not comparable
+PRE_MAX_KD2 and PRE_MAX_KD3 are not comparable
+PRE_MAX_KD2 and LEE_WODC are not comparable
+PRE_MAX_KD2 and LEE_WDC are not comparable
+PRE_MAX_KD3 and LEE_WODC are not comparable
+PRE_MAX_KD3 and LEE_WDC are not comparable
+LEE_WODC is dominated by LEE_WDC
