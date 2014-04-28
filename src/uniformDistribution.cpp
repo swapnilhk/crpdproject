@@ -1,15 +1,34 @@
-#include"global.h"
 #include<time.h>
 
 static int SIZE_ECB_TASK[NUM_TASKS];
 static int SIZE_UCB_TASK[NUM_TASKS];
 static int ECB_TASK_ARRAY[NUM_TASKS][CACHE_SIZE];
 
-void Read_ECBs(void)
-{
+void print_ecbs(FILE *fp){
+	int i;
+	fprintf(fp, "\nECB Sets\n");	
+	for(i = 0; i < NUM_TASKS; i++){
+		fprintf(fp, "ECB Set %d : \n", i);
+		print_SET(TASK_ECB[i], fp);
+		fprintf(fp, "\n");
+	}
+	fflush(fp);
+}
+
+void print_ucbs(FILE *fp){
+	int i;
+	fprintf(fp, "\nUCB Sets\n");	
+	for(i = 0; i < NUM_TASKS; i++){
+		fprintf(fp, "UCB Set %d : \n", i);
+		print_SET(TASK_UCB[i], fp);
+		fprintf(fp, "\n");
+	}	
+	fflush(fp);
+}
+
+void Read_ECBs(void){
 	int i, j;
 	std::set<int>::iterator it;
-
 	for(j=0; j < NUM_TASKS; j++){
 		int count = SIZE_ECB_TASK[j];
 		int newPos = 0;
@@ -25,15 +44,11 @@ void Read_ECBs(void)
 	}
 }
 
-void Read_UCBs(void)
-{
+void Read_UCBs(void){
 	int j;
 	std::set<int>::iterator it;
-
-	for(j=0; j < NUM_TASKS; j++)
-	{
+	for(j=0; j < NUM_TASKS; j++){
 		int newUCBlock, newPos, count, numBlocks, numUCBs;
-
 		count = 0;
 		if (SIZE_ECB_TASK[j] <= CACHE_SIZE)
 			numBlocks = SIZE_ECB_TASK[j];
@@ -55,37 +70,30 @@ void Read_UCBs(void)
 	}
 }
 
-void UUniSort(float A[], int n, float sumUtil)
-{
+void UUniSort(float A[], int n, float sumUtil){
 	int i, j; float random_val; float temp;
-
 	srand((unsigned)time(NULL));
 	A[0] = 0.0;
 	for (i=1; i < n; i++){
 		random_val = ((double) rand() / (RAND_MAX));
 		A[i] = sumUtil * random_val;
 	}
-	for (i = 0; i < n-1; i++){
-		for (j=0; j < n-i-1; j++){
+	for (i = 0; i < n-1; i++)
+		for (j=0; j < n-i-1; j++)
 			if (A[j] > A[j+1]){
 				temp = A[j];
 				A[j] = A[j+1];
 				A[j+1] = temp;
 			}
-		}
-	}
-	for (i = 1; i < n ; i++){
+	for (i = 1; i < n ; i++)
 		A[i-1] = A[i] - A[i-1];
-	}
 	A[n-1] = sumUtil - A[n-1];
 }
 
 // 5 - 500 => 1 - 100 => 0 => log (100)
-void LogUniformPeriods(float A[], int n, int minP, int maxP)
-{
+void LogUniformPeriods(float A[], int n, int minP, int maxP){
 	int i, j; float temp;
 	float logScaleFactor;
-
 	logScaleFactor = log(maxP/minP);
 	srand((unsigned)time(NULL));
 	for(i=0; i < n; i++){
@@ -99,23 +107,19 @@ void LogUniformPeriods(float A[], int n, int minP, int maxP)
 		A[i] = A[i] * minP;
 	}
 	// Sort the periods
-	for (i = 0; i < n-1; i++){
-		for (j=0; j < n-i-1; j++){
+	for (i = 0; i < n-1; i++)
+		for (j=0; j < n-i-1; j++)
 			if (A[j] > A[j+1]){
 				temp = A[j];
 				A[j] = A[j+1];
 				A[j+1] = temp;
 			}
-		}
-	}
 }
 
-void UUniFast(float A[], int n, float sumUtil)
-{
+void UUniFast(float A[], int n, float sumUtil){
 	int i;
 	float nextSumUtil;
-	float random_val;	
-
+	float random_val;
 	srand((unsigned)time(NULL));
 	for (i=1; i < n; i++){
 		random_val = ((double) rand() / (RAND_MAX));
@@ -124,14 +128,11 @@ void UUniFast(float A[], int n, float sumUtil)
 		sumUtil = nextSumUtil;
 	}
 	A[i-1] = sumUtil;
-
 }
 
-void createTaskSetUniformDistribution(float totalUtil, int minPeriod, int maxPeriod)
-{
+void createTaskSetUniformDistribution(float totalUtil, int minPeriod, int maxPeriod){
 	int i;
-	float utilsArray[NUM_TASKS], periodsArray[NUM_TASKS];
-	
+	float utilsArray[NUM_TASKS], periodsArray[NUM_TASKS];	
 	UUniFast(utilsArray, NUM_TASKS, totalUtil);
 	LogUniformPeriods(periodsArray, NUM_TASKS, minPeriod, maxPeriod);
 	for(i=0; i < NUM_TASKS; i++){
@@ -141,10 +142,8 @@ void createTaskSetUniformDistribution(float totalUtil, int minPeriod, int maxPer
 	}
 }
 
-void Set_SizeUCBs_Uniform()
-{
+void Set_SizeUCBs_Uniform(){
 	int i;
-	
 	srand((unsigned)time(NULL));
 	for(i=0; i < NUM_TASKS; i++){
 		SIZE_UCB_TASK[i] = (int) ( RF * SIZE_ECB_TASK[i] * ( (double) rand()/ RAND_MAX )) ;
@@ -152,11 +151,9 @@ void Set_SizeUCBs_Uniform()
 	}
 }
 
-void Set_SizeECBs_UUniFast()
-{
+void Set_SizeECBs_UUniFast(){
 	int i;
-	float values_uunifast[NUM_TASKS];
-	
+	float values_uunifast[NUM_TASKS];	
 	UUniSort(values_uunifast, NUM_TASKS, 1.0);
 	for(i=0; i < NUM_TASKS; i++){
 		SIZE_ECB_TASK[i] = (int) (values_uunifast[i] * Total_ECBs_CU * CACHE_SIZE);

@@ -1,5 +1,5 @@
-#ifndef HEADER_TDA
-#define HEADER_TDA
+#include<math.h>
+#include"global.h"
 
 double sigmaTda(int thisTask, double Response[]){
 	double RNew = 0;
@@ -24,5 +24,3 @@ double wcrt(int thisTask, double Response[], FILE *fp, double (*PC)(int, double[
 	}
 	return RNew;
 }
-
-#endif

@@ -3,21 +3,12 @@
 #include<stdlib.h>
 #include<time.h>
 #include<math.h>
-#include"baseConfig.h"
-#include"set_operations.cpp"
 #include"global.h"
-#include"lee.cpp"
-#include"kd.cpp"
-#include"kd2.cpp"
-#include"uniformDistribution.cpp"
-//#include"kd3.cpp"
-//#include"uniform_fixed_tasks_ecb_ucb_schemes.cpp"
 
 struct map{
 	char * methodName;
 	int (*func)();
 }methodsMap[NUM_METHODS];
-
 
 void init(){
 	methodsMap[NO_PREEMPT] = (struct map){"NO_PREEMPT", NULL};
@@ -35,7 +26,7 @@ void init(){
 	methodsMap[STASCHULAT_PRE] = (struct map){"STASCHULAT_PRE", NULL};
 	methodsMap[PRE_MAX] = (struct map){"PRE_MAX", NULL};
 	methodsMap[PRE_MAX_KD] = (struct map){"PRE_MAX_KD", NULL/*ResponseTimePreMaxKd*/};
-	methodsMap[PRE_MAX_KD2] = (struct map){"PRE_MAX_KD2", /*NULL*/ResponseTimePreMaxKd2};
+	methodsMap[PRE_MAX_KD2] = (struct map){"PRE_MAX_KD2", /*NULLResponseTimePreMaxKd2*/};
 	methodsMap[PRE_MAX_KD3] = (struct map){"PRE_MAX_KD3", NULL/*ResponseTimePreMaxKd3*/};
 	methodsMap[PRE_MAX_KD4] = (struct map){"PRE_MAX_KD4", NULL/*ResponseTimePreMaxKd4*/};
 	methodsMap[LEE_WODC] = (struct map){"LEE_WODC", NULL/*ResponseTimeLeeWodc*/};
@@ -50,6 +41,15 @@ void clearTaskExecutionStatistics(){
           Num_Executed_Tasks[i] = 0;
 }
 
+void printBaseConfig(FILE *fp){
+	fprintf(fp, "\nBase Config\n");	
+	fprintf(fp, "CACHE SIZE = %d\n", CACHE_SIZE);
+	fprintf(fp, "BRT = %g\n", BRT);
+	fprintf(fp, "RF = %g\n", RF);
+	fprintf(fp, "NUM_TASKS = %d\n\n", NUM_TASKS);
+	fflush(fp);
+}
+
 void printTaskExecutionStatistics(FILE *fp){
 	int i;
 	static int heading = 0;
@@ -58,32 +58,30 @@ void printTaskExecutionStatistics(FILE *fp){
 	     	fprintf(fp, "%-4s\t%-32s\t%s\n", "Util", "Method", "No. of Sched tasks");
 	     	heading = 1;
      	}
-	else fprintf(fp, "\n");
-    	fprintf(fp, "%-4.2g", util);
-     	for(int methodIndex = NO_PREEMPT; methodIndex < NUM_METHODS; methodIndex++){
-	     	if(methodsMap[methodIndex].func != NULL){
+	else 
+		fprintf(fp, "\n");
+   	fprintf(fp, "%-4.2g", util);
+   	for(int methodIndex = NO_PREEMPT; methodIndex < NUM_METHODS; methodIndex++)
+     	if(methodsMap[methodIndex].func != NULL){
 			char str[50] = "\0";
 			sprintf(str, "\t%-32s\t%d\n", methodsMap[methodIndex].methodName , Num_Executed_Tasks[methodIndex]);           	
 			fprintf(fp, "%s", str);
 			if(VERBOSE)
 				printf("%s", str);
 		}
-     	}
 	fflush(fp);
 }
 
 int CALL_METHODS(){
 	int WDC, sched;
 	int sched_vector = 0;
-
-	for(int methodIndex = 0; methodIndex < NUM_METHODS; methodIndex++){
+	for(int methodIndex = 0; methodIndex < NUM_METHODS; methodIndex++)
 		if(methodsMap[methodIndex].func != NULL){
 			if(VERBOSE)
 				printf("\t%s\n", methodsMap[methodIndex].methodName);		
 			sched = (methodsMap[methodIndex].func)();
 			sched_vector |= sched << methodIndex;
 		}
-	}
 	return sched_vector;
 }
 
@@ -94,9 +92,9 @@ void updateDominationMatrix(int schedVector, int dom[]){
 }
 
 void printDominationInfo(int dom[], FILE *fp){
-	for(int method1 = 0; method1 < NUM_METHODS - 1; method1++){
-		if(methodsMap[method1].func != NULL){
-			for(int method2 = method1 + 1; method2 < NUM_METHODS; method2++){
+	for(int method1 = 0; method1 < NUM_METHODS - 1; method1++)
+		if(methodsMap[method1].func != NULL)
+			for(int method2 = method1 + 1; method2 < NUM_METHODS; method2++)
 				if(methodsMap[method2].func != NULL){
 					//Checking if method1 dominates method2
 					if((dom[method1] >> method2 & 1) && !(dom[method2] >> method1 & 1))
@@ -110,18 +108,15 @@ void printDominationInfo(int dom[], FILE *fp){
 					//If all above conditions fail, method1 and method2 are not comparable
 					else fprintf(fp, "%s and %s are not comparable\n", methodsMap[method1].methodName, methodsMap[method2].methodName);
 				}
-			}		
-		}
-	}
 }
 
-void uniformDistributionBenchmark(FILE *fp)
-{
+void uniformDistributionBenchmark(FILE *fp){
 	int dom[NUM_METHODS] = {0};
 	fprintf(fp, "Uniform Distribution Benchmark\n");
 	initUniformDistributionBenchmark(fp);
 	for(util = UTIL_START; util <= UTIL_END; util += UTIL_INCREMENT){
-		if(VERBOSE) printf("The total util is %f\n", util);
+		if(VERBOSE)
+			printf("The total util is %f\n", util);
 		clearTaskExecutionStatistics();		
 		for(int taskSetNo = 1; taskSetNo <= NUM_TASK_SETS; taskSetNo++){
 			int schedVector;//vector of bits with each bit corresponding to each method
@@ -140,8 +135,14 @@ void uniformDistributionBenchmark(FILE *fp)
 	printDominationInfo(dom, fp);
 }
 
-int main() {
+int main(int argc, char * argv[]) {
 	FILE *fp = NULL;
+	for(int i = 1; i <= argc; i++){
+		if(strcmp(argv[i], "-v") || strcmp(argv[i], "-V"))
+			VERBOSE = 1;
+		else
+			VERBOSE = 0;
+	}	
 	init();
 	fp = fopen("out/statistics.txt", "w");
 	if(fp == NULL){
