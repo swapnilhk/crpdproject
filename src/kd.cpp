@@ -43,7 +43,6 @@ static void getNnp(int this_task, double Response[], int nnp_max[NUM_TASKS][NUM_
 
 static double costEcbUnion(int hpTask, int lpTask, double Response[]){
 	std::set<int> workingSet1, workingSet2, workingSet3;
-	//extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 	int i;	
 	workingSet1.clear();
 	workingSet2.clear();

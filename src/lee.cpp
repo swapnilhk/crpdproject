@@ -18,21 +18,15 @@ static int WDC;
  */
 static double varNoToCost(const int this_task, const int var_no){
 	int i, lp_task = 1, offset = 0, hp_task;
-	//extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
-
 	for(i = 1; i < var_no; i += pow(2,lp_task+1)-1, lp_task++)
 		offset = i;
-
 	std::set<int> workingSet1, workingSet2;
 	workingSet1.clear();
 	workingSet2.clear();
-
-	for(hp_task = 0; hp_task < this_task; hp_task++)
-	{
+	for(hp_task = 0; hp_task < this_task; hp_task++){
 		int jump = pow(2, hp_task);
-		if(((var_no - offset) / jump) % 2 == 1){
+		if(((var_no - offset) / jump) % 2 == 1)
 			Set_Union(workingSet1, TASK_ECB[hp_task], workingSet1);
-		}
 	}
 	Set_Intersect(workingSet1, TASK_UCB[this_task], workingSet2);
 	return BRT * SET_MOD(workingSet2);
@@ -74,14 +68,12 @@ static void var_no_to_name(const int this_task, const int var_no, char * var_nam
 	// Append opening brackets '({' to var_name
 	strcat(var_name,"({");	
 	// Genereting hp task set
-	for(hp_task = 0; hp_task < this_task; hp_task++)
-	{
+	for(hp_task = 0; hp_task < this_task; hp_task++){
 		int jump = pow(2, hp_task);
 		if(((var_no - offset) / jump) % 2 == 1){
 			char temp[10];
-			if(var_name[strlen(var_name)-1] != '{'){
-				strcat(var_name, ",");
-			}
+			if(var_name[strlen(var_name)-1] != '{')
+				strcat(var_name, ",");			
 			sprintf(temp, "T%d", hp_task);
 			strcat(var_name, temp);
 		}
@@ -124,7 +116,7 @@ static double solve_constraints_lee(int this_task, double *Response, FILE *fp)
 	int numVar = 0, *var = NULL, ret = 0, i, j, k, var_count, H, var_no;
 	double *coeff = NULL, r, obj;
 	char col_name[7+3*this_task]; /*con_name contains variable name. eg 8g8({T0,T1,T2,T3,T4,T5,T6,T7}).
-					Max size a variable name can occupy depends upon this_task.*/
+									Max size a variable name can occupy depends upon this_task.*/
 
 	/* Creating a model */	
 	for(i = 1;i <= this_task; i++)/* Counting the no. of variables for this_task*/
@@ -223,9 +215,6 @@ static double solve_constraints_lee(int this_task, double *Response, FILE *fp)
 			}
 		}
 	}
-	
-
-
 
 	if(WDC){
 		if(ret == 0) {
@@ -300,10 +289,8 @@ static double solve_constraints_lee(int this_task, double *Response, FILE *fp)
 				    }
 				}
 			}
-
 		}
 	}
-
 
 	set_add_rowmode(lp, FALSE);
 	if(ret == 0) {	
@@ -371,14 +358,12 @@ static double solve_constraints_lee(int this_task, double *Response, FILE *fp)
 // Returns preemption cost for task 'this_task'
 static double PC_LEE(int this_task, double *Response, FILE *fp){
 	int hp_task;
-	if (this_task >= 1){
+	if (this_task >= 1)
 		return solve_constraints_lee(this_task, Response, fp);
-	}
 	else return 0;
 }
 
 int ResponseTimeLeeWdc(){
-
 	int task_no;
 	bool sched = true;	
 	double Response[NUM_TASKS] = {0};
