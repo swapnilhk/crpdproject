@@ -2,7 +2,7 @@
 #include<stdio.h>
 #include<math.h>
 #include<set>
-#include"../lib/lp_solve_ux64/lp_lib.h"
+#include"lp_lib.h"
 #include"global.h"
 #include"set_operations.h"
 
@@ -218,7 +218,7 @@ static double solve_constraints_PRE_MAX_KD(int this_task, double Response[], int
 	if(ret != 0){
 		if(MESSAGE_LEVEL >= IMP)
 			fprintf(fp, "\nLP ERROR = %d\n", ret);		
-		printf("\nLP ERROR = %d\n", ret);
+		fprintf(stderr, "\nLP ERROR = %d\n", ret);
 	}
 	/* free allocated memory */
 	if(coeff != NULL)
@@ -249,15 +249,16 @@ int ResponseTimePreMaxKd(){
 	FILE *fp;
 	double Response[NUM_TASKS];
 	static int first_call = 1;
+	char * filename = "out/kd.txt";
 
 	if(MESSAGE_LEVEL > NONE){
 		if(first_call){			
-			fp = fopen("out/kd.txt", "w");
+			fp = fopen(filename, "w");
 			first_call = 0;
 		}
-		else fp = fopen("out/kd.txt", "a");
+		else fp = fopen(filename, "a");
 		if(fp == NULL){
-			printf("***Unable to open file\n");
+			fprintf(stderr, "***Unable to open file %s\n", filename);
 			MESSAGE_LEVEL = NONE;
 		}		
 	}
@@ -444,7 +445,7 @@ static double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], in
 	if(ret != 0){
 		if(MESSAGE_LEVEL >= IMP)
 			fprintf(fp, "\nLP ERROR = %d\n", ret);		
-		printf("\nLP ERROR = %d\n", ret);
+		fprintf(stderr, "\nLP ERROR = %d\n", ret);
 	}
 	/* free allocated memory */
 	if(coeff != NULL)
@@ -476,15 +477,16 @@ int ResponseTimePreMaxKd2(){
 	FILE *fp;
 	double Response[NUM_TASKS];
 	static int first_call = 1;
+	char * filename = "out/kd2.txt";
 
 	if(MESSAGE_LEVEL > NONE){
 		if(first_call){			
-			fp = fopen("out/kd2.txt", "w");
+			fp = fopen(filename, "w");
 			first_call = 0;
 		}
-		else fp = fopen("out/kd2.txt", "a");
+		else fp = fopen(filename, "a");
 		if(fp == NULL){
-			printf("***Unable to open file\n");
+			fprintf(stderr, "***Unable to open file %s\n", filename);
 			MESSAGE_LEVEL = NONE;
 		}		
 	}

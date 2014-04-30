@@ -8,8 +8,8 @@ long T[NUM_TASKS];
 double util;
 std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 int Num_Executed_Tasks[NUM_METHODS];
-int MESSAGE_LEVEL = ALL;
-int VERBOSE = 1;
+int MESSAGE_LEVEL = NONE;
+int VERBOSE = 0;
 
 void printBaseConfig(FILE *fp){
 	fprintf(fp, "\nBase Config\n");	
@@ -47,7 +47,6 @@ void print_ecbs(FILE *fp){
 		print_SET(TASK_ECB[i], fp);
 		fprintf(fp, "\n");
 	}
-	fflush(fp);
 }
 
 void print_ucbs(FILE *fp){
@@ -57,8 +56,7 @@ void print_ucbs(FILE *fp){
 		fprintf(fp, "UCB Set %d : \n", i);
 		print_SET(TASK_UCB[i], fp);
 		fprintf(fp, "\n");
-	}	
-	fflush(fp);
+	}
 }
 
 double sigmaTda(int thisTask, double Response[]){

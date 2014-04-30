@@ -2,7 +2,7 @@
 #include<stdio.h>
 #include<math.h>
 #include<set>
-#include"../lib/lp_solve_ux64/lp_lib.h"
+#include"lp_lib.h"
 #include"global.h"
 #include"set_operations.h"
 
@@ -354,7 +354,7 @@ static double solve_constraints_lee(int this_task, double *Response, FILE *fp)
 	if(ret != 0){
 		if(MESSAGE_LEVEL >= IMP)
 			fprintf(fp, "\nLP ERROR = %d\n", ret);		
-		printf("\nLP ERROR = %d\n", ret);
+		fprintf(stderr, "\nLP ERROR = %d\n", ret);
 	}
 	
 	/* free allocated memory */
@@ -384,17 +384,18 @@ int ResponseTimeLeeWdc(){
 	double Response[NUM_TASKS] = {0};
 	static int first_call = 1;
 	FILE *fp = NULL;
+	char * filename = "out/lee_wdc.txt";
 
 	WDC = 1;
 	if(MESSAGE_LEVEL > NONE){
 		if(first_call){			
-			fp = fopen("out/lee_wdc.txt", "w");
+			fp = fopen(filename, "w");
 			first_call = 0;
 		}
 		else
-			fp = fopen("out/lee_wdc.txt", "a");			
+			fp = fopen(filename, "a");			
 		if(fp == NULL){
-			printf("***Unable to open file\n");
+			fprintf(stderr, "***Unable to open file %s\n", filename);
 			MESSAGE_LEVEL = NONE;
 		}
 	}
@@ -423,17 +424,18 @@ int ResponseTimeLeeWodc(){
 	double Response[NUM_TASKS] = {0};
 	static int first_call = 1;
 	FILE *fp = NULL;
+	char * filename = "out/lee_wodc.txt";
 
 	WDC = 0;
 	if(MESSAGE_LEVEL > NONE){
 		if(first_call){			
-			fp = fopen("out/lee_wodc.txt", "w");
+			fp = fopen(filename, "w");
 			first_call= 0;
 		}
 		else
-			fp = fopen("out/lee_wodc.txt", "a");
+			fp = fopen(filename, "a");
 		if(fp == NULL){
-			printf("***Unable to open file\n");
+			fprintf(stderr, "***Unable to open file %s\n", filename);
 			MESSAGE_LEVEL = NONE;
 		}
 	}

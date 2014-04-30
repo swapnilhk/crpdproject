@@ -28,8 +28,6 @@ void init(){
 	methodsMap[PRE_MAX] = (struct map){"PRE_MAX", NULL};
 	methodsMap[PRE_MAX_KD] = (struct map){"PRE_MAX_KD", /*NULL*/ResponseTimePreMaxKd};
 	methodsMap[PRE_MAX_KD2] = (struct map){"PRE_MAX_KD2", /*NULL*/ResponseTimePreMaxKd2};
-	methodsMap[PRE_MAX_KD3] = (struct map){"PRE_MAX_KD3", NULL/*ResponseTimePreMaxKd3*/};
-	methodsMap[PRE_MAX_KD4] = (struct map){"PRE_MAX_KD4", NULL/*ResponseTimePreMaxKd4*/};
 	methodsMap[LEE_WODC] = (struct map){"LEE_WODC", /*NULL*/ResponseTimeLeeWodc};
 	methodsMap[LEE_WDC] = (struct map){"LEE_WDC", /*NULL*/ResponseTimeLeeWdc};
 }
@@ -58,8 +56,7 @@ void printTaskExecutionStatistics(FILE *fp){
 			char str[50] = "\0";
 			sprintf(str, "\t%-32s\t%d\n", methodsMap[methodIndex].methodName , Num_Executed_Tasks[methodIndex]);           	
 			fprintf(fp, "%s", str);
-			if(VERBOSE)
-				printf("%s", str);
+			if(VERBOSE) printf("%s", str);
 		}
 	fflush(fp);
 }
@@ -69,8 +66,6 @@ int CALL_METHODS(){
 	int sched_vector = 0;
 	for(int methodIndex = 0; methodIndex < NUM_METHODS; methodIndex++)
 		if(methodsMap[methodIndex].func != NULL){
-			if(VERBOSE)
-				printf("\t%s\n", methodsMap[methodIndex].methodName);		
 			sched = (methodsMap[methodIndex].func)();
 			sched_vector |= sched << methodIndex;
 		}
@@ -107,39 +102,44 @@ void uniformDistributionBenchmark(FILE *fp){
 	fprintf(fp, "Uniform Distribution Benchmark\n");
 	initUniformDistributionBenchmark(fp);
 	for(util = UTIL_START; util <= UTIL_END; util += UTIL_INCREMENT){
-		if(VERBOSE)
-			printf("The total util is %f\n", util);
+		if(VERBOSE) printf("The total util is %f\n", util);
 		clearTaskExecutionStatistics();		
 		for(int taskSetNo = 1; taskSetNo <= NUM_TASK_SETS; taskSetNo++){
 			int schedVector;//vector of bits with each bit corresponding to each method
-			VERBOSE = 1;
-			if(NUM_TASK_SETS >= 10 && taskSetNo % (NUM_TASK_SETS/10) != 0)//To reduce the output messages on stdout to to 1/101h
-				VERBOSE = 0;
-			if(VERBOSE)
-				printf("Task set no: %d Util: %.2f\n",taskSetNo, util);
+			if(VERBOSE) printf("Task set no: %d Util: %.2f\n",taskSetNo, util);
 			createTaskSetUniformDistribution(util, MIN_PERIOD, MAX_PERIOD);
 			schedVector = CALL_METHODS();
 			updateDominationMatrix(schedVector, dom);
 		}
 		if(VERBOSE) printf("\n");
-	        printTaskExecutionStatistics(fp);
+        printTaskExecutionStatistics(fp);
 	}	
 	printDominationInfo(dom, fp);
+	if(VERBOSE)printDominationInfo(dom, stdout);
 }
 
 int main(int argc, char * argv[]) {
 	FILE *fp = NULL;
-	printf("%d",argc);
+	char * filename = "out/statistics.txt";
 	for(int i = 1; i < argc; i++){
-		if(strcmp(argv[i], "-v"))
+		if(!strcmp(argv[i], "-v"))
 			VERBOSE = 1;
-		else
-			VERBOSE = 0;
+		else if(!strcmp(argv[i], "-a"))
+			MESSAGE_LEVEL = ALL;
+		else if(!strcmp(argv[i], "-i"))
+			MESSAGE_LEVEL = IMP;
+		else if(!strcmp(argv[i], "-n"))
+			MESSAGE_LEVEL = NONE;
+		else{
+			fprintf(stderr, "***Invalid parameter %s\nUsage\n-v Verbose\n-a Message Level All\n-i Message Level Imp\n-n Message Level None\n", argv[i]);
+			exit(1);
+		}
+		
 	}
 	init();
-	fp = fopen("out/statistics.txt", "w");
+	fp = fopen(filename, "w");
 	if(fp == NULL){
-		fprintf(stderr, "***Unable to open file\n");
+		fprintf(stderr, "***Unable to open file %s\n", filename);
 		exit(1);
 	}
 	if(MESSAGE_LEVEL >= IMP) printBaseConfig(fp);

@@ -8,7 +8,7 @@
 #define CACHE_SIZE 256
 #define Total_ECBs_CU 10
 #define RF 0.8
-#define NUM_TASK_SETS 1
+#define NUM_TASK_SETS 10
 #define BRT 8e-3
 #define UTIL_START 0.70
 #define UTIL_INCREMENT 0.05
