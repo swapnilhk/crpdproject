@@ -1,9 +1,10 @@
-#include<set>
 #include<stdio.h>
 #include<stdlib.h>
-#include<time.h>
-#include<math.h>
+#include<string.h>
 #include"global.h"
+#include"uniform_distribution.h"
+#include"kd.h"
+#include"lee.h"
 
 struct map{
 	char * methodName;
@@ -25,12 +26,12 @@ void init(){
 	methodsMap[STASCHULAT] = (struct map){"STASCHULAT", NULL};
 	methodsMap[STASCHULAT_PRE] = (struct map){"STASCHULAT_PRE", NULL};
 	methodsMap[PRE_MAX] = (struct map){"PRE_MAX", NULL};
-	methodsMap[PRE_MAX_KD] = (struct map){"PRE_MAX_KD", NULL/*ResponseTimePreMaxKd*/};
-	methodsMap[PRE_MAX_KD2] = (struct map){"PRE_MAX_KD2", /*NULLResponseTimePreMaxKd2*/};
+	methodsMap[PRE_MAX_KD] = (struct map){"PRE_MAX_KD", /*NULL*/ResponseTimePreMaxKd};
+	methodsMap[PRE_MAX_KD2] = (struct map){"PRE_MAX_KD2", /*NULL*/ResponseTimePreMaxKd2};
 	methodsMap[PRE_MAX_KD3] = (struct map){"PRE_MAX_KD3", NULL/*ResponseTimePreMaxKd3*/};
 	methodsMap[PRE_MAX_KD4] = (struct map){"PRE_MAX_KD4", NULL/*ResponseTimePreMaxKd4*/};
-	methodsMap[LEE_WODC] = (struct map){"LEE_WODC", NULL/*ResponseTimeLeeWodc*/};
-	methodsMap[LEE_WDC] = (struct map){"LEE_WDC", NULL/*ResponseTimeLeeWdc*/};
+	methodsMap[LEE_WODC] = (struct map){"LEE_WODC", /*NULL*/ResponseTimeLeeWodc};
+	methodsMap[LEE_WDC] = (struct map){"LEE_WDC", /*NULL*/ResponseTimeLeeWdc};
 }
 
 using namespace std;
@@ -39,15 +40,6 @@ void clearTaskExecutionStatistics(){
      int i;     
      for(i = 0; i < NUM_METHODS; i++)
           Num_Executed_Tasks[i] = 0;
-}
-
-void printBaseConfig(FILE *fp){
-	fprintf(fp, "\nBase Config\n");	
-	fprintf(fp, "CACHE SIZE = %d\n", CACHE_SIZE);
-	fprintf(fp, "BRT = %g\n", BRT);
-	fprintf(fp, "RF = %g\n", RF);
-	fprintf(fp, "NUM_TASKS = %d\n\n", NUM_TASKS);
-	fflush(fp);
 }
 
 void printTaskExecutionStatistics(FILE *fp){
@@ -137,17 +129,18 @@ void uniformDistributionBenchmark(FILE *fp){
 
 int main(int argc, char * argv[]) {
 	FILE *fp = NULL;
-	for(int i = 1; i <= argc; i++){
-		if(strcmp(argv[i], "-v") || strcmp(argv[i], "-V"))
+	printf("%d",argc);
+	for(int i = 1; i < argc; i++){
+		if(strcmp(argv[i], "-v"))
 			VERBOSE = 1;
 		else
 			VERBOSE = 0;
-	}	
+	}
 	init();
 	fp = fopen("out/statistics.txt", "w");
 	if(fp == NULL){
-		printf("***Unable to open file\n");
-		exit(0);
+		fprintf(stderr, "***Unable to open file\n");
+		exit(1);
 	}
 	if(MESSAGE_LEVEL >= IMP) printBaseConfig(fp);
 	printBaseConfig(fp);

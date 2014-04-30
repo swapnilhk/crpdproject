@@ -1,8 +1,12 @@
+#include"kd.h"
 #include<stdio.h>
 #include<math.h>
 #include<set>
 #include"../lib/lp_solve_ux64/lp_lib.h"
 #include"global.h"
+#include"set_operations.h"
+
+#define min3(a,b,c) ((a) < (b) ? ((a) < (c) ? (a) : (c)) : ((b) < (c) ? (b) : (c)))
 
 static double inv_max(int hp_task, int lp_task, double Response[]){
 	return ceil(Response[lp_task] / T[hp_task]);
@@ -28,7 +32,7 @@ static double calc_nnp_min(int hp_task, int lp_task, double Response[], int nnp_
 	return ret_val > 0 ? ret_val : 0;
 }
 
-void getNnp(int this_task, double Response[], int nnp_max[NUM_TASKS][NUM_TASKS], int nnp_min[NUM_TASKS][NUM_TASKS]){
+static void getNnp(int this_task, double Response[], int nnp_max[NUM_TASKS][NUM_TASKS], int nnp_min[NUM_TASKS][NUM_TASKS]){
 	int hp_task;
 	if (this_task >= 1)	
 		for(hp_task = this_task-1; hp_task >= 0; hp_task--){
@@ -37,9 +41,9 @@ void getNnp(int this_task, double Response[], int nnp_max[NUM_TASKS][NUM_TASKS],
 		}
 }
 
-double costEcbUnion(int hpTask, int lpTask, double Response[]){
+static double costEcbUnion(int hpTask, int lpTask, double Response[]){
 	std::set<int> workingSet1, workingSet2, workingSet3;
-	extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
+	//extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 	int i;	
 	workingSet1.clear();
 	workingSet2.clear();
@@ -49,14 +53,7 @@ double costEcbUnion(int hpTask, int lpTask, double Response[]){
 	return BRT * SET_MOD(workingSet2);
 }
 
-/*
- * Returns minimum of three numbers
- */
-double min3(double a, double b, double c){
-	return a < b ? (a < c ? a : c) : (b < c ? b : c);
-}
-
-double solve_constraints_PRE_MAX_KD(int this_task, double Response[], int nnp_max[NUM_TASKS][NUM_TASKS], int nnp_min[NUM_TASKS][NUM_TASKS], FILE *fp)
+static double solve_constraints_PRE_MAX_KD(int this_task, double Response[], int nnp_max[NUM_TASKS][NUM_TASKS], int nnp_min[NUM_TASKS][NUM_TASKS], FILE *fp)
 {
 	lprec *lp;
 	int numVar = 0, *var = NULL, ret = 0, i, j, k, var_count;
@@ -235,7 +232,7 @@ double solve_constraints_PRE_MAX_KD(int this_task, double Response[], int nnp_ma
 }
 
 // Returns preemption cost for task 'this_task'
-double PC_PRE_MAX_KD(int this_task, double Response[], FILE *fp){
+static double PC_PRE_MAX_KD(int this_task, double Response[], FILE *fp){
 	int hp_task;
 	static int nnpMax[NUM_TASKS][NUM_TASKS];
 	static int nnpMin[NUM_TASKS][NUM_TASKS];
@@ -282,7 +279,7 @@ int ResponseTimePreMaxKd(){
 	return sched ? 1 : 0;
 }
 
-double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], int nnp_max[NUM_TASKS][NUM_TASKS], int nnp_min[NUM_TASKS][NUM_TASKS], FILE *fp)
+static double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], int nnp_max[NUM_TASKS][NUM_TASKS], int nnp_min[NUM_TASKS][NUM_TASKS], FILE *fp)
 {
 	lprec *lp;
 	int numVar = 0, *var = NULL, ret = 0, i, j, k, var_count;
@@ -461,7 +458,7 @@ double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], int nnp_m
 }
 
 // Returns preemption cost for task 'this_task'
-double PC_PRE_MAX_KD2(int this_task, double Response[], FILE *fp){
+static double PC_PRE_MAX_KD2(int this_task, double Response[], FILE *fp){
 	int hp_task;
 	static int nnpMax[NUM_TASKS][NUM_TASKS];
 	static int nnpMin[NUM_TASKS][NUM_TASKS];	

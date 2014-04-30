@@ -1,8 +1,10 @@
+#include"lee.h"
 #include<stdio.h>
 #include<math.h>
 #include<set>
 #include"../lib/lp_solve_ux64/lp_lib.h"
 #include"global.h"
+#include"set_operations.h"
 
 static int WDC;
 
@@ -14,9 +16,9 @@ static int WDC;
  * g2({T1}),g3({T1}),g3({T2}),g3({T1,T2}),g4({T1}),g4({T2}),g4({T1,T2}),g4({T3}),g4({T1,T3}),g4({T2,T3}),g4({T1,T2,T3})
  * Corresponding to this var bumber preemption cost is generated
  */
-double varNoToCost(const int this_task, const int var_no){
+static double varNoToCost(const int this_task, const int var_no){
 	int i, lp_task = 1, offset = 0, hp_task;
-	extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
+	//extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 
 	for(i = 1; i < var_no; i += pow(2,lp_task+1)-1, lp_task++)
 		offset = i;
@@ -36,7 +38,7 @@ double varNoToCost(const int this_task, const int var_no){
 	return BRT * SET_MOD(workingSet2);
 }
 
-void strrev(char * s){
+static void strrev(char * s){
 	int len = strlen(s), j = 0;
 	while(j < len/2){
 		char temp = s[j];
@@ -46,7 +48,7 @@ void strrev(char * s){
 	}
 }
 
-void itoa(int i, char s[10]){
+static void itoa(int i, char s[10]){
 	int j = 0;
 	do{
 		s[j++] = '0' + i % 10;
@@ -59,7 +61,7 @@ void itoa(int i, char s[10]){
 * g2({T1}),g3({T1}),g3({T2}),g3({T1,T2}),g4({T1}),g4({T2}),g4({T1,T2}),g4({T3}),g4({T1,T3}),g4({T2,T3}),g4({T1,T2,T3})
 * Given a var_no, the following function creates variable accoeding to the above order
 */
-void var_no_to_name(const int this_task, const int var_no, char * var_name){
+static void var_no_to_name(const int this_task, const int var_no, char * var_name){
 	int i, lp_task = 1, offset = 0, hp_task;
 	// Append this task nmae to var_name
 	itoa(this_task, var_name);
@@ -90,7 +92,7 @@ void var_no_to_name(const int this_task, const int var_no, char * var_name){
 
 /*Find set difference a - b. In place of elements that are removed, 
  *0 is inserted and then and then nonzero elements are shifted left*/
-void set_difference(int a[],int b[], int n){
+static void set_difference(int a[],int b[], int n){
 	int i = 0, j = 0;
 	while(i < n && j < n && a[i] != 0 && b[j] != 0){
 		if(a[i] == b[j]){
@@ -116,7 +118,7 @@ void set_difference(int a[],int b[], int n){
 	}
 }
 
-double solve_constraints_lee(int this_task, double *Response, FILE *fp)
+static double solve_constraints_lee(int this_task, double *Response, FILE *fp)
 {
 	lprec *lp;
 	int numVar = 0, *var = NULL, ret = 0, i, j, k, var_count, H, var_no;
@@ -367,7 +369,7 @@ double solve_constraints_lee(int this_task, double *Response, FILE *fp)
 }
 
 // Returns preemption cost for task 'this_task'
-double PC_LEE(int this_task, double *Response, FILE *fp){
+static double PC_LEE(int this_task, double *Response, FILE *fp){
 	int hp_task;
 	if (this_task >= 1){
 		return solve_constraints_lee(this_task, Response, fp);

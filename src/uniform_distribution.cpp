@@ -1,32 +1,14 @@
+#include"uniform_distribution.h"
 #include<time.h>
+#include<stdlib.h>
+#include<math.h>
+#include"global.h"
 
 static int SIZE_ECB_TASK[NUM_TASKS];
 static int SIZE_UCB_TASK[NUM_TASKS];
 static int ECB_TASK_ARRAY[NUM_TASKS][CACHE_SIZE];
 
-void print_ecbs(FILE *fp){
-	int i;
-	fprintf(fp, "\nECB Sets\n");	
-	for(i = 0; i < NUM_TASKS; i++){
-		fprintf(fp, "ECB Set %d : \n", i);
-		print_SET(TASK_ECB[i], fp);
-		fprintf(fp, "\n");
-	}
-	fflush(fp);
-}
-
-void print_ucbs(FILE *fp){
-	int i;
-	fprintf(fp, "\nUCB Sets\n");	
-	for(i = 0; i < NUM_TASKS; i++){
-		fprintf(fp, "UCB Set %d : \n", i);
-		print_SET(TASK_UCB[i], fp);
-		fprintf(fp, "\n");
-	}	
-	fflush(fp);
-}
-
-void Read_ECBs(void){
+static void Read_ECBs(void){
 	int i, j;
 	std::set<int>::iterator it;
 	for(j=0; j < NUM_TASKS; j++){
@@ -44,7 +26,7 @@ void Read_ECBs(void){
 	}
 }
 
-void Read_UCBs(void){
+static void Read_UCBs(void){
 	int j;
 	std::set<int>::iterator it;
 	for(j=0; j < NUM_TASKS; j++){
@@ -70,7 +52,7 @@ void Read_UCBs(void){
 	}
 }
 
-void UUniSort(float A[], int n, float sumUtil){
+static void UUniSort(float A[], int n, float sumUtil){
 	int i, j; float random_val; float temp;
 	srand((unsigned)time(NULL));
 	A[0] = 0.0;
@@ -91,7 +73,7 @@ void UUniSort(float A[], int n, float sumUtil){
 }
 
 // 5 - 500 => 1 - 100 => 0 => log (100)
-void LogUniformPeriods(float A[], int n, int minP, int maxP){
+static void LogUniformPeriods(float A[], int n, int minP, int maxP){
 	int i, j; float temp;
 	float logScaleFactor;
 	logScaleFactor = log(maxP/minP);
@@ -116,7 +98,7 @@ void LogUniformPeriods(float A[], int n, int minP, int maxP){
 			}
 }
 
-void UUniFast(float A[], int n, float sumUtil){
+static void UUniFast(float A[], int n, float sumUtil){
 	int i;
 	float nextSumUtil;
 	float random_val;
@@ -142,7 +124,7 @@ void createTaskSetUniformDistribution(float totalUtil, int minPeriod, int maxPer
 	}
 }
 
-void Set_SizeUCBs_Uniform(){
+static void Set_SizeUCBs_Uniform(){
 	int i;
 	srand((unsigned)time(NULL));
 	for(i=0; i < NUM_TASKS; i++){
@@ -151,7 +133,7 @@ void Set_SizeUCBs_Uniform(){
 	}
 }
 
-void Set_SizeECBs_UUniFast(){
+static void Set_SizeECBs_UUniFast(){
 	int i;
 	float values_uunifast[NUM_TASKS];	
 	UUniSort(values_uunifast, NUM_TASKS, 1.0);
