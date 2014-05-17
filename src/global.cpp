@@ -1,12 +1,14 @@
 #include"global.h"
 #include<math.h>
 #include<set>
+#include<stdlib.h>
 
-double C[NUM_TASKS];
-long D[NUM_TASKS];
-long T[NUM_TASKS];
+int NUM_TASKS;
+double *C;
+long *D;
+long *T;
 double util;
-std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
+std::set<int> *TASK_ECB, *TASK_UCB;
 int Num_Executed_Tasks[NUM_METHODS];
 int MESSAGE_LEVEL = NONE;
 int VERBOSE = 0;
@@ -57,6 +59,15 @@ void print_ucbs(FILE *fp){
 		print_SET(TASK_UCB[i], fp);
 		fprintf(fp, "\n");
 	}
+}
+
+int** Make2DintArray(int arraySizeX, int arraySizeY){	
+    int i;
+    int** theArray;
+    theArray = (int**) malloc(arraySizeX*sizeof(int*));
+    for (i = 0; i < arraySizeX; i++)
+        theArray[i] = (int*) malloc(arraySizeY*sizeof(int));
+    return theArray;
 }
 
 double sigmaTda(int thisTask, double Response[]){

@@ -4,7 +4,8 @@
 #include<set>
 #include<stdio.h>
 
-#define NUM_TASKS 4
+//#define NUM_TASKS 4
+extern int NUM_TASKS;
 #define CACHE_SIZE 256
 #define Total_ECBs_CU 10
 #define RF 0.8
@@ -41,18 +42,19 @@ enum METHOD_NAMES {
 };
 extern int MESSAGE_LEVEL;
 extern int VERBOSE;
-extern double C[];
-extern long D[];
-extern long T[];
+extern double *C;
+extern long *D;
+extern long *T;
 extern double util;
-extern std::set<int> TASK_ECB[];
-extern std::set<int> TASK_UCB[];
+extern std::set<int> *TASK_ECB;
+extern std::set<int> *TASK_UCB;
 extern int Num_Executed_Tasks[];
 
 void printBaseConfig(FILE *fp);
 void printTaskInfo(FILE *fp);
 void print_ecbs(FILE *fp);
 void print_ucbs(FILE *fp);
+int** Make2DintArray(int arraySizeX, int arraySizeY);
 double sigmaTda(int thisTask, double Response[]);
 double wcrt(int thisTask, double Response[], FILE *fp, double (*PC)(int, double[], FILE*));
 #endif

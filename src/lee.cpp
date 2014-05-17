@@ -366,7 +366,7 @@ static double PC_LEE(int this_task, double *Response, FILE *fp){
 int ResponseTimeLeeWdc(){
 	int task_no;
 	bool sched = true;	
-	double Response[NUM_TASKS] = {0};
+	double *Response = 	(double*)malloc(sizeof(*Response) * NUM_TASKS);
 	static int first_call = 1;
 	FILE *fp = NULL;
 	char * filename = "out/lee_wdc.txt";
@@ -406,7 +406,7 @@ int ResponseTimeLeeWodc(){
 
 	int task_no;
 	bool sched = true;	
-	double Response[NUM_TASKS] = {0};
+	double *Response = 	(double*)malloc(sizeof(*Response) * NUM_TASKS);
 	static int first_call = 1;
 	FILE *fp = NULL;
 	char * filename = "out/lee_wodc.txt";

@@ -6,6 +6,9 @@
 #include"global.h"
 #include"set_operations.h"
 
+static int **nnpMax;
+static int **nnpMin;
+
 #define min3(a,b,c) ((a) < (b) ? ((a) < (c) ? (a) : (c)) : ((b) < (c) ? (b) : (c)))
 
 static double inv_max(int hp_task, int lp_task, double Response[]){
@@ -16,28 +19,28 @@ static double inv_min(int hp_task, int lp_task, double Response[]){
 	return floor(Response[lp_task] / T[hp_task]);
 }
 
-static double calc_nnp_max(int hp_task, int lp_task, double Response[], int nnp_max[NUM_TASKS][NUM_TASKS], int nnp_min[NUM_TASKS][NUM_TASKS]){
+static double calc_nnpMax(int hp_task, int lp_task, double Response[]){
 	int i;
 	double ret_val = inv_max(hp_task, lp_task, Response);
 	for(i = hp_task + 1;i < lp_task; i++)
-		ret_val -= nnp_min[hp_task][i] * inv_min(i, lp_task, Response);
+		ret_val -= nnpMin[hp_task][i] * inv_min(i, lp_task, Response);
 	return ret_val > 0 ? ret_val : 0;
 }
 
-static double calc_nnp_min(int hp_task, int lp_task, double Response[], int nnp_max[NUM_TASKS][NUM_TASKS], int nnp_min[NUM_TASKS][NUM_TASKS]){
+static double calc_nnpMin(int hp_task, int lp_task, double Response[]){
 	int i;
 	double ret_val = inv_min(hp_task, lp_task, Response);
 	for(i = hp_task + 1;i < lp_task; i++)
-		ret_val -= nnp_max[hp_task][i] * inv_max(i, lp_task, Response);
+		ret_val -= nnpMax[hp_task][i] * inv_max(i, lp_task, Response);
 	return ret_val > 0 ? ret_val : 0;
 }
 
-static void getNnp(int this_task, double Response[], int nnp_max[NUM_TASKS][NUM_TASKS], int nnp_min[NUM_TASKS][NUM_TASKS]){
+static void getNnp(int this_task, double Response[]){
 	int hp_task;
 	if (this_task >= 1)	
 		for(hp_task = this_task-1; hp_task >= 0; hp_task--){
-			nnp_max[hp_task][this_task] = calc_nnp_max(hp_task, this_task, Response, nnp_max, nnp_min);
-			nnp_min[hp_task][this_task] = calc_nnp_min(hp_task, this_task, Response, nnp_max, nnp_min);
+			nnpMax[hp_task][this_task] = calc_nnpMax(hp_task, this_task, Response);
+			nnpMin[hp_task][this_task] = calc_nnpMin(hp_task, this_task, Response);
 		}
 }
 
@@ -52,7 +55,7 @@ static double costEcbUnion(int hpTask, int lpTask, double Response[]){
 	return BRT * SET_MOD(workingSet2);
 }
 
-static double solve_constraints_PRE_MAX_KD(int this_task, double Response[], int nnp_max[NUM_TASKS][NUM_TASKS], int nnp_min[NUM_TASKS][NUM_TASKS], FILE *fp)
+static double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 {
 	lprec *lp;
 	int numVar = 0, *var = NULL, ret = 0, i, j, k, var_count;
@@ -98,12 +101,12 @@ static double solve_constraints_PRE_MAX_KD(int this_task, double Response[], int
 			}
 			lhs= 0;
 			for(i = 0; i < j; i++)
-				lhs+= nnp_min[i][j];
+				lhs+= nnpMin[i][j];
 			lhs*= floor(Response[this_task]/T[j]);
 
 			rhs = 0;
 			for(i = 0; i < j; i++)
-				rhs += nnp_max[i][j];
+				rhs += nnpMax[i][j];
 			rhs *= ceil(Response[this_task]/T[j]);
 
 			if(!add_constraintex(lp, var_count, coeff, var, GE, lhs))
@@ -139,7 +142,7 @@ static double solve_constraints_PRE_MAX_KD(int this_task, double Response[], int
 		/* ------------------adding EQN-G & H------------------ */
 		for(j = 1; j <= this_task ; j++){
 			for(i = 0; i < j; i++){
-				lhs= floor(Response[this_task]/T[j]) * nnp_min[i][j];
+				lhs= floor(Response[this_task]/T[j]) * nnpMin[i][j];
 				sprintf(col_name,"NNP%d_%d", i, j);
 				var[0] = get_nameindex(lp, col_name, FALSE);
 				coeff[0] = ceil(Response[this_task] / T[j]);
@@ -149,7 +152,7 @@ static double solve_constraints_PRE_MAX_KD(int this_task, double Response[], int
 				rhs = min3(
 						ceil(Response[this_task]/T[i]),
 						ceil(Response[this_task]/T[j]) * ceil(Response[j]/T[i]),
-						ceil(Response[this_task]/T[j]) * nnp_max[i][j]
+						ceil(Response[this_task]/T[j]) * nnpMax[i][j]
 				);
 				if(!add_constraintex(lp, 1, coeff, var, LE,rhs))
 					ret = 3;
@@ -233,11 +236,9 @@ static double solve_constraints_PRE_MAX_KD(int this_task, double Response[], int
 // Returns preemption cost for task 'this_task'
 static double PC_PRE_MAX_KD(int this_task, double Response[], FILE *fp){
 	int hp_task;
-	static int nnpMax[NUM_TASKS][NUM_TASKS];
-	static int nnpMin[NUM_TASKS][NUM_TASKS];
 	if (this_task >= 1){
-		getNnp(this_task, Response, nnpMax, nnpMin);
-		return solve_constraints_PRE_MAX_KD(this_task, Response, nnpMax, nnpMin, fp);
+		getNnp(this_task, Response);
+		return solve_constraints_PRE_MAX_KD(this_task, Response, fp);
 	}
 	else return 0;
 }
@@ -246,7 +247,9 @@ int ResponseTimePreMaxKd(){
 	int task_no;
 	bool sched = true;
 	FILE *fp;
-	double Response[NUM_TASKS];
+	double *Response = 	(double*)malloc(sizeof(*Response) * NUM_TASKS);
+	nnpMin = Make2DintArray(NUM_TASKS, NUM_TASKS);
+	nnpMax = Make2DintArray(NUM_TASKS, NUM_TASKS);
 	static int first_call = 1;
 	char * filename = "out/kd.txt";
 
@@ -279,7 +282,7 @@ int ResponseTimePreMaxKd(){
 	return sched ? 1 : 0;
 }
 
-static double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], int nnp_max[NUM_TASKS][NUM_TASKS], int nnp_min[NUM_TASKS][NUM_TASKS], FILE *fp)
+static double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], FILE *fp)
 {
 	lprec *lp;
 	int numVar = 0, *var = NULL, ret = 0, i, j, k, var_count;
@@ -325,12 +328,12 @@ static double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], in
 
 			lhs= 0;
 			for(i = 0; i < j; i++)
-				lhs+= nnp_min[i][j];
+				lhs+= nnpMin[i][j];
 			lhs*= floor(Response[this_task]/T[j]);
 
 			rhs = 0;
 			for(i = 0; i < j; i++)
-				rhs += nnp_max[i][j];
+				rhs += nnpMax[i][j];
 			rhs *= ceil(Response[this_task]/T[j]);
 
 			if(!add_constraintex(lp, var_count, coeff, var, GE, lhs))
@@ -366,7 +369,7 @@ static double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], in
 		/* ------------------adding EQN-G & H------------------ */
 		for(j = 1; j <= this_task ; j++){
 			for(i = 0; i < j; i++){
-				lhs= floor(Response[this_task]/T[j]) * nnp_min[i][j];
+				lhs= floor(Response[this_task]/T[j]) * nnpMin[i][j];
 				sprintf(col_name,"%dNNP%d_%d", this_task, i, j);
 				var[0] = get_nameindex(lp, col_name, FALSE);
 				coeff[0] = 1;
@@ -376,7 +379,7 @@ static double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], in
 				rhs = min3(
 						ceil(Response[this_task]/T[i]),
 						ceil(Response[this_task]/T[j]) * ceil(Response[j]/T[i]),
-						ceil(Response[this_task]/T[j]) * nnp_max[i][j]
+						ceil(Response[this_task]/T[j]) * nnpMax[i][j]
 				);
 				if(!add_constraintex(lp, 1, coeff, var, LE,rhs))
 					ret = 3;
@@ -460,12 +463,10 @@ static double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], in
 // Returns preemption cost for task 'this_task'
 static double PC_PRE_MAX_KD2(int this_task, double Response[], FILE *fp){
 	int hp_task;
-	static int nnpMax[NUM_TASKS][NUM_TASKS];
-	static int nnpMin[NUM_TASKS][NUM_TASKS];	
 	if (this_task >= 1){
-		getNnp(this_task, Response, nnpMax, nnpMin);
+		getNnp(this_task, Response);
 		// Define constraints
-		return solve_constraints_PRE_MAX_KD2(this_task, Response, nnpMax, nnpMin, fp);
+		return solve_constraints_PRE_MAX_KD2(this_task, Response, fp);
 	}
 	else return 0;
 }
@@ -474,7 +475,9 @@ int ResponseTimePreMaxKd2(){
 	int task_no;
 	bool sched = true;
 	FILE *fp;
-	double Response[NUM_TASKS];
+	double *Response = 	(double*)malloc(sizeof(*Response) * NUM_TASKS);
+	nnpMin = Make2DintArray(NUM_TASKS, NUM_TASKS);
+	nnpMax = Make2DintArray(NUM_TASKS, NUM_TASKS);
 	static int first_call = 1;
 	char * filename = "out/kd2.txt";
 

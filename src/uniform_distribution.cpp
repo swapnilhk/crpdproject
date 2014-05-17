@@ -3,10 +3,12 @@
 #include<stdlib.h>
 #include<math.h>
 #include"global.h"
+#include<new>
+#include<set>
 
-static int SIZE_ECB_TASK[NUM_TASKS];
-static int SIZE_UCB_TASK[NUM_TASKS];
-static int ECB_TASK_ARRAY[NUM_TASKS][CACHE_SIZE];
+static int *SIZE_ECB_TASK;
+static int *SIZE_UCB_TASK;
+static int **ECB_TASK_ARRAY;
 
 static void Read_ECBs(void){
 	int i, j;
@@ -143,7 +145,16 @@ static void Set_SizeECBs_UUniFast(){
 	}
 }
 
-void initUniformDistributionBenchmark(FILE* fp){	
+void initUniformDistributionBenchmark(FILE* fp){
+	NUM_TASKS = 4;//TODO: read from config file
+	C = (double*)malloc(sizeof(*C) * NUM_TASKS);
+	D = (long*)malloc(sizeof(*D) * NUM_TASKS);
+	T = (long*)malloc(sizeof(*T) * NUM_TASKS);
+	TASK_ECB = new std::set<int>[NUM_TASKS];
+	TASK_UCB = new std::set<int>[NUM_TASKS];
+	SIZE_ECB_TASK = (int*)malloc(sizeof(*SIZE_ECB_TASK) * NUM_TASKS);
+	SIZE_UCB_TASK = (int*)malloc(sizeof(*SIZE_UCB_TASK) * NUM_TASKS);
+	ECB_TASK_ARRAY = Make2DintArray(NUM_TASKS, CACHE_SIZE);
 	Set_SizeECBs_UUniFast();
 	Set_SizeUCBs_Uniform();
 	Read_ECBs();
