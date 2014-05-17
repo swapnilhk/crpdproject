@@ -2,9 +2,10 @@
 #include<stdlib.h>
 #include<string.h>
 #include"global.h"
-#include"uniform_distribution.h"
+#include"benchmarks.h"
 #include"kd.h"
 #include"lee.h"
+#include"ramaprasad_mueller.h"
 
 struct map{
 	char * methodName;
@@ -118,6 +119,22 @@ void uniformDistributionBenchmark(FILE *fp){
 	if(VERBOSE)printDominationInfo(dom, stdout);
 }
 
+void constantValuesBenchmark(FILE *fp){
+	int sched;
+	fprintf(fp, "Constant Values Banchmark\n");
+	for(NUM_TASKS = 2; NUM_TASKS <= 8; NUM_TASKS+=2){
+		for(util = 0.5; util <= 0.6; util += 0.1){			
+			initConstantValuesBenchmark(fp);		
+			clearTaskExecutionStatistics();
+			createTaskSetConstantValues();
+			sched = ramaprasadMueller();
+			if(VERBOSE) printf("NUM_TASKS = %d util is %f sched = %d\n", NUM_TASKS, util, sched);
+			fprintf(fp, "NUM_TASKS = %d util is %f sched = %d\n", NUM_TASKS, util, sched);
+		}
+		if(VERBOSE) printf("\n");
+	}
+}
+
 int main(int argc, char * argv[]) {
 	FILE *fp = NULL;
 	char * filename = "out/statistics.txt";
@@ -133,8 +150,7 @@ int main(int argc, char * argv[]) {
 		else{
 			fprintf(stderr, "***Invalid parameter %s\nUsage\n-v Verbose\n-a Message Level All\n-i Message Level Imp\n-n Message Level None\n", argv[i]);
 			exit(1);
-		}
-		
+		}		
 	}
 	init();
 	fp = fopen(filename, "w");
@@ -144,6 +160,7 @@ int main(int argc, char * argv[]) {
 	}
 	if(MESSAGE_LEVEL >= IMP) printBaseConfig(fp);
 	printBaseConfig(fp);
-	uniformDistributionBenchmark(fp);
+	//uniformDistributionBenchmark(fp);
+	constantValuesBenchmark(fp);
 	fclose(fp);
 }

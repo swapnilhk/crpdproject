@@ -42,7 +42,8 @@ enum METHOD_NAMES {
 };
 extern int MESSAGE_LEVEL;
 extern int VERBOSE;
-extern double *C;
+extern double *C;//Worst case execution time
+extern double *BC;//Best case execution time
 extern long *D;
 extern long *T;
 extern double util;

@@ -4,7 +4,8 @@
 #include<stdlib.h>
 
 int NUM_TASKS;
-double *C;
+double *C;//Worst case execution time
+double *BC;//Best case execution time
 long *D;
 long *T;
 double util;
