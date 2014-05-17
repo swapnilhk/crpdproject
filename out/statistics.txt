@@ -5,40 +5,12 @@ BRT = 0.008
 RF = 0.8
 Num Tasks = 0
 
-Uniform Distribution Benchmark
-Util	Method                          	No. of Sched tasks
-0.7 	PRE_MAX_KD                      	10
-	PRE_MAX_KD2                     	10
-	LEE_WODC                        	10
-	LEE_WDC                         	10
-
-0.75	PRE_MAX_KD                      	10
-	PRE_MAX_KD2                     	10
-	LEE_WODC                        	10
-	LEE_WDC                         	10
-
-0.8 	PRE_MAX_KD                      	10
-	PRE_MAX_KD2                     	10
-	LEE_WODC                        	10
-	LEE_WDC                         	10
-
-0.85	PRE_MAX_KD                      	10
-	PRE_MAX_KD2                     	10
-	LEE_WODC                        	10
-	LEE_WDC                         	10
-
-0.9 	PRE_MAX_KD                      	10
-	PRE_MAX_KD2                     	10
-	LEE_WODC                        	10
-	LEE_WDC                         	10
-
-0.95	PRE_MAX_KD                      	0
-	PRE_MAX_KD2                     	0
-	LEE_WODC                        	0
-	LEE_WDC                         	0
-PRE_MAX_KD and PRE_MAX_KD2 are equal
-PRE_MAX_KD and LEE_WODC are equal
-PRE_MAX_KD and LEE_WDC are equal
-PRE_MAX_KD2 and LEE_WODC are equal
-PRE_MAX_KD2 and LEE_WDC are equal
-LEE_WODC and LEE_WDC are equal
+Constant Values Banchmark
+NUM_TASKS = 2 util is 0.500000 sched = 1
+NUM_TASKS = 2 util is 0.600000 sched = 1
+NUM_TASKS = 4 util is 0.500000 sched = 1
+NUM_TASKS = 4 util is 0.600000 sched = 1
+NUM_TASKS = 6 util is 0.500000 sched = 1
+NUM_TASKS = 6 util is 0.600000 sched = 0
+NUM_TASKS = 8 util is 0.500000 sched = 1
+NUM_TASKS = 8 util is 0.600000 sched = 1
