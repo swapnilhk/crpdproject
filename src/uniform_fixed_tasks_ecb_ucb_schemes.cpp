@@ -1,73 +1,124 @@
-#include <cstdlib>
-#include <iostream>
+#include"uniform_fixed_tasks_ecb_ucb_schemes.h"
+#include<cstdlib>
+#include<iostream>
 #include<math.h>
 #include<set>
-#include"base_config.h"
-#include"set_operations.cpp"
-#include"common.h"
+#include"set_operations.h"
+#include"global.h"
 
 using namespace std;
 
 // to scale Task Periods
 float multFactor;
 
-double Gamma_i_j_ECB_Only[NUM_TASKS][NUM_TASKS];
-double Gamma_i_j_UCB_Only[NUM_TASKS][NUM_TASKS];
-double Gamma_i_j_UCB_Union[NUM_TASKS][NUM_TASKS];
-double Gamma_i_j_ECB_Union[NUM_TASKS][NUM_TASKS];
+double **Gamma_i_j_ECB_Only;
+double **Gamma_i_j_UCB_Only;
+double **Gamma_i_j_UCB_Union;
+double **Gamma_i_j_ECB_Union;
+double **Gamma_i_j_Staschulat;
+double **Gamma_i_j_ECB_Union_Multiset;
+double **Gamma_i_j_UCB_Union_Multiset;
+double **Gamma_i_j_Staschulat_PRE;
+double **Gamma_i_j_ECB_Union_Multiset_PRE;
+double **Gamma_i_j_UCB_Union_Multiset_PRE;
+double **Gamma_i_j_PRE_MAX;
 
-double Gamma_i_j_Staschulat[NUM_TASKS][NUM_TASKS];
-double Gamma_i_j_ECB_Union_Multiset[NUM_TASKS][NUM_TASKS];
-double Gamma_i_j_UCB_Union_Multiset[NUM_TASKS][NUM_TASKS];
+long *Num_Displaced_Blocks_ECB_Only;
+long *Num_Displaced_Blocks_UCB_Only;
+long *Num_Displaced_Blocks_UCB_Union;
+long *Num_Displaced_Blocks_ECB_Union;
+long *Num_Displaced_Blocks_Staschulat;
+long *Num_Displaced_Blocks_ECB_Union_Multiset;
+long *Num_Displaced_Blocks_UCB_Union_Multiset;
+long *Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined;
+long *Num_Displaced_Blocks_Staschulat_PRE;
+long *Num_Displaced_Blocks_ECB_Union_Multiset_PRE;
+long *Num_Displaced_Blocks_UCB_Union_Multiset_PRE;
+long *Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined_PRE;
+long *Num_Displaced_Blocks_PRE_MAX;
 
-double Gamma_i_j_Staschulat_PRE[NUM_TASKS][NUM_TASKS];
-double Gamma_i_j_ECB_Union_Multiset_PRE[NUM_TASKS][NUM_TASKS];
-double Gamma_i_j_UCB_Union_Multiset_PRE[NUM_TASKS][NUM_TASKS];
+double *Response;
+double *Response_NO_PREEMPT;
+double *Response_ECB_Only;
+double *Response_UCB_Only;
+double *Response_UCB_Union;
+double *Response_ECB_Union;
+double *Response_Staschulat;
+double *Response_ECB_Union_Multiset;
+double *Response_UCB_Union_Multiset;
+double *Response_ECB_UCB_Union_Multiset_Combined;
+double *Response_Staschulat_PRE;
+double *Response_ECB_Union_Multiset_PRE;
+double *Response_UCB_Union_Multiset_PRE;
+double *Response_ECB_UCB_Union_Multiset_Combined_PRE;
+double *Response_PRE_MAX;
 
-double Gamma_i_j_PRE_MAX[NUM_TASKS][NUM_TASKS];
+int *Cost;
+int *Useful_cost;
 
-long Num_Displaced_Blocks_ECB_Only[NUM_TASKS];
-long Num_Displaced_Blocks_UCB_Only[NUM_TASKS];
-long Num_Displaced_Blocks_UCB_Union[NUM_TASKS];
-long Num_Displaced_Blocks_ECB_Union[NUM_TASKS];
+long **PRE_ij_min;
+long **PRE_ij_max;
+    
+long *PRE_min;
+long *PRE_max;
 
-long Num_Displaced_Blocks_Staschulat[NUM_TASKS];
-long Num_Displaced_Blocks_ECB_Union_Multiset[NUM_TASKS];
-long Num_Displaced_Blocks_UCB_Union_Multiset[NUM_TASKS];
-long Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined[NUM_TASKS];
+void init_uniform_fixed_tasks_ecb_ucb_schemes(){
+	double **Gamma_i_j_ECB_Only = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
+	double **Gamma_i_j_UCB_Only = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
+	double **Gamma_i_j_UCB_Union = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
+	double **Gamma_i_j_ECB_Union = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
+	double **Gamma_i_j_Staschulat = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
+	double **Gamma_i_j_ECB_Union_Multiset = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
+	double **Gamma_i_j_UCB_Union_Multiset = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
+	double **Gamma_i_j_Staschulat_PRE = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
+	double **Gamma_i_j_ECB_Union_Multiset_PRE = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
+	double **Gamma_i_j_UCB_Union_Multiset_PRE = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
+	double **Gamma_i_j_PRE_MAX = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
 
-long Num_Displaced_Blocks_Staschulat_PRE[NUM_TASKS];
-long Num_Displaced_Blocks_ECB_Union_Multiset_PRE[NUM_TASKS];
-long Num_Displaced_Blocks_UCB_Union_Multiset_PRE[NUM_TASKS];
-long Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined_PRE[NUM_TASKS];
+	long *Num_Displaced_Blocks_ECB_Only = (long*)malloc(sizeof(long) * NUM_TASKS);
+	long *Num_Displaced_Blocks_UCB_Only = (long*)malloc(sizeof(long) * NUM_TASKS);
+	long *Num_Displaced_Blocks_UCB_Union = (long*)malloc(sizeof(long) * NUM_TASKS);
+	long *Num_Displaced_Blocks_ECB_Union = (long*)malloc(sizeof(long) * NUM_TASKS);
+	long *Num_Displaced_Blocks_Staschulat = (long*)malloc(sizeof(long) * NUM_TASKS);
+	long *Num_Displaced_Blocks_ECB_Union_Multiset = (long*)malloc(sizeof(long) * NUM_TASKS);
+	long *Num_Displaced_Blocks_UCB_Union_Multiset = (long*)malloc(sizeof(long) * NUM_TASKS);
+	long *Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined = (long*)malloc(sizeof(long) * NUM_TASKS);
+	long *Num_Displaced_Blocks_Staschulat_PRE = (long*)malloc(sizeof(long) * NUM_TASKS);
+	long *Num_Displaced_Blocks_ECB_Union_Multiset_PRE = (long*)malloc(sizeof(long) * NUM_TASKS);
+	long *Num_Displaced_Blocks_UCB_Union_Multiset_PRE = (long*)malloc(sizeof(long) * NUM_TASKS);
+	long *Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined_PRE = (long*)malloc(sizeof(long) * NUM_TASKS);
+	long *Num_Displaced_Blocks_PRE_MAX = (long*)malloc(sizeof(long) * NUM_TASKS);
+	
+	double *Response = (double*)malloc(sizeof(double) * NUM_TASKS);
+	double *Response_NO_PREEMPT = (double*)malloc(sizeof(double) * NUM_TASKS);
+	double *Response_ECB_Only = (double*)malloc(sizeof(double) * NUM_TASKS);
+	double *Response_UCB_Only = (double*)malloc(sizeof(double) * NUM_TASKS);
+	double *Response_UCB_Union = (double*)malloc(sizeof(double) * NUM_TASKS);
+	double *Response_ECB_Union = (double*)malloc(sizeof(double) * NUM_TASKS);
+	double *Response_Staschulat = (double*)malloc(sizeof(double) * NUM_TASKS);
+	double *Response_ECB_Union_Multiset = (double*)malloc(sizeof(double) * NUM_TASKS);
+	double *Response_UCB_Union_Multiset = (double*)malloc(sizeof(double) * NUM_TASKS);
+	double *Response_ECB_UCB_Union_Multiset_Combined = (double*)malloc(sizeof(double) * NUM_TASKS);
+	double *Response_Staschulat_PRE = (double*)malloc(sizeof(double) * NUM_TASKS);
+	double *Response_ECB_Union_Multiset_PRE = (double*)malloc(sizeof(double) * NUM_TASKS);
+	double *Response_UCB_Union_Multiset_PRE = (double*)malloc(sizeof(double) * NUM_TASKS);
+	double *Response_ECB_UCB_Union_Multiset_Combined_PRE = (double*)malloc(sizeof(double) * NUM_TASKS);
+	double *Response_PRE_MAX = (double*)malloc(sizeof(double) * NUM_TASKS);
 
-long Num_Displaced_Blocks_PRE_MAX[NUM_TASKS];
+	int *Cost = (int*)malloc(sizeof(int) * NUM_TASKS);
+	int *Useful_cost = (int*)malloc(sizeof(int) * NUM_TASKS);
 
+	long **PRE_ij_min = Make2DintArrayLong(NUM_TASKS, NUM_TASKS);
+	long **PRE_ij_max = Make2DintArrayLong(NUM_TASKS, NUM_TASKS);
+	    
+	long *PRE_min = (long*)malloc(sizeof(long) * NUM_TASKS);
+	long *PRE_max = (long*)malloc(sizeof(long) * NUM_TASKS);
+}
 /* Input */
 
 // Exec times Malardalen
 //double Cycles[NUM_TASKS] = {445, 504, 1252, 1351, 6573, 13449, 17088, 22146, 29160, 39962, 43319, 214076, 290782, 742585, 1567222};
 double Cycles[15] = {445, 504, 1252, 1351, 6573, 13449, 17088, 22146, 29160, 39962, 43319, 214076, 290782, 742585, 1567222};
-
-double Response[NUM_TASKS] = {0, 0, 0, 0};
-
-double Response_NO_PREEMPT[NUM_TASKS];
-double Response_ECB_Only[NUM_TASKS], Response_UCB_Only[NUM_TASKS], Response_UCB_Union[NUM_TASKS], Response_ECB_Union[NUM_TASKS];
-double Response_Staschulat[NUM_TASKS];
-double Response_ECB_Union_Multiset[NUM_TASKS], Response_UCB_Union_Multiset[NUM_TASKS], Response_ECB_UCB_Union_Multiset_Combined[NUM_TASKS]; 
-
-double Response_Staschulat_PRE[NUM_TASKS];
-double Response_ECB_Union_Multiset_PRE[NUM_TASKS], Response_UCB_Union_Multiset_PRE[NUM_TASKS], Response_ECB_UCB_Union_Multiset_Combined_PRE[NUM_TASKS]; 
-double Response_PRE_MAX[NUM_TASKS];
-
-int Cost[NUM_TASKS] = {2, 4, 6, 8};
-int Useful_cost[NUM_TASKS] = {1, 2, 3, 4};
-
-long PRE_ij_min[NUM_TASKS][NUM_TASKS];
-long PRE_ij_max[NUM_TASKS][NUM_TASKS];
-    
-long PRE_min[NUM_TASKS];
-long PRE_max[NUM_TASKS];
 
 bool BDU_ONLY;
 FILE* BDU_fp;
@@ -508,30 +559,30 @@ int Response_time_NO_PREEMPT()
            {
                 flag = 0;
                 sched = false;
-                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
            else
            {
-               //printf("TASK %d  IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d  IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
      }
      if(sched ==false)
      {
-             //printf("\nTASKSET is NOT schedulable under NO PREEMPT at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under NO PREEMPT at TASKSET_UTIL = %f \n", taskSetUtil);       
+             //printf("\nTASKSET is NOT schedulable under NO PREEMPT at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under NO PREEMPT at TASKSET_UTIL = %f \n", util);       
      }
      else
      {
-             //printf("\nTASKSET IS schedulable under NO PREEMPT at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under NO PREEMPT at TASKSET_UTIL = %f \n", taskSetUtil);   
+             //printf("\nTASKSET IS schedulable under NO PREEMPT at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under NO PREEMPT at TASKSET_UTIL = %f \n", util);   
              
              Num_Executed_Tasks[NO_PREEMPT]++;
              /*if(BDU_found == false)
              {
                  BDU_found = true;
-                 fprintf(BDU_fp, "\t\t NO PREEMPT \t\t\t\t %f \t\t %f \n\n", taskSetUtil, multFactor);
+                 fprintf(BDU_fp, "\t\t NO PREEMPT \t\t\t\t %f \t\t %f \n\n", util, multFactor);
              }*/    
      }
 
@@ -560,7 +611,6 @@ int Response_time_ECB_Only()
      bool sched = true;
      FILE *fp;
      static int first_call = 1;
-     extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 
      if(MESSAGE_LEVEL > NONE){
 	if(first_call){			
@@ -659,31 +709,31 @@ int Response_time_ECB_Only()
            {
                 flag = 0;
                 sched = false;
-                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
            else
            {
-               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
      }
      if(sched == false)
      {
-             //printf("\nTASKSET NOT schedulable under ECB Only at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under ECB Only at TASKSET_UTIL = %f \n", taskSetUtil);       
+             //printf("\nTASKSET NOT schedulable under ECB Only at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under ECB Only at TASKSET_UTIL = %f \n", util);       
      }
      else
      {
-             //printf("\nTASKSET IS schedulable under ECB Only at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under ECB Only at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET IS schedulable under ECB Only at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under ECB Only at TASKSET_UTIL = %f \n", util);
              
              Num_Executed_Tasks[ECB_ONLY]++;
              
              /*if(BDU_found == false)
              {
                  BDU_found = true;
-                 fprintf(BDU_fp, "\t\t ECB Only \t\t\t\t %f \t\t %f \n\n", taskSetUtil, multFactor);
+                 fprintf(BDU_fp, "\t\t ECB Only \t\t\t\t %f \t\t %f \n\n", util, multFactor);
              }*/
      }
      
@@ -709,7 +759,6 @@ int Response_time_UCB_Only()
      bool sched = true;
      FILE *fp;
      static int first_call = 1;
-     extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 
      if(MESSAGE_LEVEL > NONE){
 	if(first_call){			
@@ -808,31 +857,31 @@ int Response_time_UCB_Only()
            {
                 flag = 0;
                 sched = false;
-                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
            else
            {
-               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
      }
      if(sched == false)
      {
-             //printf("\nTASKSET is NOT schedulable under UCB Only at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under UCB Only at TASKSET_UTIL = %f \n", taskSetUtil);       
+             //printf("\nTASKSET is NOT schedulable under UCB Only at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under UCB Only at TASKSET_UTIL = %f \n", util);       
      }
      else
      {
-             //printf("\nTASKSET IS schedulable under UCB Only at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under UCB Only at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET IS schedulable under UCB Only at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under UCB Only at TASKSET_UTIL = %f \n", util);
              
              Num_Executed_Tasks[UCB_ONLY]++;
              
              /*if(BDU_found == false)
              {
                  BDU_found = true;
-                 fprintf(BDU_fp, "\t\t UCB Only \t\t\t\t %f \t\t %f \n\n", taskSetUtil, multFactor);
+                 fprintf(BDU_fp, "\t\t UCB Only \t\t\t\t %f \t\t %f \n\n", util, multFactor);
              }*/
      }
      
@@ -860,7 +909,6 @@ int Response_time_UCB_Union()
      bool sched = true;
      FILE *fp;
      static int first_call = 1;
-     extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 
      if(MESSAGE_LEVEL > NONE){
 	if(first_call){			
@@ -978,31 +1026,31 @@ int Response_time_UCB_Union()
            {
                 flag = 0;
                 sched = false;
-                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
            else
            {
-               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
      }
      if(sched == false)
      {
-             //printf("\nTASKSET is NOT schedulable under UCB Union at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under UCB Union at TASKSET_UTIL = %f \n", taskSetUtil);       
+             //printf("\nTASKSET is NOT schedulable under UCB Union at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under UCB Union at TASKSET_UTIL = %f \n", util);       
      }
      else
      {
-             //printf("\nTASKSET IS  schedulable under UCB Union at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS  schedulable under UCB Union at TASKSET_UTIL = %f \n", taskSetUtil); 
+             //printf("\nTASKSET IS  schedulable under UCB Union at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS  schedulable under UCB Union at TASKSET_UTIL = %f \n", util); 
              
              Num_Executed_Tasks[UCB_UNION]++;
              
              /*if(BDU_found == false)
              {
                  BDU_found = true;
-                 fprintf(BDU_fp, "\t\t UCB Union \t\t\t\t %f \t\t %f \n\n", taskSetUtil, multFactor);
+                 fprintf(BDU_fp, "\t\t UCB Union \t\t\t\t %f \t\t %f \n\n", util, multFactor);
              }*/
      }
      
@@ -1030,7 +1078,6 @@ int Response_time_ECB_Union()
      bool sched = true;
      FILE *fp;
      static int first_call = 1;
-     extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 
      if(MESSAGE_LEVEL > NONE){
 	if(first_call){			
@@ -1142,31 +1189,31 @@ int Response_time_ECB_Union()
            {
                 flag = 0;
                 sched = false;
-                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
            else
            {
-               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
      }
      if(sched == false)
      {
-             //printf("\nTASKSET is NOT schedulable under ECB Union at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under ECB Union at TASKSET_UTIL = %f \n", taskSetUtil);       
+             //printf("\nTASKSET is NOT schedulable under ECB Union at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under ECB Union at TASKSET_UTIL = %f \n", util);       
      }
      else
      {
-             //printf("\nTASKSET IS  schedulable under ECB Union at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS  schedulable under ECB Union at TASKSET_UTIL = %f \n", taskSetUtil); 
+             //printf("\nTASKSET IS  schedulable under ECB Union at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS  schedulable under ECB Union at TASKSET_UTIL = %f \n", util); 
              
              Num_Executed_Tasks[ECB_UNION]++;
              
              /*if(BDU_found == false)
              {
                  BDU_found = true;
-                 fprintf(BDU_fp, "\t\t ECB Union \t\t\t\t %f \t\t %f \n\n", taskSetUtil, multFactor);
+                 fprintf(BDU_fp, "\t\t ECB Union \t\t\t\t %f \t\t %f \n\n", util, multFactor);
              }*/
      }
      
@@ -1195,7 +1242,6 @@ int Response_time_Staschulat()
      bool sched = true;
      FILE *fp;
      static int first_call = 1;
-     extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 
      if(MESSAGE_LEVEL > NONE){
 	if(first_call){			
@@ -1333,31 +1379,31 @@ int Response_time_Staschulat()
            {
                 flag = 0;
                 sched = false;
-                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
            else
            {
-               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
      }
      if(sched == false)
      {
-             //printf("\nTASKSET NOT schedulable under STASCHULAT at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under STASCHULAT at TASKSET_UTIL = %f \n", taskSetUtil);       
+             //printf("\nTASKSET NOT schedulable under STASCHULAT at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under STASCHULAT at TASKSET_UTIL = %f \n", util);       
      }
      else
      {
-             //printf("\nTASKSET IS  schedulable under STASCHULAT at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under STASCHULAT at TASKSET_UTIL = %f \n", taskSetUtil); 
+             //printf("\nTASKSET IS  schedulable under STASCHULAT at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under STASCHULAT at TASKSET_UTIL = %f \n", util); 
              
              Num_Executed_Tasks[STASCHULAT]++;
              
              /*if(BDU_found == false)
              {
                  BDU_found = true;
-                 fprintf(BDU_fp, "\t\t Staschulat \t\t\t\t %f \t\t %f \n\n", taskSetUtil, multFactor);
+                 fprintf(BDU_fp, "\t\t Staschulat \t\t\t\t %f \t\t %f \n\n", util, multFactor);
              }*/
      }
      
@@ -1370,12 +1416,13 @@ int Response_time_Staschulat()
      return sched;
 }
 
-int Response_time_ECB_Union_Multiset(bool display=false)
+int Response_time_ECB_Union_Multiset()
 {
      int i, j, k;
      double acc;
      int flag;
      int LAST_TASK = NUM_TASKS - 1;
+     bool display=false;
      
      std::set<int> workingSet1, workingSet2;
      
@@ -1384,7 +1431,6 @@ int Response_time_ECB_Union_Multiset(bool display=false)
      bool sched = true;
      FILE *fp;
      static int first_call = 1;
-     extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 
      if(MESSAGE_LEVEL > NONE){
 	if(first_call){			
@@ -1542,16 +1588,16 @@ int Response_time_ECB_Union_Multiset(bool display=false)
                 
                 if(display)
                 {
-                    printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                    if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                    printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                    if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
                 }
            }
            else
            {
                if(display)
                {
-                    printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                    if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                    printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                    if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
                }
            }
      }
@@ -1560,20 +1606,20 @@ int Response_time_ECB_Union_Multiset(bool display=false)
      {
         if(sched == false)
         {
-             printf("\nTASKSET is NOT schedulable under ECB-Union-MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under ECB-Union-MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);       
+             printf("\nTASKSET is NOT schedulable under ECB-Union-MULTISET at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under ECB-Union-MULTISET at TASKSET_UTIL = %f \n", util);       
         }
         else
         {
-             printf("\nTASKSET IS schedulable under ECB-Union-MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS  schedulable under-ECB-Union MULTISET at TASKSET_UTIL = %f \n", taskSetUtil); 
+             printf("\nTASKSET IS schedulable under ECB-Union-MULTISET at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS  schedulable under-ECB-Union MULTISET at TASKSET_UTIL = %f \n", util); 
              
              
              
              /*if(BDU_found == false)
              {
                  BDU_found = true;
-                 fprintf(BDU_fp, "\t\t ECB Union Multiset \t\t\t\t %f \t\t %f \n\n", taskSetUtil, multFactor);
+                 fprintf(BDU_fp, "\t\t ECB Union Multiset \t\t\t\t %f \t\t %f \n\n", util, multFactor);
              }*/
         }
         
@@ -1589,13 +1635,14 @@ int Response_time_ECB_Union_Multiset(bool display=false)
      
 }
 
-int Response_time_UCB_Union_Multiset(bool display=false)
+int Response_time_UCB_Union_Multiset()
 {
      int i, j, k;
      double acc;
      int Num_Blocks;
      int flag;
      int LAST_TASK = NUM_TASKS - 1;
+     bool display=false;
      
      std::set<int> workingSet1, workingSet2;
      std::set<int>::iterator it;
@@ -1605,7 +1652,6 @@ int Response_time_UCB_Union_Multiset(bool display=false)
      bool sched = true;
      FILE *fp;
      static int first_call = 1;
-     extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 
      if(MESSAGE_LEVEL > NONE){
 	if(first_call){			
@@ -1743,16 +1789,16 @@ int Response_time_UCB_Union_Multiset(bool display=false)
                 
                 if(display)
                 {
-                   printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                   if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                   printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                   if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
                 }
            }
            else
            {
                if(display)
                {
-                   printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                   if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                   printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                   if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
                }
            }
      }
@@ -1761,20 +1807,20 @@ int Response_time_UCB_Union_Multiset(bool display=false)
      {
         if(sched == false)
         {
-             printf("\nTASKSET NOT schedulable under UCB-Union-MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET NOT schedulable under UCB-Union-MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);       
+             printf("\nTASKSET NOT schedulable under UCB-Union-MULTISET at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET NOT schedulable under UCB-Union-MULTISET at TASKSET_UTIL = %f \n", util);       
         }
         else
         {
-             printf("\nTASKSET IS schedulable under UCB-Union-MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under-UCB-Union MULTISET at TASKSET_UTIL = %f \n", taskSetUtil); 
+             printf("\nTASKSET IS schedulable under UCB-Union-MULTISET at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under-UCB-Union MULTISET at TASKSET_UTIL = %f \n", util); 
              
              
              
              /*if(BDU_found == false)
              {
                  BDU_found = true;
-                 fprintf(BDU_fp, "\t\t UCB Union Multiset \t\t\t\t %f \t\t %f \n\n", taskSetUtil, multFactor);
+                 fprintf(BDU_fp, "\t\t UCB Union Multiset \t\t\t\t %f \t\t %f \n\n", util, multFactor);
              }*/
         }
         
@@ -1800,7 +1846,6 @@ int Response_time_ECB_UCB_Union_Multiset_Combined()
      bool sched = true;
      FILE *fp;
      static int first_call = 1;
-     extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 
      if(MESSAGE_LEVEL > NONE){
 	if(first_call){			
@@ -1859,31 +1904,31 @@ int Response_time_ECB_UCB_Union_Multiset_Combined()
            {
                 flag = 0;
                 sched = false;
-                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
            else
            {
-               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
      }
      if(sched==false)
      {
-             //printf("\nTASKSET is NOT schedulable under ECB-UCB-Union-MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under ECB-UCB-Union-MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);       
+             //printf("\nTASKSET is NOT schedulable under ECB-UCB-Union-MULTISET at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under ECB-UCB-Union-MULTISET at TASKSET_UTIL = %f \n", util);       
      }
      else
      {
-             //printf("\nTASKSET IS  schedulable under ECB-UCB-Union-MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under-ECB-UCB-Union MULTISET at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET IS  schedulable under ECB-UCB-Union-MULTISET at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under-ECB-UCB-Union MULTISET at TASKSET_UTIL = %f \n", util);
              
              Num_Executed_Tasks[ECB_UCB_UNION_MULTISET_COMBINED]++; 
              
              /*if(BDU_found == false)
              {
                  BDU_found = true;
-                 fprintf(BDU_fp, "\t\t ECB UCB Union Multiset Combined \t\t\t\t %f \t\t %f \n\n", taskSetUtil, multFactor);
+                 fprintf(BDU_fp, "\t\t ECB UCB Union Multiset Combined \t\t\t\t %f \t\t %f \n\n", util, multFactor);
              }*/
      }
      
@@ -1911,7 +1956,6 @@ int Response_time_Staschulat_PRE()
      bool sched = true;
      FILE *fp;
      static int first_call = 1;
-     extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 
      if(MESSAGE_LEVEL > NONE){
 	if(first_call){			
@@ -2071,31 +2115,31 @@ int Response_time_Staschulat_PRE()
            {
                 flag = 0;
                 sched = false;
-                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
            else
            {
-               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
      }
      if(sched == false)
      {
-             //printf("\nTASKSET  NOT schedulable under Staschulat-with-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET  NOT schedulable under Staschulat-with-PRE at TASKSET_UTIL = %f \n", taskSetUtil);       
+             //printf("\nTASKSET  NOT schedulable under Staschulat-with-PRE at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET  NOT schedulable under Staschulat-with-PRE at TASKSET_UTIL = %f \n", util);       
      }
      else
      {
-             //printf("\nTASKSET IS schedulable under Staschulat-with-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under Staschulat-with-PRE at TASKSET_UTIL = %f \n", taskSetUtil); 
+             //printf("\nTASKSET IS schedulable under Staschulat-with-PRE at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under Staschulat-with-PRE at TASKSET_UTIL = %f \n", util); 
              
              Num_Executed_Tasks[STASCHULAT_PRE]++; 
              
              /*if(BDU_found == false)
              {
                  BDU_found = true;
-                 fprintf(BDU_fp, "\t\t Staschulat with PRE \t\t\t\t %f \t\t %f \n\n", taskSetUtil, multFactor);
+                 fprintf(BDU_fp, "\t\t Staschulat with PRE \t\t\t\t %f \t\t %f \n\n", util, multFactor);
              }*/
      }
      
@@ -2109,12 +2153,13 @@ int Response_time_Staschulat_PRE()
      return sched;    
 }
 
-int Response_time_ECB_Union_Multiset_PRE(bool display=false)
+int Response_time_ECB_Union_Multiset_PRE()
 {
      int i, j, k;
      double acc;
      int flag;
      int LAST_TASK = NUM_TASKS - 1;
+     bool display=false;
      
      std::set<int> workingSet1, workingSet2;
      
@@ -2123,7 +2168,6 @@ int Response_time_ECB_Union_Multiset_PRE(bool display=false)
      bool sched = true;
      FILE *fp;
      static int first_call = 1;
-     extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 
      if(MESSAGE_LEVEL > NONE){
 	if(first_call){			
@@ -2300,16 +2344,16 @@ int Response_time_ECB_Union_Multiset_PRE(bool display=false)
                 sched = false;
                 if(display)
                 {
-                     printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                     if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                     printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                     if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
                 }
            }
            else
            {
                if(display)
                {
-                    printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                    if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                    printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                    if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
                }
            }
      }
@@ -2318,20 +2362,20 @@ int Response_time_ECB_Union_Multiset_PRE(bool display=false)
      {
         if(sched == false)
         {
-             printf("\nTASKSET NOT schedulable under ECB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET NOT schedulable under ECB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);       
+             printf("\nTASKSET NOT schedulable under ECB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET NOT schedulable under ECB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", util);       
         }
         else
         {
-             printf("\nTASKSET IS schedulable under ECB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under ECB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
+             printf("\nTASKSET IS schedulable under ECB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under ECB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", util);
              
              
              
              /*if(BDU_found == false)
              {
                  BDU_found = true;
-                 fprintf(BDU_fp, "\t\t ECB Union Multiset PRE  \t\t\t\t %f \t\t %f \n\n", taskSetUtil, multFactor);
+                 fprintf(BDU_fp, "\t\t ECB Union Multiset PRE  \t\t\t\t %f \t\t %f \n\n", util, multFactor);
              }*/
         }
         
@@ -2346,13 +2390,14 @@ int Response_time_ECB_Union_Multiset_PRE(bool display=false)
      return sched;
 }
 
-int Response_time_UCB_Union_Multiset_PRE(bool display=false)
+int Response_time_UCB_Union_Multiset_PRE()
 {
      int i, j, k;
      double acc;
      int Num_Blocks;
      int flag;
      int LAST_TASK = NUM_TASKS - 1;
+     bool display=false;
      
      std::set<int> workingSet1, workingSet2;
      std::set<int>::iterator it;
@@ -2362,7 +2407,6 @@ int Response_time_UCB_Union_Multiset_PRE(bool display=false)
      bool sched = true;
      FILE *fp;
      static int first_call = 1;
-     extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 
      if(MESSAGE_LEVEL > NONE){
 	if(first_call){			
@@ -2520,16 +2564,16 @@ int Response_time_UCB_Union_Multiset_PRE(bool display=false)
                 
                 if(display)
                 {
-                     printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                     if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                     printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                     if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
                 }
            }
            else
            {
                if(display)
                {
-                     printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                     if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                     printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                     if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
                }
            }
      }
@@ -2538,20 +2582,20 @@ int Response_time_UCB_Union_Multiset_PRE(bool display=false)
      {
          if(sched == false)
          {
-             printf("\nTASKSET  NOT schedulable under UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET  NOT schedulable under UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);     
+             printf("\nTASKSET  NOT schedulable under UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET  NOT schedulable under UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", util);     
          }
          else
          {
-             printf("\nTASKSET IS schedulable under UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil); 
+             printf("\nTASKSET IS schedulable under UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", util); 
              
              
              
              /*if(BDU_found == false)
              {
                  BDU_found = true;
-                 fprintf(BDU_fp, "\t\t UCB-Union-Multiset-PRE  \t\t\t\t %f \t\t %f \n\n", taskSetUtil, multFactor);
+                 fprintf(BDU_fp, "\t\t UCB-Union-Multiset-PRE  \t\t\t\t %f \t\t %f \n\n", util, multFactor);
              }*/  
              
          }
@@ -2578,7 +2622,6 @@ int Response_time_ECB_UCB_Union_Multiset_Combined_PRE()
      bool sched = true;
      FILE *fp;
      static int first_call = 1;
-     extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 
      if(MESSAGE_LEVEL > NONE){
 	if(first_call){			
@@ -2637,31 +2680,31 @@ int Response_time_ECB_UCB_Union_Multiset_Combined_PRE()
            {
                 flag = 0;
                 sched = false;
-                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
            else
            {
-               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
      }
      if(sched == false)
      {
-             //printf("\nTASKSET NOT schedulable under ECB-UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET  NOT schedulable under ECB-UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);       
+             //printf("\nTASKSET NOT schedulable under ECB-UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET  NOT schedulable under ECB-UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", util);       
      }
      else
      {
-             //printf("\nTASKSET IS schedulable under ECB-UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under ECB-UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", taskSetUtil); 
+             //printf("\nTASKSET IS schedulable under ECB-UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under ECB-UCB-Union-Multiset-PRE at TASKSET_UTIL = %f \n", util); 
              
              Num_Executed_Tasks[ECB_UCB_UNION_MULTISET_COMBINED_PRE]++;
              
              /*if(BDU_found == false)
              {
                  BDU_found = true;
-                 fprintf(BDU_fp, "\t\t ECB-UCB-Union-Multiset-Combined PRE  \t\t\t\t %f \t\t %f \n\n", taskSetUtil, multFactor);
+                 fprintf(BDU_fp, "\t\t ECB-UCB-Union-Multiset-Combined PRE  \t\t\t\t %f \t\t %f \n\n", util, multFactor);
              }*/
      }
      
@@ -2690,7 +2733,6 @@ int Response_time_PRE_MAX()
      bool sched = true;
      FILE *fp;
      static int first_call = 1;
-     extern std::set<int> TASK_ECB[NUM_TASKS], TASK_UCB[NUM_TASKS];
 
      if(MESSAGE_LEVEL > NONE){
 	if(first_call){			
@@ -2816,31 +2858,31 @@ int Response_time_PRE_MAX()
            {
                 flag = 0;
                 sched = false;
-                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+                //printf("TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+                if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d NOT schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
            else
            {
-               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
-               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, taskSetUtil, Response[i], D[i]);
+               //printf("TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
+               if(MESSAGE_LEVEL > NONE) fprintf(fp, "TASK %d IS schedulable at TASKSET_UTIL = %f Response = %f Deadline = %ld \n", i, util, Response[i], D[i]);
            }
      }
      if(sched == false)
      {
-             //printf("\nTASKSET NOT schedulable under PRE-MAX at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under PRE-MAX at TASKSET_UTIL = %f \n", taskSetUtil);       
+             //printf("\nTASKSET NOT schedulable under PRE-MAX at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET is NOT schedulable under PRE-MAX at TASKSET_UTIL = %f \n", util);       
      }
      else
      {
-             //printf("\nTASKSET IS schedulable under PRE-MAX at TASKSET_UTIL = %f \n", taskSetUtil);
-             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under PRE-MAX at TASKSET_UTIL = %f \n", taskSetUtil);
+             //printf("\nTASKSET IS schedulable under PRE-MAX at TASKSET_UTIL = %f \n", util);
+             if(MESSAGE_LEVEL > NONE) fprintf(fp, "\nTASKSET IS schedulable under PRE-MAX at TASKSET_UTIL = %f \n", util);
              
              Num_Executed_Tasks[PRE_MAX]++; 
              
              /*if(BDU_found == false)
              {
                  BDU_found = true;
-                 fprintf(BDU_fp, "\t\t PRE MAX  \t\t\t\t %f \t\t %f \n\n", taskSetUtil, multFactor);
+                 fprintf(BDU_fp, "\t\t PRE MAX  \t\t\t\t %f \t\t %f \n\n", util, multFactor);
              }*/
      }
      

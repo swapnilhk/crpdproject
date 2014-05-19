@@ -55,7 +55,9 @@ void printBaseConfig(FILE *fp);
 void printTaskInfo(FILE *fp);
 void print_ecbs(FILE *fp);
 void print_ucbs(FILE *fp);
-int** Make2DintArray(int arraySizeX, int arraySizeY);
+int** Make2DintArrayInt(int arraySizeX, int arraySizeY);
+double** Make2DintArrayDouble(int arraySizeX, int arraySizeY);
+long** Make2DintArrayLong(int arraySizeX, int arraySizeY);
 double sigmaTda(int thisTask, double Response[]);
 double wcrt(int thisTask, double Response[], FILE *fp, double (*PC)(int, double[], FILE*));
 #endif

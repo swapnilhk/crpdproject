@@ -62,7 +62,7 @@ void print_ucbs(FILE *fp){
 	}
 }
 
-int** Make2DintArray(int arraySizeX, int arraySizeY){	
+int** Make2DintArrayInt(int arraySizeX, int arraySizeY){	
     int i;
     int** theArray;
     theArray = (int**) malloc(arraySizeX*sizeof(int*));
@@ -70,6 +70,25 @@ int** Make2DintArray(int arraySizeX, int arraySizeY){
         theArray[i] = (int*) malloc(arraySizeY*sizeof(int));
     return theArray;
 }
+
+double** Make2DintArrayDouble(int arraySizeX, int arraySizeY){	
+    int i;
+    double** theArray;
+    theArray = (double**) malloc(arraySizeX*sizeof(double*));
+    for (i = 0; i < arraySizeX; i++)
+        theArray[i] = (double*) malloc(arraySizeY*sizeof(double));
+    return theArray;
+}
+
+long** Make2DintArrayLong(int arraySizeX, int arraySizeY){	
+    int i;
+    long** theArray;
+    theArray = (long**) malloc(arraySizeX*sizeof(long*));
+    for (i = 0; i < arraySizeX; i++)
+        theArray[i] = (long*) malloc(arraySizeY*sizeof(long));
+    return theArray;
+}
+
 
 double sigmaTda(int thisTask, double Response[]){
 	double RNew = 0;

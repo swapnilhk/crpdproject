@@ -248,8 +248,8 @@ int ResponseTimePreMaxKd(){
 	bool sched = true;
 	FILE *fp;
 	double *Response = 	(double*)malloc(sizeof(*Response) * NUM_TASKS);
-	nnpMin = Make2DintArray(NUM_TASKS, NUM_TASKS);
-	nnpMax = Make2DintArray(NUM_TASKS, NUM_TASKS);
+	nnpMin = Make2DintArrayInt(NUM_TASKS, NUM_TASKS);
+	nnpMax = Make2DintArrayInt(NUM_TASKS, NUM_TASKS);
 	static int first_call = 1;
 	char * filename = "out/kd.txt";
 
@@ -475,9 +475,9 @@ int ResponseTimePreMaxKd2(){
 	int task_no;
 	bool sched = true;
 	FILE *fp;
-	double *Response = 	(double*)malloc(sizeof(*Response) * NUM_TASKS);
-	nnpMin = Make2DintArray(NUM_TASKS, NUM_TASKS);
-	nnpMax = Make2DintArray(NUM_TASKS, NUM_TASKS);
+	double *Response = (double*)malloc(sizeof(*Response) * NUM_TASKS);
+	nnpMin = Make2DintArrayInt(NUM_TASKS, NUM_TASKS);
+	nnpMax = Make2DintArrayInt(NUM_TASKS, NUM_TASKS);
 	static int first_call = 1;
 	char * filename = "out/kd2.txt";
 

@@ -155,7 +155,7 @@ static void initBenchmark(FILE *fp){
 	TASK_UCB = new std::set<int>[NUM_TASKS];
 	SIZE_ECB_TASK = (int*)malloc(sizeof(*SIZE_ECB_TASK) * NUM_TASKS);
 	SIZE_UCB_TASK = (int*)malloc(sizeof(*SIZE_UCB_TASK) * NUM_TASKS);
-	ECB_TASK_ARRAY = Make2DintArray(NUM_TASKS, CACHE_SIZE);
+	ECB_TASK_ARRAY = Make2DintArrayInt(NUM_TASKS, CACHE_SIZE);
 	Set_SizeECBs_UUniFast();
 	Set_SizeUCBs_Uniform();
 	Read_ECBs();

@@ -1,3 +1,4 @@
+#include"uniform_fixed_tasks_ecb_ucb_schemes.h"
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -12,21 +13,21 @@ struct map{
 	int (*func)();
 }methodsMap[NUM_METHODS];
 
-void init(){
-	methodsMap[NO_PREEMPT] = (struct map){"NO_PREEMPT", NULL};
-	methodsMap[ECB_ONLY] = (struct map){"ECB_ONLY", NULL};
-	methodsMap[UCB_ONLY] = (struct map){"ECB_ONLY", NULL};
-	methodsMap[UCB_UNION] = (struct map){"UCB_UNION", NULL};
-	methodsMap[ECB_UNION] = (struct map){"ECB_UNION", NULL};
-	methodsMap[ECB_UNION_MULTISET] = (struct map){"ECB_UNION_MULTISET", NULL};
-	methodsMap[UCB_UNION_MULTISET] = (struct map){"UCB_UNION_MULTISET", NULL};
-	methodsMap[ECB_UCB_UNION_MULTISET_COMBINED] = (struct map){"ECB_UCB_UNION_MULTISET_COMBINED", NULL};
-	methodsMap[ECB_UNION_MULTISET_PRE] = (struct map){"ECB_UNION_MULTISET_PRE", NULL};
-	methodsMap[UCB_UNION_MULTISET_PRE] = (struct map){"UCB_UNION_MULTISET_PRE", NULL};
-	methodsMap[ECB_UCB_UNION_MULTISET_COMBINED_PRE] = (struct map){"ECB_UCB_UNION_MULTISET_COMBINED_PRE", NULL};
-	methodsMap[STASCHULAT] = (struct map){"STASCHULAT", NULL};
-	methodsMap[STASCHULAT_PRE] = (struct map){"STASCHULAT_PRE", NULL};
-	methodsMap[PRE_MAX] = (struct map){"PRE_MAX", NULL};
+void init(){	
+	methodsMap[NO_PREEMPT] = (struct map){"NO_PREEMPT", /*NULL*/Response_time_NO_PREEMPT};
+	methodsMap[ECB_ONLY] = (struct map){"ECB_ONLY", /*NULL*/Response_time_ECB_Only};
+	methodsMap[UCB_ONLY] = (struct map){"UCB_ONLY", /*NULL*/Response_time_UCB_Only};
+	methodsMap[UCB_UNION] = (struct map){"UCB_UNION", /*NULL*/Response_time_UCB_Union};
+	methodsMap[ECB_UNION] = (struct map){"ECB_UNION", /*NULL*/Response_time_ECB_Union};
+	methodsMap[ECB_UNION_MULTISET] = (struct map){"ECB_UNION_MULTISET", /*NULL*/Response_time_ECB_Union_Multiset};
+	methodsMap[UCB_UNION_MULTISET] = (struct map){"UCB_UNION_MULTISET", /*NULL*/Response_time_UCB_Union_Multiset};
+	methodsMap[ECB_UCB_UNION_MULTISET_COMBINED] = (struct map){"ECB_UCB_UNION_MULTISET_COMBINED", /*NULL*/Response_time_ECB_UCB_Union_Multiset_Combined};
+	methodsMap[ECB_UNION_MULTISET_PRE] = (struct map){"ECB_UNION_MULTISET_PRE", /*NULL*/Response_time_ECB_Union_Multiset_PRE};
+	methodsMap[UCB_UNION_MULTISET_PRE] = (struct map){"UCB_UNION_MULTISET_PRE", /*NULL*/Response_time_UCB_Union_Multiset_PRE};
+	methodsMap[ECB_UCB_UNION_MULTISET_COMBINED_PRE] = (struct map){"ECB_UCB_UNION_MULTISET_COMBINED_PRE", /*NULL*/Response_time_ECB_UCB_Union_Multiset_Combined_PRE};
+	methodsMap[STASCHULAT] = (struct map){"STASCHULAT", /*NULL*/Response_time_Staschulat};
+	methodsMap[STASCHULAT_PRE] = (struct map){"STASCHULAT_PRE", /*NULL*/Response_time_Staschulat_PRE};
+	methodsMap[PRE_MAX] = (struct map){"PRE_MAX", /*NULL*/Response_time_PRE_MAX};
 	methodsMap[PRE_MAX_KD] = (struct map){"PRE_MAX_KD", /*NULL*/ResponseTimePreMaxKd};
 	methodsMap[PRE_MAX_KD2] = (struct map){"PRE_MAX_KD2", /*NULL*/ResponseTimePreMaxKd2};
 	methodsMap[LEE_WODC] = (struct map){"LEE_WODC", /*NULL*/ResponseTimeLeeWodc};
@@ -101,7 +102,7 @@ void printDominationInfo(int dom[], FILE *fp){
 void uniformDistributionBenchmark(FILE *fp){
 	int dom[NUM_METHODS] = {0};
 	fprintf(fp, "Uniform Distribution Benchmark\n");
-	initUniformDistributionBenchmark(fp);
+	initUniformDistributionBenchmark(fp);	
 	for(util = UTIL_START; util <= UTIL_END; util += UTIL_INCREMENT){
 		if(VERBOSE) printf("The total util is %f\n", util);
 		clearTaskExecutionStatistics();		
@@ -158,9 +159,10 @@ int main(int argc, char * argv[]) {
 		fprintf(stderr, "***Unable to open file %s\n", filename);
 		exit(1);
 	}
+	init_uniform_fixed_tasks_ecb_ucb_schemes();
 	if(MESSAGE_LEVEL >= IMP) printBaseConfig(fp);
 	printBaseConfig(fp);
-	//uniformDistributionBenchmark(fp);
-	constantValuesBenchmark(fp);
+	uniformDistributionBenchmark(fp);
+	//constantValuesBenchmark(fp);
 	fclose(fp);
 }
