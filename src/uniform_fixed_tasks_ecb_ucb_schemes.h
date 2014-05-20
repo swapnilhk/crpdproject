@@ -3,63 +3,6 @@
 
 #include<stdio.h>
 
-extern float multFactor;
-
-extern double **Gamma_i_j_ECB_Only;
-extern double **Gamma_i_j_UCB_Only;
-extern double **Gamma_i_j_UCB_Union;
-extern double **Gamma_i_j_ECB_Union;
-extern double **Gamma_i_j_Staschulat;
-extern double **Gamma_i_j_ECB_Union_Multiset;
-extern double **Gamma_i_j_UCB_Union_Multiset;
-extern double **Gamma_i_j_Staschulat_PRE;
-extern double **Gamma_i_j_ECB_Union_Multiset_PRE;
-extern double **Gamma_i_j_UCB_Union_Multiset_PRE;
-extern double **Gamma_i_j_PRE_MAX;
-
-extern long *Num_Displaced_Blocks_ECB_Only;
-extern long *Num_Displaced_Blocks_UCB_Only;
-extern long *Num_Displaced_Blocks_UCB_Union;
-extern long *Num_Displaced_Blocks_ECB_Union;
-extern long *Num_Displaced_Blocks_Staschulat;
-extern long *Num_Displaced_Blocks_ECB_Union_Multiset;
-extern long *Num_Displaced_Blocks_UCB_Union_Multiset;
-extern long *Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined;
-extern long *Num_Displaced_Blocks_Staschulat_PRE;
-extern long *Num_Displaced_Blocks_ECB_Union_Multiset_PRE;
-extern long *Num_Displaced_Blocks_UCB_Union_Multiset_PRE;
-extern long *Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined_PRE;
-extern long *Num_Displaced_Blocks_PRE_MAX;
-
-extern double *Response;
-extern double *Response_NO_PREEMPT;
-extern double *Response_ECB_Only;
-extern double *Response_UCB_Only;
-extern double *Response_UCB_Union;
-extern double *Response_ECB_Union;
-extern double *Response_Staschulat;
-extern double *Response_ECB_Union_Multiset;
-extern double *Response_UCB_Union_Multiset;
-extern double *Response_ECB_UCB_Union_Multiset_Combined;
-extern double *Response_Staschulat_PRE;
-extern double *Response_ECB_Union_Multiset_PRE;
-extern double *Response_UCB_Union_Multiset_PRE;
-extern double *Response_ECB_UCB_Union_Multiset_Combined_PRE;
-extern double *Response_PRE_MAX;
-
-extern int *Cost;
-extern int *Useful_cost;
-
-extern long **PRE_ij_min;
-extern long **PRE_ij_max;
-    
-extern long *PRE_min;
-extern long *PRE_max;
-
-extern double Cycles[15];
-extern bool BDU_ONLY;
-extern FILE* BDU_fp;
-
 void init_uniform_fixed_tasks_ecb_ucb_schemes(void);
 void clear_Response(void);
 long INTR_max(int i, int j);
@@ -87,5 +30,4 @@ int Response_time_ECB_Union_Multiset_PRE(void);
 int Response_time_UCB_Union_Multiset_PRE(void);
 int Response_time_ECB_UCB_Union_Multiset_Combined_PRE(void);
 int Response_time_PRE_MAX(void);
-void Clear_ALL(void);
 #endif

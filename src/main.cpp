@@ -103,6 +103,7 @@ void uniformDistributionBenchmark(FILE *fp){
 	int dom[NUM_METHODS] = {0};
 	fprintf(fp, "Uniform Distribution Benchmark\n");
 	initUniformDistributionBenchmark(fp);	
+	init_uniform_fixed_tasks_ecb_ucb_schemes();
 	for(util = UTIL_START; util <= UTIL_END; util += UTIL_INCREMENT){
 		if(VERBOSE) printf("The total util is %f\n", util);
 		clearTaskExecutionStatistics();		
@@ -158,8 +159,7 @@ int main(int argc, char * argv[]) {
 	if(fp == NULL){
 		fprintf(stderr, "***Unable to open file %s\n", filename);
 		exit(1);
-	}
-	init_uniform_fixed_tasks_ecb_ucb_schemes();
+	}	
 	if(MESSAGE_LEVEL >= IMP) printBaseConfig(fp);
 	printBaseConfig(fp);
 	uniformDistributionBenchmark(fp);

@@ -1,5 +1,6 @@
 #include"uniform_fixed_tasks_ecb_ucb_schemes.h"
 #include<cstdlib>
+#include<stdlib.h>
 #include<iostream>
 #include<math.h>
 #include<set>
@@ -10,18 +11,6 @@ using namespace std;
 
 // to scale Task Periods
 float multFactor;
-
-double **Gamma_i_j_ECB_Only;
-double **Gamma_i_j_UCB_Only;
-double **Gamma_i_j_UCB_Union;
-double **Gamma_i_j_ECB_Union;
-double **Gamma_i_j_Staschulat;
-double **Gamma_i_j_ECB_Union_Multiset;
-double **Gamma_i_j_UCB_Union_Multiset;
-double **Gamma_i_j_Staschulat_PRE;
-double **Gamma_i_j_ECB_Union_Multiset_PRE;
-double **Gamma_i_j_UCB_Union_Multiset_PRE;
-double **Gamma_i_j_PRE_MAX;
 
 long *Num_Displaced_Blocks_ECB_Only;
 long *Num_Displaced_Blocks_UCB_Only;
@@ -63,56 +52,44 @@ long *PRE_min;
 long *PRE_max;
 
 void init_uniform_fixed_tasks_ecb_ucb_schemes(){
-	double **Gamma_i_j_ECB_Only = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
-	double **Gamma_i_j_UCB_Only = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
-	double **Gamma_i_j_UCB_Union = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
-	double **Gamma_i_j_ECB_Union = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
-	double **Gamma_i_j_Staschulat = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
-	double **Gamma_i_j_ECB_Union_Multiset = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
-	double **Gamma_i_j_UCB_Union_Multiset = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
-	double **Gamma_i_j_Staschulat_PRE = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
-	double **Gamma_i_j_ECB_Union_Multiset_PRE = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
-	double **Gamma_i_j_UCB_Union_Multiset_PRE = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
-	double **Gamma_i_j_PRE_MAX = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
-
-	long *Num_Displaced_Blocks_ECB_Only = (long*)malloc(sizeof(long) * NUM_TASKS);
-	long *Num_Displaced_Blocks_UCB_Only = (long*)malloc(sizeof(long) * NUM_TASKS);
-	long *Num_Displaced_Blocks_UCB_Union = (long*)malloc(sizeof(long) * NUM_TASKS);
-	long *Num_Displaced_Blocks_ECB_Union = (long*)malloc(sizeof(long) * NUM_TASKS);
-	long *Num_Displaced_Blocks_Staschulat = (long*)malloc(sizeof(long) * NUM_TASKS);
-	long *Num_Displaced_Blocks_ECB_Union_Multiset = (long*)malloc(sizeof(long) * NUM_TASKS);
-	long *Num_Displaced_Blocks_UCB_Union_Multiset = (long*)malloc(sizeof(long) * NUM_TASKS);
-	long *Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined = (long*)malloc(sizeof(long) * NUM_TASKS);
-	long *Num_Displaced_Blocks_Staschulat_PRE = (long*)malloc(sizeof(long) * NUM_TASKS);
-	long *Num_Displaced_Blocks_ECB_Union_Multiset_PRE = (long*)malloc(sizeof(long) * NUM_TASKS);
-	long *Num_Displaced_Blocks_UCB_Union_Multiset_PRE = (long*)malloc(sizeof(long) * NUM_TASKS);
-	long *Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined_PRE = (long*)malloc(sizeof(long) * NUM_TASKS);
-	long *Num_Displaced_Blocks_PRE_MAX = (long*)malloc(sizeof(long) * NUM_TASKS);
+	Num_Displaced_Blocks_ECB_Only = (long*)malloc(sizeof(long) * NUM_TASKS);
+	Num_Displaced_Blocks_UCB_Only = (long*)malloc(sizeof(long) * NUM_TASKS);
+	Num_Displaced_Blocks_UCB_Union = (long*)malloc(sizeof(long) * NUM_TASKS);
+	Num_Displaced_Blocks_ECB_Union = (long*)malloc(sizeof(long) * NUM_TASKS);
+	Num_Displaced_Blocks_Staschulat = (long*)malloc(sizeof(long) * NUM_TASKS);
+	Num_Displaced_Blocks_ECB_Union_Multiset = (long*)malloc(sizeof(long) * NUM_TASKS);
+	Num_Displaced_Blocks_UCB_Union_Multiset = (long*)malloc(sizeof(long) * NUM_TASKS);
+	Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined = (long*)malloc(sizeof(long) * NUM_TASKS);
+	Num_Displaced_Blocks_Staschulat_PRE = (long*)malloc(sizeof(long) * NUM_TASKS);
+	Num_Displaced_Blocks_ECB_Union_Multiset_PRE = (long*)malloc(sizeof(long) * NUM_TASKS);
+	Num_Displaced_Blocks_UCB_Union_Multiset_PRE = (long*)malloc(sizeof(long) * NUM_TASKS);
+	Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined_PRE = (long*)malloc(sizeof(long) * NUM_TASKS);
+	Num_Displaced_Blocks_PRE_MAX = (long*)malloc(sizeof(long) * NUM_TASKS);
 	
-	double *Response = (double*)malloc(sizeof(double) * NUM_TASKS);
-	double *Response_NO_PREEMPT = (double*)malloc(sizeof(double) * NUM_TASKS);
-	double *Response_ECB_Only = (double*)malloc(sizeof(double) * NUM_TASKS);
-	double *Response_UCB_Only = (double*)malloc(sizeof(double) * NUM_TASKS);
-	double *Response_UCB_Union = (double*)malloc(sizeof(double) * NUM_TASKS);
-	double *Response_ECB_Union = (double*)malloc(sizeof(double) * NUM_TASKS);
-	double *Response_Staschulat = (double*)malloc(sizeof(double) * NUM_TASKS);
-	double *Response_ECB_Union_Multiset = (double*)malloc(sizeof(double) * NUM_TASKS);
-	double *Response_UCB_Union_Multiset = (double*)malloc(sizeof(double) * NUM_TASKS);
-	double *Response_ECB_UCB_Union_Multiset_Combined = (double*)malloc(sizeof(double) * NUM_TASKS);
-	double *Response_Staschulat_PRE = (double*)malloc(sizeof(double) * NUM_TASKS);
-	double *Response_ECB_Union_Multiset_PRE = (double*)malloc(sizeof(double) * NUM_TASKS);
-	double *Response_UCB_Union_Multiset_PRE = (double*)malloc(sizeof(double) * NUM_TASKS);
-	double *Response_ECB_UCB_Union_Multiset_Combined_PRE = (double*)malloc(sizeof(double) * NUM_TASKS);
-	double *Response_PRE_MAX = (double*)malloc(sizeof(double) * NUM_TASKS);
+	Response = (double*)malloc(sizeof(double) * NUM_TASKS);
+	Response_NO_PREEMPT = (double*)malloc(sizeof(double) * NUM_TASKS);
+	Response_ECB_Only = (double*)malloc(sizeof(double) * NUM_TASKS);
+	Response_UCB_Only = (double*)malloc(sizeof(double) * NUM_TASKS);
+	Response_UCB_Union = (double*)malloc(sizeof(double) * NUM_TASKS);
+	Response_ECB_Union = (double*)malloc(sizeof(double) * NUM_TASKS);
+	Response_Staschulat = (double*)malloc(sizeof(double) * NUM_TASKS);
+	Response_ECB_Union_Multiset = (double*)malloc(sizeof(double) * NUM_TASKS);
+	Response_UCB_Union_Multiset = (double*)malloc(sizeof(double) * NUM_TASKS);
+	Response_ECB_UCB_Union_Multiset_Combined = (double*)malloc(sizeof(double) * NUM_TASKS);
+	Response_Staschulat_PRE = (double*)malloc(sizeof(double) * NUM_TASKS);
+	Response_ECB_Union_Multiset_PRE = (double*)malloc(sizeof(double) * NUM_TASKS);
+	Response_UCB_Union_Multiset_PRE = (double*)malloc(sizeof(double) * NUM_TASKS);
+	Response_ECB_UCB_Union_Multiset_Combined_PRE = (double*)malloc(sizeof(double) * NUM_TASKS);
+	Response_PRE_MAX = (double*)malloc(sizeof(double) * NUM_TASKS);
 
-	int *Cost = (int*)malloc(sizeof(int) * NUM_TASKS);
-	int *Useful_cost = (int*)malloc(sizeof(int) * NUM_TASKS);
+	Cost = (int*)malloc(sizeof(int) * NUM_TASKS);
+	Useful_cost = (int*)malloc(sizeof(int) * NUM_TASKS);
 
-	long **PRE_ij_min = Make2DintArrayLong(NUM_TASKS, NUM_TASKS);
-	long **PRE_ij_max = Make2DintArrayLong(NUM_TASKS, NUM_TASKS);
+	PRE_ij_min = Make2DintArrayLong(NUM_TASKS, NUM_TASKS);
+	PRE_ij_max = Make2DintArrayLong(NUM_TASKS, NUM_TASKS);
 	    
-	long *PRE_min = (long*)malloc(sizeof(long) * NUM_TASKS);
-	long *PRE_max = (long*)malloc(sizeof(long) * NUM_TASKS);
+	PRE_min = (long*)malloc(sizeof(long) * NUM_TASKS);
+	PRE_max = (long*)malloc(sizeof(long) * NUM_TASKS);
 }
 /* Input */
 
@@ -503,7 +480,7 @@ int Response_time_NO_PREEMPT()
         if (BDU_ONLY)
            return 0;
      }
-            
+     
      clear_Response();
      
      if(MESSAGE_LEVEL > NONE) fprintf(fp, "************** NO PREEMPT*********************\n \n");
@@ -655,6 +632,8 @@ int Response_time_ECB_Only()
             
             Num_Displaced_Blocks_ECB_Only[i] = 0;
             
+            double **Gamma_i_j_ECB_Only = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
+            
             for(int k = 0; k < NUM_TASKS; k++)
             {
                     Gamma_i_j_ECB_Only[k][i] = 0;
@@ -804,6 +783,8 @@ int Response_time_UCB_Only()
             
             Num_Displaced_Blocks_UCB_Only[i] = 0;
             
+            double **Gamma_i_j_UCB_Only = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
+            
             for(int k = 0; k < NUM_TASKS; k++)
             {
                     Gamma_i_j_UCB_Only[k][i] = 0;
@@ -952,6 +933,8 @@ int Response_time_UCB_Union()
             acc = C[i];
             
             Num_Displaced_Blocks_UCB_Union[i] = 0;
+            
+            double **Gamma_i_j_UCB_Union = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
             
             for(int k = 0; k < NUM_TASKS; k++)
             {
@@ -1121,6 +1104,8 @@ int Response_time_ECB_Union()
             
             Num_Displaced_Blocks_ECB_Union[i] = 0;
             
+            double **Gamma_i_j_ECB_Union = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
+            
             for(int k = 0; k < NUM_TASKS; k++)
             {
                     Gamma_i_j_ECB_Union[k][i] = 0;
@@ -1287,6 +1272,8 @@ int Response_time_Staschulat()
             acc = C[i];
             
             Num_Displaced_Blocks_Staschulat[i] = 0;
+            
+            double **Gamma_i_j_Staschulat = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
             
             for(k = 0; k < NUM_TASKS; k++)
             {
@@ -1479,6 +1466,8 @@ int Response_time_ECB_Union_Multiset()
             acc = C[i];
             
             Num_Displaced_Blocks_ECB_Union_Multiset[i] = 0;
+            
+           	double **Gamma_i_j_ECB_Union_Multiset = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
             
             for(k = 0; k < NUM_TASKS; k++)
             {
@@ -1700,6 +1689,8 @@ int Response_time_UCB_Union_Multiset()
             acc = C[i];
             
             Num_Displaced_Blocks_UCB_Union_Multiset[i] = 0;
+            
+            double **Gamma_i_j_UCB_Union_Multiset = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
             
             for(k = 0; k < NUM_TASKS; k++)
             {
@@ -2006,6 +1997,8 @@ int Response_time_Staschulat_PRE()
             
             Num_Displaced_Blocks_Staschulat_PRE[i] = 0;
             
+            double **Gamma_i_j_Staschulat_PRE = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
+            
             for(k = 0; k < NUM_TASKS; k++)
             {
                     Gamma_i_j_Staschulat_PRE[k][i] = 0;
@@ -2219,6 +2212,8 @@ int Response_time_ECB_Union_Multiset_PRE()
             acc = C[i];
             
             Num_Displaced_Blocks_ECB_Union_Multiset_PRE[i] = 0;
+            
+            double **Gamma_i_j_ECB_Union_Multiset_PRE = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
             
             for(k = 0; k < NUM_TASKS; k++)
             {
@@ -2458,6 +2453,8 @@ int Response_time_UCB_Union_Multiset_PRE()
             acc = C[i];
             
             Num_Displaced_Blocks_UCB_Union_Multiset_PRE[i] = 0;
+            
+            double **Gamma_i_j_UCB_Union_Multiset_PRE = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
             
             for(k = 0; k < NUM_TASKS; k++)
             {
@@ -2778,6 +2775,8 @@ int Response_time_PRE_MAX()
             acc = C[i];
             
             Num_Displaced_Blocks_PRE_MAX[i] = 0;
+
+			double **Gamma_i_j_PRE_MAX = Make2DintArrayDouble(NUM_TASKS, NUM_TASKS);
             
             for(k = 0; k < NUM_TASKS; k++)
             {
@@ -2895,73 +2894,4 @@ int Response_time_PRE_MAX()
      return sched;     
 }
 
-
-void Clear_ALL()
-{
-
-     for(int i=0; i < NUM_TASKS; i++)
-     {
-         
-              Num_Displaced_Blocks_ECB_Only[i] = 0;
-              Num_Displaced_Blocks_UCB_Only[i] = 0;
-              Num_Displaced_Blocks_UCB_Union[i] = 0;
-              Num_Displaced_Blocks_ECB_Union[i] = 0;
-
-              Num_Displaced_Blocks_Staschulat[i] = 0;
-              Num_Displaced_Blocks_ECB_Union_Multiset[i] = 0;
-              Num_Displaced_Blocks_UCB_Union_Multiset[i] = 0;
-              Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined[i] = 0;
-
-              Num_Displaced_Blocks_Staschulat_PRE[i] = 0;
-              Num_Displaced_Blocks_ECB_Union_Multiset_PRE[i] = 0;
-              Num_Displaced_Blocks_UCB_Union_Multiset_PRE[i] = 0;
-              Num_Displaced_Blocks_ECB_UCB_Union_Multiset_Combined_PRE[i] = 0;
-
-              Num_Displaced_Blocks_PRE_MAX[i] = 0;
-
-              Response[i] = 0;
-
-              Response_NO_PREEMPT[i] = 0;
-              Response_ECB_Only[i] = 0; 
-              Response_UCB_Only[i] = 0; 
-              Response_UCB_Union[i] = 0; 
-              Response_ECB_Union[i] = 0;
-              Response_Staschulat[i] = 0;
-              Response_ECB_Union_Multiset[i] = 0; 
-              Response_UCB_Union_Multiset[i] = 0; 
-              Response_ECB_UCB_Union_Multiset_Combined[i] = 0; 
-
-              Response_Staschulat_PRE[i] = 0;
-              Response_ECB_Union_Multiset_PRE[i] = 0; 
-              Response_UCB_Union_Multiset_PRE[i] = 0; 
-              Response_ECB_UCB_Union_Multiset_Combined_PRE[i] = 0; 
-              Response_PRE_MAX[i] = 0;
-
-              PRE_min[i] = 0;
-              PRE_max[i] = 0;
-    
-             
-             
-             for(int j = 0; j < NUM_TASKS; j++)
-             {
-                     Gamma_i_j_ECB_Only[i][j] = 0;
-                     Gamma_i_j_UCB_Only[i][j] = 0;
-                     Gamma_i_j_UCB_Union[i][j] = 0;
-                     Gamma_i_j_ECB_Union[i][j] = 0;
-
-                     Gamma_i_j_Staschulat[i][j] = 0;
-                     Gamma_i_j_ECB_Union_Multiset[i][j] = 0;
-                     Gamma_i_j_UCB_Union_Multiset[i][j] = 0;
-
-                     Gamma_i_j_Staschulat_PRE[i][j] = 0;
-                     Gamma_i_j_ECB_Union_Multiset_PRE[i][j] = 0;
-                     Gamma_i_j_UCB_Union_Multiset_PRE[i][j] = 0;
-
-                     Gamma_i_j_PRE_MAX[i][j] = 0;
-                     
-                     PRE_ij_min[i][j] = 0; 
-                     PRE_ij_max[i][j] = 0;
-             }
-      }
-}
 
