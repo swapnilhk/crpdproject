@@ -14,6 +14,7 @@ struct map{
 }methodsMap[NUM_METHODS];
 
 void init(){	
+	//TODO: Read these mappings from a configuration file
 	methodsMap[NO_PREEMPT] = (struct map){"NO_PREEMPT", /*NULL*/Response_time_NO_PREEMPT};
 	methodsMap[ECB_ONLY] = (struct map){"ECB_ONLY", /*NULL*/Response_time_ECB_Only};
 	methodsMap[UCB_ONLY] = (struct map){"UCB_ONLY", /*NULL*/Response_time_UCB_Only};
@@ -31,7 +32,7 @@ void init(){
 	methodsMap[PRE_MAX_KD] = (struct map){"PRE_MAX_KD", /*NULL*/ResponseTimePreMaxKd};
 	methodsMap[PRE_MAX_KD2] = (struct map){"PRE_MAX_KD2", /*NULL*/ResponseTimePreMaxKd2};
 	methodsMap[LEE_WODC] = (struct map){"LEE_WODC", /*NULL*/ResponseTimeLeeWodc};
-	methodsMap[LEE_WDC] = (struct map){"LEE_WDC", /*NULL*/ResponseTimeLeeWdc};
+	methodsMap[LEE_WDC] = (struct map){"LEE_WDC", /*NULL*/ResponseTimeLeeWdc};	
 }
 
 using namespace std;
@@ -102,8 +103,9 @@ void printDominationInfo(int dom[], FILE *fp){
 void uniformDistributionBenchmark(FILE *fp){
 	int dom[NUM_METHODS] = {0};
 	fprintf(fp, "Uniform Distribution Benchmark\n");
-	initUniformDistributionBenchmark(fp);	
+	initUniformDistributionBenchmark(fp);
 	init_uniform_fixed_tasks_ecb_ucb_schemes();
+	printBaseConfig(fp);
 	for(util = UTIL_START; util <= UTIL_END; util += UTIL_INCREMENT){
 		if(VERBOSE) printf("The total util is %f\n", util);
 		clearTaskExecutionStatistics();		
@@ -115,26 +117,26 @@ void uniformDistributionBenchmark(FILE *fp){
 			updateDominationMatrix(schedVector, dom);
 		}
 		if(VERBOSE) printf("\n");
-        printTaskExecutionStatistics(fp);
+        	printTaskExecutionStatistics(fp);
 	}	
 	printDominationInfo(dom, fp);
 	if(VERBOSE)printDominationInfo(dom, stdout);
 }
 
 void constantValuesBenchmark(FILE *fp){
-	int sched;
+	int schedVector;
+	int dom[NUM_METHODS] = {0};
 	fprintf(fp, "Constant Values Banchmark\n");
-	for(NUM_TASKS = 2; NUM_TASKS <= 8; NUM_TASKS+=2){
-		for(util = 0.5; util <= 0.6; util += 0.1){			
-			initConstantValuesBenchmark(fp);		
-			clearTaskExecutionStatistics();
-			createTaskSetConstantValues();
-			sched = ramaprasadMueller();
-			if(VERBOSE) printf("NUM_TASKS = %d util is %f sched = %d\n", NUM_TASKS, util, sched);
-			fprintf(fp, "NUM_TASKS = %d util is %f sched = %d\n", NUM_TASKS, util, sched);
-		}
-		if(VERBOSE) printf("\n");
+	while(createTaskSetConstantValues(fp)){	
+		printBaseConfig(fp);
+		init_uniform_fixed_tasks_ecb_ucb_schemes();
+		clearTaskExecutionStatistics();			
+		schedVector = CALL_METHODS();
+		updateDominationMatrix(schedVector, dom);
+        	printTaskExecutionStatistics(fp);
 	}
+	printDominationInfo(dom, fp);
+	if(VERBOSE)printDominationInfo(dom, stdout);
 }
 
 int main(int argc, char * argv[]) {
@@ -160,9 +162,8 @@ int main(int argc, char * argv[]) {
 		fprintf(stderr, "***Unable to open file %s\n", filename);
 		exit(1);
 	}	
-	if(MESSAGE_LEVEL >= IMP) printBaseConfig(fp);
-	printBaseConfig(fp);
-	uniformDistributionBenchmark(fp);
-	//constantValuesBenchmark(fp);
+	if(MESSAGE_LEVEL >= IMP) printBaseConfig(fp);	
+	//uniformDistributionBenchmark(fp);
+	constantValuesBenchmark(fp);
 	fclose(fp);
 }

@@ -4,5 +4,5 @@
 void initUniformDistributionBenchmark(FILE* fp);
 void initConstantValuesBenchmark(FILE* fp);
 void createTaskSetUniformDistribution(float totalUtil, int minPeriod, int maxPeriod);
-void createTaskSetConstantValues(void);
+int createTaskSetConstantValues(FILE *fp);
 #endif

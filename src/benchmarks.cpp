@@ -131,20 +131,16 @@ void createTaskSetUniformDistribution(float totalUtil, int minPeriod, int maxPer
 static void Set_SizeUCBs_Uniform(){
 	int i;
 	srand((unsigned)time(NULL));
-	for(i=0; i < NUM_TASKS; i++){
+	for(i=0; i < NUM_TASKS; i++)
 		SIZE_UCB_TASK[i] = (int) ( RF * SIZE_ECB_TASK[i] * ( (double) rand()/ RAND_MAX )) ;
-		if(VERBOSE) printf("The number of UCBs for task %d is %d \n", i, SIZE_UCB_TASK[i]);
-	}
 }
 
 static void Set_SizeECBs_UUniFast(){
 	int i;
 	float values_uunifast[NUM_TASKS];	
 	UUniSort(values_uunifast, NUM_TASKS, 1.0);
-	for(i=0; i < NUM_TASKS; i++){
+	for(i=0; i < NUM_TASKS; i++)
 		SIZE_ECB_TASK[i] = (int) (values_uunifast[i] * Total_ECBs_CU * CACHE_SIZE);
-		if(VERBOSE) printf("The number of ECBs for task %d is %d \n", i, SIZE_ECB_TASK[i]);
-	}
 }
 
 static void initBenchmark(FILE *fp){
@@ -167,7 +163,7 @@ static void initBenchmark(FILE *fp){
 }
 
 void initUniformDistributionBenchmark(FILE* fp){
-	NUM_TASKS = 4;//TODO: read from config file	
+	NUM_TASKS = 4;//TODO: read from config file
 	initBenchmark(fp);
 }
 
@@ -190,506 +186,572 @@ struct{
 	{92536,112636},{105536,135636},{118536,158636},{131536, 181636}
 };
 
-void createTaskSetConstantValues(void){
-	if(NUM_TASKS == 2 && util == 0.5){
-	
-		C[0]  = ET[15].WCET;
-		BC[0] = ET[15].BCET;
-		D[0]  =	50000;	
-		T[0]  = 50000;
-		
-		C[1]  = ET[18].WCET;
-		BC[1] = ET[18].BCET;
-		D[1]  =	200000;	
-		T[1]  = 200000;		
-				
-	}
-	else if(NUM_TASKS == 4 && util == 0.5){
-	
-		C[0]  = ET[0].WCET;
-		BC[0] = ET[0].BCET;
-		D[0]  =	50000;	
-		T[0]  = 50000;
-		
-		C[1]  = ET[14].WCET;
-		BC[1] = ET[14].BCET;
-		D[1]  =	400000;	
-		T[1]  = 400000;
-		
-		C[2]  = ET[17].WCET;
-		BC[2] = ET[17].BCET;
-		D[2]  =	500000;	
-		T[2]  = 500000;
-		
-		C[3]  = ET[21].WCET;
-		BC[3] = ET[21].BCET;
-		D[3]  =	1000000;	
-		T[3]  = 1000000;
-		
-	}
-	else if(NUM_TASKS == 6 && util == 0.5){
-	
-		C[0]  = ET[22].WCET;
-		BC[0] = ET[22].BCET;
-		D[0]  =	100000;	
-		T[0]  = 100000;
-		
-		C[1]  = ET[2].WCET;
-		BC[1] = ET[2].BCET;
-		D[1]  =	400000;	
-		T[1]  = 400000;
-		
-		C[2]  = ET[5].WCET;
-		BC[2] = ET[5].BCET;
-		D[2]  =	500000;	
-		T[2]  = 500000;
-		
-		C[3]  = ET[10].WCET;
-		BC[3] = ET[10].BCET;
-		D[3]  =	1000000;	
-		T[3]  = 1000000;
-		
-		C[4]  = ET[18].WCET;
-		BC[4] = ET[18].BCET;
-		D[4]  =	1000000;	
-		T[4]  = 1000000;
-		
-		C[5]  = ET[25].WCET;
-		BC[5] = ET[25].BCET;
-		D[5]  =	2000000;	
-		T[5]  = 2000000;
+/*
+ * This function tries to create task sets as defined in Ramaprasad Mueller consicutely.
+ * The static variable taskSetNo keeps track of which task set needs to be passed. 
+ * A task set may change NUM_TASKS (number of tasks in a task set) and util (utilization
+ * of the task set). The tasks sets are limted in number. The return value is 1 as long
+ * as task set is created. When the task sets have exhausetd, it return 0. When 0 is
+ * returned, taskSetNo is set to 0 again so that on next call of this function, the
+ * first task is returned again.
+ */
+int createTaskSetConstantValues(FILE *fp){
+	static int taskSetNo = 0;
+	switch(taskSetNo++){
+		case 0:
+			NUM_TASKS = 2;
+			util = 0.5;
 			
-	}
-	else if(NUM_TASKS == 8 && util == 0.5){
-	
-		C[0]  = ET[1].WCET;
-		BC[0] = ET[1].BCET;
-		D[0]  =	100000;	
-		T[0]  = 100000;
-		
-		C[1]  = ET[2].WCET;
-		BC[1] = ET[2].BCET;
-		D[1]  =	400000;	
-		T[1]  = 400000;
-		
-		C[2]  = ET[3].WCET;
-		BC[2] = ET[3].BCET;
-		D[2]  =	500000;	
-		T[2]  = 500000;
-		
-		C[3]  = ET[10].WCET;
-		BC[3] = ET[10].BCET;
-		D[3]  =	800000;	
-		T[3]  = 800000;
-		
-		C[4]  = ET[14].WCET;
-		BC[4] = ET[14].BCET;
-		D[4]  =	1000000;	
-		T[4]  = 1000000;
-		
-		C[5]  = ET[17].WCET;
-		BC[5] = ET[17].BCET;
-		D[5]  =	2000000;	
-		T[5]  = 2000000;
-				
-		C[6]  = ET[6].WCET;
-		BC[6] = ET[6].BCET;
-		D[6]  =	2000000;	
-		T[6]  = 2000000;
-		
-		C[7]  = ET[26].WCET;
-		BC[7] = ET[26].BCET;
-		D[7]  =	4000000;	
-		T[7]  = 4000000;
-		
-	}
-	else if(NUM_TASKS == 2 && util == 0.6){
-	
-		C[0]  = ET[20].WCET;
-		BC[0] = ET[20].BCET;
-		D[0]  =	300000;	
-		T[0]  = 300000;
-		
-		C[1]  = ET[26].WCET;
-		BC[1] = ET[26].BCET;
-		D[1]  =	500000;	
-		T[1]  = 500000;		
-				
-	}
-	else if(NUM_TASKS == 4 && util == 0.6){
-	
-		C[0]  = ET[0].WCET;
-		BC[0] = ET[0].BCET;
-		D[0]  =	50000;	
-		T[0]  = 50000;
-		
-		C[1]  = ET[14].WCET;
-		BC[1] = ET[14].BCET;
-		D[1]  =	400000;	
-		T[1]  = 400000;
-		
-		C[2]  = ET[7].WCET;
-		BC[2] = ET[7].BCET;
-		D[2]  =	500000;	
-		T[2]  = 500000;
-		
-		C[3]  = ET[26].WCET;
-		BC[3] = ET[26].BCET;
-		D[3]  =	1000000;	
-		T[3]  = 1000000;
-		
-	}
-	else if(NUM_TASKS == 6 && util == 0.6){
-	
-		C[0]  = ET[2].WCET;
-		BC[0] = ET[2].BCET;
-		D[0]  =	100000;	
-		T[0]  = 100000;
-		
-		C[1]  = ET[3].WCET;
-		BC[1] = ET[3].BCET;
-		D[1]  =	400000;	
-		T[1]  = 400000;
-		
-		C[2]  = ET[5].WCET;
-		BC[2] = ET[5].BCET;
-		D[2]  =	500000;	
-		T[2]  = 100000;
-		
-		C[3]  = ET[10].WCET;
-		BC[3] = ET[10].BCET;
-		D[3]  =	1000000;	
-		T[3]  = 1000000;
-		
-		C[4]  = ET[18].WCET;
-		BC[4] = ET[18].BCET;
-		D[4]  =	1000000;	
-		T[4]  = 1000000;
-		
-		C[5]  = ET[25].WCET;
-		BC[5] = ET[25].BCET;
-		D[5]  =	2000000;	
-		T[5]  = 2000000;
+			initConstantValuesBenchmark(fp);
+						
+			C[0]  = ET[15].WCET;
+			BC[0] = ET[15].BCET;
+			D[0]  =	50000;	
+			T[0]  = 50000;		
 			
-	}
-	else if(NUM_TASKS == 8 && util == 0.6){
-	
-		C[0]  = ET[1].WCET;
-		BC[0] = ET[1].BCET;
-		D[0]  =	100000;	
-		T[0]  = 100000;
-		
-		C[1]  = ET[4].WCET;
-		BC[1] = ET[4].BCET;
-		D[1]  =	400000;	
-		T[1]  = 400000;
-		
-		C[2]  = ET[5].WCET;
-		BC[2] = ET[5].BCET;
-		D[2]  =	500000;	
-		T[2]  = 500000;
-		
-		C[3]  = ET[10].WCET;
-		BC[3] = ET[10].BCET;
-		D[3]  =	800000;	
-		T[3]  = 800000;
-		
-		C[4]  = ET[14].WCET;
-		BC[4] = ET[14].BCET;
-		D[4]  =	1000000;	
-		T[4]  = 1000000;
-		
-		C[5]  = ET[17].WCET;
-		BC[5] = ET[17].BCET;
-		D[5]  =	2000000;	
-		T[5]  = 2000000;
-				
-		C[6]  = ET[6].WCET;
-		BC[6] = ET[6].BCET;
-		D[6]  =	2000000;	
-		T[6]  = 2000000;
-		
-		C[7]  = ET[26].WCET;
-		BC[7] = ET[26].BCET;
-		D[7]  =	4000000;	
-		T[7]  = 4000000;
-		
-	}
-	/*if(NUM_TASKS == 2 && util == 0.7){
-	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
-		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;		
-				
-	}
-	if(NUM_TASKS == 4 && util == 0.7){
-	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
-		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;
-		
-		C[2]  = ET[].WCET;
-		BC[2] = ET[].BCET;
-		D[2]  =	;	
-		T[2]  = ;
-		
-		C[3]  = ET[].WCET;
-		BC[3] = ET[].BCET;
-		D[3]  =	;	
-		T[3]  = ;
-		
-	}
-	if(NUM_TASKS == 6 && util == 0.7){
-	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
-		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;
-		
-		C[2]  = ET[].WCET;
-		BC[2] = ET[].BCET;
-		D[2]  =	;	
-		T[2]  = ;
-		
-		C[3]  = ET[].WCET;
-		BC[3] = ET[].BCET;
-		D[3]  =	;	
-		T[3]  = ;
-		
-		C[4]  = ET[].WCET;
-		BC[4] = ET[].BCET;
-		D[4]  =	;	
-		T[4]  = ;
-		
-		C[5]  = ET[].WCET;
-		BC[5] = ET[].BCET;
-		D[5]  =	;	
-		T[5]  = ;
+			C[1]  = ET[18].WCET;
+			BC[1] = ET[18].BCET;
+			D[1]  =	200000;	
+			T[1]  = 200000;			
+			return 1;
 			
-	}
-	if(NUM_TASKS == 8 && util == 0.7){
+		case 1:
+			NUM_TASKS = 4;
+			util = 0.5;
 	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
+			initConstantValuesBenchmark(fp);
+						
+			C[0]  = ET[0].WCET;
+			BC[0] = ET[0].BCET;
+			D[0]  =	50000;	
+			T[0]  = 50000;
 		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;
+			C[1]  = ET[14].WCET;
+			BC[1] = ET[14].BCET;
+			D[1]  =	400000;	
+			T[1]  = 400000;
 		
-		C[2]  = ET[].WCET;
-		BC[2] = ET[].BCET;
-		D[2]  =	;	
-		T[2]  = ;
+			C[2]  = ET[17].WCET;
+			BC[2] = ET[17].BCET;
+			D[2]  =	500000;	
+			T[2]  = 500000;
 		
-		C[3]  = ET[].WCET;
-		BC[3] = ET[].BCET;
-		D[3]  =	;	
-		T[3]  = ;
-		
-		C[4]  = ET[].WCET;
-		BC[4] = ET[].BCET;
-		D[4]  =	;	
-		T[4]  = ;
-		
-		C[5]  = ET[].WCET;
-		BC[5] = ET[].BCET;
-		D[5]  =	;	
-		T[5]  = ;
-				
-		C[6]  = ET[].WCET;
-		BC[6] = ET[].BCET;
-		D[6]  =	;	
-		T[6]  = ;
-		
-		C[7]  = ET[].WCET;
-		BC[7] = ET[].BCET;
-		D[7]  =	;	
-		T[7]  = ;
-		
-	}	
-	if(NUM_TASKS == 2 && util == 0.8){
-	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
-		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;		
-				
-	}
-	if(NUM_TASKS == 4 && util == 0.8){
-	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
-		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;
-		
-		C[2]  = ET[].WCET;
-		BC[2] = ET[].BCET;
-		D[2]  =	;	
-		T[2]  = ;
-		
-		C[3]  = ET[].WCET;
-		BC[3] = ET[].BCET;
-		D[3]  =	;	
-		T[3]  = ;
-		
-	}
-	if(NUM_TASKS == 6 && util == 0.8){
-	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
-		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;
-		
-		C[2]  = ET[].WCET;
-		BC[2] = ET[].BCET;
-		D[2]  =	;	
-		T[2]  = ;
-		
-		C[3]  = ET[].WCET;
-		BC[3] = ET[].BCET;
-		D[3]  =	;	
-		T[3]  = ;
-		
-		C[4]  = ET[].WCET;
-		BC[4] = ET[].BCET;
-		D[4]  =	;	
-		T[4]  = ;
-		
-		C[5]  = ET[].WCET;
-		BC[5] = ET[].BCET;
-		D[5]  =	;	
-		T[5]  = ;
+			C[3]  = ET[21].WCET;
+			BC[3] = ET[21].BCET;
+			D[3]  =	1000000;	
+			T[3]  = 1000000;
+			return 1;
 			
+		case 2:		
+			NUM_TASKS = 6;
+			util = 0.5;
+	
+			initConstantValuesBenchmark(fp);
+						
+			C[0]  = ET[22].WCET;
+			BC[0] = ET[22].BCET;
+			D[0]  =	100000;	
+			T[0]  = 100000;
+		
+			C[1]  = ET[2].WCET;
+			BC[1] = ET[2].BCET;
+			D[1]  =	400000;	
+			T[1]  = 400000;
+		
+			C[2]  = ET[5].WCET;
+			BC[2] = ET[5].BCET;
+			D[2]  =	500000;	
+			T[2]  = 500000;
+		
+			C[3]  = ET[10].WCET;
+			BC[3] = ET[10].BCET;
+			D[3]  =	1000000;	
+			T[3]  = 1000000;
+		
+			C[4]  = ET[18].WCET;
+			BC[4] = ET[18].BCET;
+			D[4]  =	1000000;	
+			T[4]  = 1000000;
+		
+			C[5]  = ET[25].WCET;
+			BC[5] = ET[25].BCET;
+			D[5]  =	2000000;	
+			T[5]  = 2000000;
+			return 1;	
+		
+		case 3:
+			NUM_TASKS = 8;
+			util = 0.5;
+	
+			initConstantValuesBenchmark(fp);
+						
+			C[0]  = ET[1].WCET;
+			BC[0] = ET[1].BCET;
+			D[0]  =	100000;	
+			T[0]  = 100000;
+		
+			C[1]  = ET[2].WCET;
+			BC[1] = ET[2].BCET;
+			D[1]  =	400000;	
+			T[1]  = 400000;
+		
+			C[2]  = ET[3].WCET;
+			BC[2] = ET[3].BCET;
+			D[2]  =	500000;	
+			T[2]  = 500000;
+		
+			C[3]  = ET[10].WCET;
+			BC[3] = ET[10].BCET;
+			D[3]  =	800000;	
+			T[3]  = 800000;
+		
+			C[4]  = ET[14].WCET;
+			BC[4] = ET[14].BCET;
+			D[4]  =	1000000;	
+			T[4]  = 1000000;
+		
+			C[5]  = ET[17].WCET;
+			BC[5] = ET[17].BCET;
+			D[5]  =	2000000;	
+			T[5]  = 2000000;
+				
+			C[6]  = ET[6].WCET;
+			BC[6] = ET[6].BCET;
+			D[6]  =	2000000;	
+			T[6]  = 2000000;
+		
+			C[7]  = ET[26].WCET;
+			BC[7] = ET[26].BCET;
+			D[7]  =	4000000;	
+			T[7]  = 4000000;
+			return 1;
+		
+		case 4:
+			NUM_TASKS = 2;
+			util = 0.6;
+	
+			initConstantValuesBenchmark(fp);
+						
+			C[0]  = ET[20].WCET;
+			BC[0] = ET[20].BCET;
+			D[0]  =	300000;	
+			T[0]  = 300000;
+		
+			C[1]  = ET[26].WCET;
+			BC[1] = ET[26].BCET;
+			D[1]  =	500000;	
+			T[1]  = 500000;		
+			return 1;
+				
+		case 5:
+			NUM_TASKS = 4;
+			util = 0.6;
+	
+			initConstantValuesBenchmark(fp);
+						
+			C[0]  = ET[0].WCET;
+			BC[0] = ET[0].BCET;
+			D[0]  =	50000;	
+			T[0]  = 50000;
+		
+			C[1]  = ET[14].WCET;
+			BC[1] = ET[14].BCET;
+			D[1]  =	400000;	
+			T[1]  = 400000;
+		
+			C[2]  = ET[7].WCET;
+			BC[2] = ET[7].BCET;
+			D[2]  =	500000;	
+			T[2]  = 500000;
+		
+			C[3]  = ET[26].WCET;
+			BC[3] = ET[26].BCET;
+			D[3]  =	1000000;	
+			T[3]  = 1000000;
+			return 1;
+		
+		case 6:
+			NUM_TASKS = 6;
+			util = 0.6;
+	
+			initConstantValuesBenchmark(fp);
+						
+			C[0]  = ET[2].WCET;
+			BC[0] = ET[2].BCET;
+			D[0]  =	100000;	
+			T[0]  = 100000;
+		
+			C[1]  = ET[3].WCET;
+			BC[1] = ET[3].BCET;
+			D[1]  =	400000;	
+			T[1]  = 400000;
+		
+			C[2]  = ET[5].WCET;
+			BC[2] = ET[5].BCET;
+			D[2]  =	500000;	
+			T[2]  = 100000;
+		
+			C[3]  = ET[10].WCET;
+			BC[3] = ET[10].BCET;
+			D[3]  =	1000000;	
+			T[3]  = 1000000;
+		
+			C[4]  = ET[18].WCET;
+			BC[4] = ET[18].BCET;
+			D[4]  =	1000000;	
+			T[4]  = 1000000;
+		
+			C[5]  = ET[25].WCET;
+			BC[5] = ET[25].BCET;
+			D[5]  =	2000000;	
+			T[5]  = 2000000;
+			return 1;
+			
+		case 7:
+			NUM_TASKS = 8;
+			util = 0.6;
+	
+			initConstantValuesBenchmark(fp);
+						
+			C[0]  = ET[1].WCET;
+			BC[0] = ET[1].BCET;
+			D[0]  =	100000;	
+			T[0]  = 100000;
+		
+			C[1]  = ET[4].WCET;
+			BC[1] = ET[4].BCET;
+			D[1]  =	400000;	
+			T[1]  = 400000;
+		
+			C[2]  = ET[5].WCET;
+			BC[2] = ET[5].BCET;
+			D[2]  =	500000;	
+			T[2]  = 500000;
+		
+			C[3]  = ET[10].WCET;
+			BC[3] = ET[10].BCET;
+			D[3]  =	800000;	
+			T[3]  = 800000;
+		
+			C[4]  = ET[14].WCET;
+			BC[4] = ET[14].BCET;
+			D[4]  =	1000000;	
+			T[4]  = 1000000;
+		
+			C[5]  = ET[17].WCET;
+			BC[5] = ET[17].BCET;
+			D[5]  =	2000000;	
+			T[5]  = 2000000;
+				
+			C[6]  = ET[6].WCET;
+			BC[6] = ET[6].BCET;
+			D[6]  =	2000000;	
+			T[6]  = 2000000;
+		
+			C[7]  = ET[26].WCET;
+			BC[7] = ET[26].BCET;
+			D[7]  =	4000000;	
+			T[7]  = 4000000;
+			return 1;
+			
+		default:
+			taskSetNo = 0;
+			return 0;
+		
+		/*if(NUM_TASKS == 2 && util == 0.7){
+	
+			initConstantValuesBenchmark(fp);
+						
+			C[0]  = ET[].WCET;
+			BC[0] = ET[].BCET;
+			D[0]  =	;	
+			T[0]  = ;
+		
+			C[1]  = ET[].WCET;
+			BC[1] = ET[].BCET;
+			D[1]  =	;	
+			T[1]  = ;		
+				
+		}
+		if(NUM_TASKS == 4 && util == 0.7){
+	
+			initConstantValuesBenchmark(fp);
+						
+			C[0]  = ET[].WCET;
+			BC[0] = ET[].BCET;
+			D[0]  =	;	
+			T[0]  = ;
+		
+			C[1]  = ET[].WCET;
+			BC[1] = ET[].BCET;
+			D[1]  =	;	
+			T[1]  = ;
+		
+			C[2]  = ET[].WCET;
+			BC[2] = ET[].BCET;
+			D[2]  =	;	
+			T[2]  = ;
+		
+			C[3]  = ET[].WCET;
+			BC[3] = ET[].BCET;
+			D[3]  =	;	
+			T[3]  = ;
+		
+		}
+		if(NUM_TASKS == 6 && util == 0.7){
+	
+			initConstantValuesBenchmark(fp);
+						
+			C[0]  = ET[].WCET;
+			BC[0] = ET[].BCET;
+			D[0]  =	;	
+			T[0]  = ;
+		
+			C[1]  = ET[].WCET;
+			BC[1] = ET[].BCET;
+			D[1]  =	;	
+			T[1]  = ;
+		
+			C[2]  = ET[].WCET;
+			BC[2] = ET[].BCET;
+			D[2]  =	;	
+			T[2]  = ;
+		
+			C[3]  = ET[].WCET;
+			BC[3] = ET[].BCET;
+			D[3]  =	;	
+			T[3]  = ;
+		
+			C[4]  = ET[].WCET;
+			BC[4] = ET[].BCET;
+			D[4]  =	;	
+			T[4]  = ;
+		
+			C[5]  = ET[].WCET;
+			BC[5] = ET[].BCET;
+			D[5]  =	;	
+			T[5]  = ;
+			
+		}
+		if(NUM_TASKS == 8 && util == 0.7){
+	
+			initConstantValuesBenchmark(fp);
+						
+			C[0]  = ET[].WCET;
+			BC[0] = ET[].BCET;
+			D[0]  =	;	
+			T[0]  = ;
+		
+			C[1]  = ET[].WCET;
+			BC[1] = ET[].BCET;
+			D[1]  =	;	
+			T[1]  = ;
+		
+			C[2]  = ET[].WCET;
+			BC[2] = ET[].BCET;
+			D[2]  =	;	
+			T[2]  = ;
+		
+			C[3]  = ET[].WCET;
+			BC[3] = ET[].BCET;
+			D[3]  =	;	
+			T[3]  = ;
+		
+			C[4]  = ET[].WCET;
+			BC[4] = ET[].BCET;
+			D[4]  =	;	
+			T[4]  = ;
+		
+			C[5]  = ET[].WCET;
+			BC[5] = ET[].BCET;
+			D[5]  =	;	
+			T[5]  = ;
+				
+			C[6]  = ET[].WCET;
+			BC[6] = ET[].BCET;
+			D[6]  =	;	
+			T[6]  = ;
+		
+			C[7]  = ET[].WCET;
+			BC[7] = ET[].BCET;
+			D[7]  =	;	
+			T[7]  = ;
+		
+		}	
+		if(NUM_TASKS == 2 && util == 0.8){
+	
+			initConstantValuesBenchmark(fp);
+						
+			C[0]  = ET[].WCET;
+			BC[0] = ET[].BCET;
+			D[0]  =	;	
+			T[0]  = ;
+		
+			C[1]  = ET[].WCET;
+			BC[1] = ET[].BCET;
+			D[1]  =	;	
+			T[1]  = ;		
+				
+		}
+		if(NUM_TASKS == 4 && util == 0.8){
+	
+			initConstantValuesBenchmark(fp);
+						
+			C[0]  = ET[].WCET;
+			BC[0] = ET[].BCET;
+			D[0]  =	;	
+			T[0]  = ;
+		
+			C[1]  = ET[].WCET;
+			BC[1] = ET[].BCET;
+			D[1]  =	;	
+			T[1]  = ;
+		
+			C[2]  = ET[].WCET;
+			BC[2] = ET[].BCET;
+			D[2]  =	;	
+			T[2]  = ;
+		
+			C[3]  = ET[].WCET;
+			BC[3] = ET[].BCET;
+			D[3]  =	;	
+			T[3]  = ;
+		
+		}
+		if(NUM_TASKS == 6 && util == 0.8){
+	
+			initConstantValuesBenchmark(fp);
+						
+			C[0]  = ET[].WCET;
+			BC[0] = ET[].BCET;
+			D[0]  =	;	
+			T[0]  = ;
+		
+			C[1]  = ET[].WCET;
+			BC[1] = ET[].BCET;
+			D[1]  =	;	
+			T[1]  = ;
+		
+			C[2]  = ET[].WCET;
+			BC[2] = ET[].BCET;
+			D[2]  =	;	
+			T[2]  = ;
+		
+			C[3]  = ET[].WCET;
+			BC[3] = ET[].BCET;
+			D[3]  =	;	
+			T[3]  = ;
+		
+			C[4]  = ET[].WCET;
+			BC[4] = ET[].BCET;
+			D[4]  =	;	
+			T[4]  = ;
+		
+			C[5]  = ET[].WCET;
+			BC[5] = ET[].BCET;
+			D[5]  =	;	
+			T[5]  = ;
+			
+		}
+		if(NUM_TASKS == 8 && util == 0.8){
+	
+			initConstantValuesBenchmark(fp);
+						
+			C[0]  = ET[].WCET;
+			BC[0] = ET[].BCET;
+			D[0]  =	;	
+			T[0]  = ;
+		
+			C[1]  = ET[].WCET;
+			BC[1] = ET[].BCET;
+			D[1]  =	;	
+			T[1]  = ;
+		
+			C[2]  = ET[].WCET;
+			BC[2] = ET[].BCET;
+			D[2]  =	;	
+			T[2]  = ;
+		
+			C[3]  = ET[].WCET;
+			BC[3] = ET[].BCET;
+			D[3]  =	;	
+			T[3]  = ;
+		
+			C[4]  = ET[].WCET;
+			BC[4] = ET[].BCET;
+			D[4]  =	;	
+			T[4]  = ;
+		
+			C[5]  = ET[].WCET;
+			BC[5] = ET[].BCET;
+			D[5]  =	;	
+			T[5]  = ;
+				
+			C[6]  = ET[].WCET;
+			BC[6] = ET[].BCET;
+			D[6]  =	;	
+			T[6]  = ;
+		
+			C[7]  = ET[].WCET;
+			BC[7] = ET[].BCET;
+			D[7]  =	;	
+			T[7]  = ;
+		
+		}	
+		if(NUM_TASKS == 10 && util == 0.8){
+	
+			initConstantValuesBenchmark(fp);
+						
+			C[0]  = ET[].WCET;
+			BC[0] = ET[].BCET;
+			D[0]  =	;	
+			T[0]  = ;
+		
+			C[1]  = ET[].WCET;
+			BC[1] = ET[].BCET;
+			D[1]  =	;	
+			T[1]  = ;
+		
+			C[2]  = ET[].WCET;
+			BC[2] = ET[].BCET;
+			D[2]  =	;	
+			T[2]  = ;
+		
+			C[3]  = ET[].WCET;
+			BC[3] = ET[].BCET;
+			D[3]  =	;	
+			T[3]  = ;
+		
+			C[4]  = ET[].WCET;
+			BC[4] = ET[].BCET;
+			D[4]  =	;	
+			T[4]  = ;
+		
+			C[5]  = ET[].WCET;
+			BC[5] = ET[].BCET;
+			D[5]  =	;	
+			T[5]  = ;
+				
+			C[6]  = ET[].WCET;
+			BC[6] = ET[].BCET;
+			D[6]  =	;	
+			T[6]  = ;
+		
+			C[7]  = ET[].WCET;
+			BC[7] = ET[].BCET;
+			D[7]  =	;	
+			T[7]  = ;
+		
+			C[8]  = ET[].WCET;
+			BC[8] = ET[].BCET;
+			D[8]  =	;	
+			T[8]  = ;
+		
+			C[9]  = ET[].WCET;
+			BC[9] = ET[].BCET;
+			D[9]  =	;	
+			T[9]  = ;
+		
+		}*/
 	}
-	if(NUM_TASKS == 8 && util == 0.8){
-	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
-		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;
-		
-		C[2]  = ET[].WCET;
-		BC[2] = ET[].BCET;
-		D[2]  =	;	
-		T[2]  = ;
-		
-		C[3]  = ET[].WCET;
-		BC[3] = ET[].BCET;
-		D[3]  =	;	
-		T[3]  = ;
-		
-		C[4]  = ET[].WCET;
-		BC[4] = ET[].BCET;
-		D[4]  =	;	
-		T[4]  = ;
-		
-		C[5]  = ET[].WCET;
-		BC[5] = ET[].BCET;
-		D[5]  =	;	
-		T[5]  = ;
-				
-		C[6]  = ET[].WCET;
-		BC[6] = ET[].BCET;
-		D[6]  =	;	
-		T[6]  = ;
-		
-		C[7]  = ET[].WCET;
-		BC[7] = ET[].BCET;
-		D[7]  =	;	
-		T[7]  = ;
-		
-	}	
-	if(NUM_TASKS == 10 && util == 0.8){
-	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
-		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;
-		
-		C[2]  = ET[].WCET;
-		BC[2] = ET[].BCET;
-		D[2]  =	;	
-		T[2]  = ;
-		
-		C[3]  = ET[].WCET;
-		BC[3] = ET[].BCET;
-		D[3]  =	;	
-		T[3]  = ;
-		
-		C[4]  = ET[].WCET;
-		BC[4] = ET[].BCET;
-		D[4]  =	;	
-		T[4]  = ;
-		
-		C[5]  = ET[].WCET;
-		BC[5] = ET[].BCET;
-		D[5]  =	;	
-		T[5]  = ;
-				
-		C[6]  = ET[].WCET;
-		BC[6] = ET[].BCET;
-		D[6]  =	;	
-		T[6]  = ;
-		
-		C[7]  = ET[].WCET;
-		BC[7] = ET[].BCET;
-		D[7]  =	;	
-		T[7]  = ;
-		
-		C[8]  = ET[].WCET;
-		BC[8] = ET[].BCET;
-		D[8]  =	;	
-		T[8]  = ;
-		
-		C[9]  = ET[].WCET;
-		BC[9] = ET[].BCET;
-		D[9]  =	;	
-		T[9]  = ;
-		
-	}*/
 }
