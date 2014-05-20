@@ -163,6 +163,8 @@ static void initBenchmark(FILE *fp){
 }
 
 void initUniformDistributionBenchmark(FILE* fp){
+	static int PREV_NUM_TASKS;
+	PREV_NUM_TASKS
 	NUM_TASKS = 4;//TODO: read from config file
 	initBenchmark(fp);
 }
