@@ -190,7 +190,7 @@ int ramaprasadMueller(void){
 			do{
 				j = (JOB*)malloc(sizeof(JOB));
 				j->inTime = inTime;
-				j->remTime = BC[i];
+				j->remTime = B[i];
 				j->priority = i;				
 				insertIntoQueue(inQBcet, j);	
 				inTime += T[j->priority];

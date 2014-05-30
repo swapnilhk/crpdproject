@@ -5,9 +5,9 @@
 
 int NUM_TASKS;
 double *C;//Worst case execution time
-double *BC;//Best case execution time
-long *D;
-long *T;
+double *B;//Best case execution time
+long *T;// Period
+long *D;// Deadline
 double util;
 std::set<int> *TASK_ECB, *TASK_UCB;
 int Num_Executed_Tasks[NUM_METHODS];
@@ -89,6 +89,10 @@ long** Make2DintArrayLong(int arraySizeX, int arraySizeY){
     return theArray;
 }
 
+void free2DintArrayInt(int ** twoDArray, int n){
+	while(n--)
+		free(twoDArray[n]);
+}
 
 double sigmaTda(int thisTask, double Response[]){
 	double RNew = 0;
