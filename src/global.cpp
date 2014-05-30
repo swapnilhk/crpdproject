@@ -4,6 +4,11 @@
 #include<stdlib.h>
 
 int NUM_TASKS;
+int CACHE_SIZE;
+int NUM_TASK_SETS;
+double UTIL_START;
+double UTIL_INCREMENT;
+double UTIL_END;
 double *C;//Worst case execution time
 double *B;//Best case execution time
 long *T;// Period

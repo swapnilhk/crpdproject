@@ -13,7 +13,40 @@ struct map{
 	int (*func)();
 }methodsMap[NUM_METHODS];
 
-void init(){	
+static int readConfig(void){
+	FILE *fp = fopen("config", "r");
+	if(fp == NULL){
+		fprintf(stderr, "Unable to open config file\n");
+		return 0;
+	}
+	char *line;
+	int len;
+	size_t n;
+	n = 50;
+	while((len = getline(&line, &n, fp)) != -1){
+		if(line[len-1] == '\n')
+			line[len-1] = '\0';
+		char *paramValue = strchr(line ,'=');
+		*paramValue = '\0';
+		paramValue++;
+		char *paramName = line;
+		if(!strcmp(paramName,"NUM_TASKS"))
+			NUM_TASKS = atoi(paramValue);
+		if(!strcmp(paramName,"CACHE_SIZE"))
+			CACHE_SIZE = atoi(paramValue);
+		if(!strcmp(paramName,"NUM_TASK_SETS"))
+			NUM_TASK_SETS = atoi(paramValue);
+		if(!strcmp(paramName,"UTIL_START"))
+			UTIL_START = atof(paramValue);
+		if(!strcmp(paramName,"UTIL_INCREMENT"))
+			UTIL_INCREMENT = atof(paramValue);
+		if(!strcmp(paramName,"UTIL_END"))
+			UTIL_END = atof(paramValue);
+	}
+	return 1;
+}
+
+static int init(void){
 	methodsMap[NO_PREEMPT] = (struct map){"NO_PREEMPT", NULL/*Response_time_NO_PREEMPT*/};
 	methodsMap[ECB_ONLY] = (struct map){"ECB_ONLY", NULL/*Response_time_ECB_Only*/};
 	methodsMap[UCB_ONLY] = (struct map){"UCB_ONLY", NULL/*Response_time_UCB_Only*/};
@@ -32,17 +65,18 @@ void init(){
 	methodsMap[PRE_MAX_KD2] = (struct map){"PRE_MAX_KD2", /*NULL*/ResponseTimePreMaxKd2};
 	methodsMap[LEE_WODC] = (struct map){"LEE_WODC", /*NULL*/ResponseTimeLeeWodc};
 	methodsMap[LEE_WDC] = (struct map){"LEE_WDC", /*NULL*/ResponseTimeLeeWdc};
+	return readConfig();	
 }
 
 using namespace std;
 
-void clearTaskExecutionStatistics(){
+static void clearTaskExecutionStatistics(){
      int i;     
      for(i = 0; i < NUM_METHODS; i++)
           Num_Executed_Tasks[i] = 0;
 }
 
-void printTaskExecutionStatistics(FILE *fp){
+static void printTaskExecutionStatistics(FILE *fp){
 	int i;
 	static int heading = 0;
 	if(VERBOSE) printf("Task execution statistics\n");
@@ -61,7 +95,7 @@ void printTaskExecutionStatistics(FILE *fp){
 	fflush(fp);
 }
 
-int CALL_METHODS(){
+static int CALL_METHODS(){
 	int WDC, sched;
 	int sched_vector = 0;
 	for(int methodIndex = 0; methodIndex < NUM_METHODS; methodIndex++)
@@ -73,13 +107,13 @@ int CALL_METHODS(){
 	return sched_vector;
 }
 
-void updateDominationMatrix(int schedVector, int dom[]){
+static void updateDominationMatrix(int schedVector, int dom[]){
 	for(int methodIndex = 0; methodIndex < NUM_METHODS; methodIndex++)
 		if(schedVector >> methodIndex & 1)// if(sched_vectpr has bit corresponding to the method set)
 			dom[methodIndex] |= ~schedVector; // Add to dom[this_method] all methods that this_method domonates, ie are zero
 }
 
-void printDominationInfo(int dom[], FILE *fp){
+static void printDominationInfo(int dom[], FILE *fp){
 	for(int method1 = 0; method1 < NUM_METHODS - 1; method1++)
 		if(methodsMap[method1].func != NULL)
 			for(int method2 = method1 + 1; method2 < NUM_METHODS; method2++)
@@ -98,7 +132,7 @@ void printDominationInfo(int dom[], FILE *fp){
 				}
 }
 
-void uniformDistributionBenchmark(FILE *fp){
+static void uniformDistributionBenchmark(FILE *fp){
 	int dom[NUM_METHODS] = {0};
 	fprintf(fp, "Uniform Distribution Benchmark\n");
 	if(VERBOSE) fprintf(stdout, "Uniform Distribution Benchmark\n");		
@@ -122,7 +156,7 @@ void uniformDistributionBenchmark(FILE *fp){
 	}
 }
 
-void constantValuesBenchmark(FILE *fp){
+static void constantValuesBenchmark(FILE *fp){
 	int dom[NUM_METHODS] = {0};	
 	fprintf(fp, "Constant Values Banchmark\n");
 	if(VERBOSE) fprintf(stdout, "Constant Values Banchmark\n");
@@ -163,14 +197,15 @@ int main(int argc, char * argv[]) {
 			exit(1);
 		}		
 	}
-	init();
-	fp = fopen(filename, "w");
-	if(fp == NULL){
-		fprintf(stderr, "***Unable to open file %s\n", filename);
-		exit(1);
-	}	
-	if(MESSAGE_LEVEL >= IMP) printBaseConfig(fp);
-	uniformDistributionBenchmark(fp);
-	constantValuesBenchmark(fp);
-	fclose(fp);
+	if(init()){
+		fp = fopen(filename, "w");
+		if(fp == NULL){
+			fprintf(stderr, "***Unable to open file %s\n", filename);
+			exit(1);
+		}	
+		if(MESSAGE_LEVEL >= IMP) printBaseConfig(fp);
+		uniformDistributionBenchmark(fp);
+		constantValuesBenchmark(fp);
+		fclose(fp);
+	}
 }

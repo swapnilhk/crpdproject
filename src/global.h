@@ -6,14 +6,14 @@
 
 //#define NUM_TASKS 4
 extern int NUM_TASKS;
-#define CACHE_SIZE 256
+extern int CACHE_SIZE;
+extern int NUM_TASK_SETS;
+extern double UTIL_START;
+extern double UTIL_INCREMENT;
+extern double UTIL_END;
 #define Total_ECBs_CU 10
 #define RF 0.8
-#define NUM_TASK_SETS 2
 #define BRT 8e-3
-#define UTIL_START 0.70
-#define UTIL_INCREMENT 0.05
-#define UTIL_END 0.70
 #define MIN_PERIOD 20
 #define MAX_PERIOD 500
 enum flag {NONE, IMP, ALL};

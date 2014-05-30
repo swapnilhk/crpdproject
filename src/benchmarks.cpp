@@ -121,7 +121,7 @@ static void Set_SizeUCBs_Uniform(){
 	srand((unsigned)time(NULL));
 	for(i=0; i < NUM_TASKS; i++){
 		SIZE_UCB_TASK[i] = (int) ( RF * SIZE_ECB_TASK[i] * ( (double) rand()/ RAND_MAX )) ;
-		if(VERBOSE) printf("The number of UCBs for task %d is %d \n", i, SIZE_UCB_TASK[i]);
+		//if(VERBOSE) printf("The number of UCBs for task %d is %d \n", i, SIZE_UCB_TASK[i]);
 	}
 }
 
@@ -131,7 +131,7 @@ static void Set_SizeECBs_UUniFast(){
 	UUniSort(values_uunifast, NUM_TASKS, 1.0);
 	for(i=0; i < NUM_TASKS; i++){
 		SIZE_ECB_TASK[i] = (int) (values_uunifast[i] * Total_ECBs_CU * CACHE_SIZE);
-		if(VERBOSE) printf("The number of ECBs for task %d is %d \n", i, SIZE_ECB_TASK[i]);
+		//if(VERBOSE) printf("The number of ECBs for task %d is %d \n", i, SIZE_ECB_TASK[i]);
 	}
 }
 
@@ -166,10 +166,10 @@ int initBenchmark(int numTasks, FILE *fp){
 	Set_SizeUCBs_Uniform();
 	Read_ECBs();
 	Read_UCBs();
-	if(MESSAGE_LEVEL >= ALL){
+	/*if(MESSAGE_LEVEL >= ALL){
 		print_ecbs(fp);
 		print_ucbs(fp);
-	}
+	}*/
 	return 1;
 }
 

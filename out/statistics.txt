@@ -1,9 +1,9 @@
 Uniform Distribution Benchmark
 Util	Method                          	No. of Sched tasks
-0.7 	PRE_MAX_KD                      	2
-0.7 	PRE_MAX_KD2                     	2
-0.7 	LEE_WODC                        	2
-0.7 	LEE_WDC                         	2
+0.5 	PRE_MAX_KD                      	2
+0.5 	PRE_MAX_KD2                     	2
+0.5 	LEE_WODC                        	2
+0.5 	LEE_WDC                         	2
 PRE_MAX_KD and PRE_MAX_KD2 are equal
 PRE_MAX_KD and LEE_WODC are equal
 PRE_MAX_KD and LEE_WDC are equal
