@@ -1,16 +1,35 @@
-
-Base Config
-Cache size = 256
-BRT = 0.008
-RF = 0.8
-Num Tasks = 0
-
+Uniform Distribution Benchmark
+Util	Method                          	No. of Sched tasks
+0.7 	PRE_MAX_KD                      	2
+0.7 	PRE_MAX_KD2                     	2
+0.7 	LEE_WODC                        	2
+0.7 	LEE_WDC                         	2
+PRE_MAX_KD and PRE_MAX_KD2 are equal
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD2 and LEE_WODC are equal
+PRE_MAX_KD2 and LEE_WDC are equal
+LEE_WODC and LEE_WDC are equal
 Constant Values Banchmark
-NUM_TASKS = 2 util is 0.500000 sched = 1
-NUM_TASKS = 2 util is 0.600000 sched = 1
-NUM_TASKS = 4 util is 0.500000 sched = 1
-NUM_TASKS = 4 util is 0.600000 sched = 1
-NUM_TASKS = 6 util is 0.500000 sched = 1
-NUM_TASKS = 6 util is 0.600000 sched = 0
-NUM_TASKS = 8 util is 0.500000 sched = 1
-NUM_TASKS = 8 util is 0.600000 sched = 1
+NUM_TASKS = 2 util is 0.500000
+0.5 	PRE_MAX_KD                      	1
+0.5 	PRE_MAX_KD2                     	1
+0.5 	LEE_WODC                        	1
+0.5 	LEE_WDC                         	1
+PRE_MAX_KD and PRE_MAX_KD2 are equal
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD2 and LEE_WODC are equal
+PRE_MAX_KD2 and LEE_WDC are equal
+LEE_WODC and LEE_WDC are equal
+NUM_TASKS = 2 util is 0.600000
+0.6 	PRE_MAX_KD                      	1
+0.6 	PRE_MAX_KD2                     	1
+0.6 	LEE_WODC                        	1
+0.6 	LEE_WDC                         	1
+PRE_MAX_KD and PRE_MAX_KD2 are equal
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD2 and LEE_WODC are equal
+PRE_MAX_KD2 and LEE_WDC are equal
+LEE_WODC and LEE_WDC are equal

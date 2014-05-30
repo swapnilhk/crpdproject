@@ -92,6 +92,7 @@ long** Make2DintArrayLong(int arraySizeX, int arraySizeY){
 void free2DintArrayInt(int ** twoDArray, int n){
 	while(n--)
 		free(twoDArray[n]);
+	free(twoDArray);
 }
 
 double sigmaTda(int thisTask, double Response[]){

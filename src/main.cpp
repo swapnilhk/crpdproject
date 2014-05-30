@@ -46,13 +46,13 @@ void printTaskExecutionStatistics(FILE *fp){
 	int i;
 	static int heading = 0;
 	if(VERBOSE) printf("Task execution statistics\n");
-    if(heading == 0){
-	  	fprintf(fp, "%-4s\t%-32s\t%s\n", "Util", "Method", "No. of Sched tasks");
+	if(heading == 0){
+		fprintf(fp, "%-4s\t%-32s\t%s\n", "Util", "Method", "No. of Sched tasks");
 	   	heading = 1;
-    }
-    if(VERBOSE)	fprintf(stdout, "%-4s\t%-32s\t%s\n", "Util", "Method", "No. of Sched tasks");
+    	}
+	if(VERBOSE) fprintf(stdout, "%-4s\t%-32s\t%s\n", "Util", "Method", "No. of Sched tasks");
    	for(int methodIndex = NO_PREEMPT; methodIndex < NUM_METHODS; methodIndex++)
-     	if(methodsMap[methodIndex].func != NULL){
+     		if(methodsMap[methodIndex].func != NULL){
 			char str[50] = "\0";
 			sprintf(str, "%-4.2g\t%-32s\t%d\n", util, methodsMap[methodIndex].methodName , Num_Executed_Tasks[methodIndex]);           	
 			fprintf(fp, "%s", str);
@@ -114,7 +114,7 @@ void uniformDistributionBenchmark(FILE *fp){
 				updateDominationMatrix(schedVector, dom);
 			}
 			if(VERBOSE) printf("\n");
-		    printTaskExecutionStatistics(fp);
+			printTaskExecutionStatistics(fp);
 		}	
 		printDominationInfo(dom, fp);
 		if(VERBOSE)printDominationInfo(dom, stdout);

@@ -366,7 +366,7 @@ static double PC_LEE(int this_task, double *Response, FILE *fp){
 int ResponseTimeLeeWdc(){
 	int task_no;
 	bool sched = true;	
-	double *Response = 	(double*)malloc(sizeof(*Response) * NUM_TASKS);
+	double *Response = (double*)malloc(sizeof(*Response) * NUM_TASKS);
 	static int first_call = 1;
 	FILE *fp = NULL;
 	char * filename = "out/lee_wdc.txt";
@@ -399,6 +399,7 @@ int ResponseTimeLeeWdc(){
 		Num_Executed_Tasks[LEE_WDC]++;		
 	if(MESSAGE_LEVEL > NONE && fp != NULL)
 		fclose(fp);
+	free(Response);
 	return sched ? 1 : 0;
 }
 
@@ -406,7 +407,7 @@ int ResponseTimeLeeWodc(){
 
 	int task_no;
 	bool sched = true;	
-	double *Response = 	(double*)malloc(sizeof(*Response) * NUM_TASKS);
+	double *Response = (double*)malloc(sizeof(*Response) * NUM_TASKS);
 	static int first_call = 1;
 	FILE *fp = NULL;
 	char * filename = "out/lee_wodc.txt";
@@ -441,6 +442,7 @@ int ResponseTimeLeeWodc(){
 		Num_Executed_Tasks[LEE_WODC]++;
 	if(MESSAGE_LEVEL > NONE && fp != NULL)
 		fclose(fp);
+	free(Response);
 	return sched ? 1 : 0;
 }
 
