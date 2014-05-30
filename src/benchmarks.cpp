@@ -144,66 +144,38 @@ void freeBenchmark(void){
 	delete [] TASK_UCB;
 	free(SIZE_ECB_TASK);
 	free(SIZE_UCB_TASK);
-	free2DintArrayInt(ECB_TASK_ARRAY, NUM_TASKS);
-	
+	free2DintArrayInt(ECB_TASK_ARRAY, NUM_TASKS);	
 }
 
-static int initBenchmark(FILE *fp){
-	static int benchmarkInitialized = 0;
-	static int numTasks = 0;
-	if(numTasks != NUM_TASKS){
-	/*NUM_TASKS was changed, hence variables need to be allocated once more*/
-		if(benchmarkInitialized){
-			freeBenchmark();
-			numTasks = NUM_TASKS;
-		}
-		C = (double*)malloc(sizeof(*C) * NUM_TASKS);
-		B = (double*)malloc(sizeof(*B) * NUM_TASKS);	
-		T = (long*)malloc(sizeof(*T) * NUM_TASKS);	
-		D = (long*)malloc(sizeof(*D) * NUM_TASKS);
-		TASK_ECB = new std::set<int>[NUM_TASKS];
-		TASK_UCB = new std::set<int>[NUM_TASKS];	
-		SIZE_ECB_TASK = (int*)malloc(sizeof(*SIZE_ECB_TASK) * NUM_TASKS);
-		SIZE_UCB_TASK = (int*)malloc(sizeof(*SIZE_UCB_TASK) * NUM_TASKS);
-		ECB_TASK_ARRAY = Make2DintArrayInt(NUM_TASKS, CACHE_SIZE);
-		if(C==NULL||B==NULL||T==NULL||D==NULL||TASK_ECB==NULL||TASK_UCB==NULL||SIZE_ECB_TASK==NULL||SIZE_UCB_TASK==NULL||ECB_TASK_ARRAY==NULL){
-			fprintf(stderr, "Memory allocation error\n");
-			benchmarkInitialized = 0;
-		}
-		else benchmarkInitialized = 1;
+int initBenchmark(int numTasks, FILE *fp){
+	NUM_TASKS = numTasks;
+	C = (double*)malloc(sizeof(*C) * NUM_TASKS);
+	B = (double*)malloc(sizeof(*B) * NUM_TASKS);	
+	T = (long*)malloc(sizeof(*T) * NUM_TASKS);	
+	D = (long*)malloc(sizeof(*D) * NUM_TASKS);
+	TASK_ECB = new std::set<int>[NUM_TASKS];
+	TASK_UCB = new std::set<int>[NUM_TASKS];	
+	SIZE_ECB_TASK = (int*)malloc(sizeof(*SIZE_ECB_TASK) * NUM_TASKS);
+	SIZE_UCB_TASK = (int*)malloc(sizeof(*SIZE_UCB_TASK) * NUM_TASKS);
+	ECB_TASK_ARRAY = Make2DintArrayInt(NUM_TASKS, CACHE_SIZE);
+	if(C==NULL||B==NULL||T==NULL||D==NULL||TASK_ECB==NULL||TASK_UCB==NULL||SIZE_ECB_TASK==NULL||SIZE_UCB_TASK==NULL||ECB_TASK_ARRAY==NULL){
+		fprintf(stderr, "Memory allocation error\n");
+		return 0;
+	}	
+	Set_SizeECBs_UUniFast();
+	Set_SizeUCBs_Uniform();
+	Read_ECBs();
+	Read_UCBs();
+	if(MESSAGE_LEVEL >= ALL){
+		print_ecbs(fp);
+		print_ucbs(fp);
 	}
-	if(benchmarkInitialized){
-		Set_SizeECBs_UUniFast();
-		Set_SizeUCBs_Uniform();
-		Read_ECBs();
-		Read_UCBs();
-		if(MESSAGE_LEVEL >= ALL){
-			print_ecbs(fp);
-			print_ucbs(fp);
-		}
-	}
-	return benchmarkInitialized;
+	return 1;
 }
 
 void createTaskSetUniformDistribution(float totalUtil, int minPeriod, int maxPeriod, FILE *fp){
 	int i;
 	float utilsArray[NUM_TASKS], periodsArray[NUM_TASKS];	
-	static int first_call = 1;
-	static int numTasks;
-	if(!first_call && numTasks != NUM_TASKS){
-		/* The uniform distribution benchmark had been initialized for NUM_TASKS. Since its value has changed, we have to
-		 * initialize the benchmark again*/
-		fprintf(fp, "NUM_TASKS got changed from previous value %d to new value %d. Initializing uniform benchmark again\n", numTasks, NUM_TASKS);
-		fprintf(stderr, "NUM_TASKS got changed from previous value %d to new value %d. Initializing uniform benchmark again\n", numTasks, NUM_TASKS);
-		first_call = 1;
-	}
-	if(first_call){
-		NUM_TASKS = 4;//TODO: read from config file
-		numTasks = NUM_TASKS;
-		printBaseConfig(fp);
-		initBenchmark(fp);
-		first_call = 0;
-	}
 	UUniFast(utilsArray, NUM_TASKS, totalUtil);
 	LogUniformPeriods(periodsArray, NUM_TASKS, minPeriod, maxPeriod);
 	for(i=0; i < NUM_TASKS; i++){
@@ -227,8 +199,8 @@ struct{
 	{92536,112636},{105536,135636},{118536,158636},{131536, 181636}
 };
 
-void createTaskSetConstantValues(void){
-	if(NUM_TASKS == 2 && util == 0.5){
+void createTaskSetConstantValues(int numTasks, double utilization){
+	if(numTasks == 2 && utilization == 0.5){
 
 		C[0] = ET[15].WCET;
 		B[0] = ET[15].BCET;
@@ -241,7 +213,7 @@ void createTaskSetConstantValues(void){
 		T[1] = 200000;		
 
 	}
-	else if(NUM_TASKS == 4 && util == 0.5){
+	else if(numTasks == 4 && utilization == 0.5){
 
 		C[0] = ET[0].WCET;
 		B[0] = ET[0].BCET;
@@ -264,7 +236,7 @@ void createTaskSetConstantValues(void){
 		T[3] = 1000000;
 
 	}
-	else if(NUM_TASKS == 6 && util == 0.5){
+	else if(numTasks == 6 && utilization == 0.5){
 
 		C[0] = ET[22].WCET;
 		B[0] = ET[22].BCET;
@@ -297,7 +269,7 @@ void createTaskSetConstantValues(void){
 		T[5] = 2000000;
 
 	}
-	else if(NUM_TASKS == 8 && util == 0.5){
+	else if(numTasks == 8 && utilization == 0.5){
 
 		C[0] = ET[1].WCET;
 		B[0] = ET[1].BCET;
@@ -340,7 +312,7 @@ void createTaskSetConstantValues(void){
 		T[7] = 4000000;
 
 	}
-	else if(NUM_TASKS == 2 && util == 0.6){
+	else if(numTasks == 2 && utilization == 0.6){
 
 		C[0] = ET[20].WCET;
 		B[0] = ET[20].BCET;
@@ -353,7 +325,7 @@ void createTaskSetConstantValues(void){
 		T[1] = 500000;		
 
 	}
-	else if(NUM_TASKS == 4 && util == 0.6){
+	else if(numTasks == 4 && utilization == 0.6){
 
 		C[0] = ET[0].WCET;
 		B[0] = ET[0].BCET;
@@ -376,7 +348,7 @@ void createTaskSetConstantValues(void){
 		T[3] = 1000000;
 
 	}
-	else if(NUM_TASKS == 6 && util == 0.6){
+	else if(numTasks == 6 && utilization == 0.6){
 
 		C[0] = ET[2].WCET;
 		B[0] = ET[2].BCET;
@@ -409,7 +381,7 @@ void createTaskSetConstantValues(void){
 		T[5] = 2000000;
 
 	}
-	else if(NUM_TASKS == 8 && util == 0.6){
+	else if(numTasks == 8 && utilization == 0.6){
 
 		C[0] = ET[1].WCET;
 		B[0] = ET[1].BCET;
@@ -452,7 +424,7 @@ void createTaskSetConstantValues(void){
 		T[7] = 4000000;
 
 	}
-	if(NUM_TASKS == 2 && util == 0.7){
+	if(numTasks == 2 && utilization == 0.7){
 	
 		C[0] = ET[26].WCET;
 		B[0] = ET[26].BCET;
@@ -465,7 +437,7 @@ void createTaskSetConstantValues(void){
 		T[1] = 500000;		
 				
 	}
-	if(NUM_TASKS == 4 && util == 0.7){
+	if(numTasks == 4 && utilization == 0.7){
 	
 		C[0] = ET[15].WCET;
 		B[0] = ET[15].BCET;
@@ -488,7 +460,7 @@ void createTaskSetConstantValues(void){
 		T[3] = 1000000;
 		
 	}
-	if(NUM_TASKS == 6 && util == 0.7){
+	if(numTasks == 6 && utilization == 0.7){
 	
 		C[0] = ET[2].WCET;
 		B[0] = ET[2].BCET;
@@ -521,7 +493,7 @@ void createTaskSetConstantValues(void){
 		T[5] = 2000000;
 			
 	}
-	if(NUM_TASKS == 8 && util == 0.7){
+	if(numTasks == 8 && utilization == 0.7){
 	
 		C[0] = ET[2].WCET;
 		B[0] = ET[2].BCET;
@@ -564,7 +536,7 @@ void createTaskSetConstantValues(void){
 		T[7] = 4000000;
 		
 	}	
-	if(NUM_TASKS == 2 && util == 0.8){
+	if(numTasks == 2 && utilization == 0.8){
 	
 		C[0] = ET[26].WCET;
 		B[0] = ET[26].BCET;
@@ -577,7 +549,7 @@ void createTaskSetConstantValues(void){
 		T[1] = 500000;		
 				
 	}
-	if(NUM_TASKS == 4 && util == 0.8){
+	if(numTasks == 4 && utilization == 0.8){
 	
 		C[0] = ET[27].WCET;
 		B[0] = ET[27].BCET;
@@ -600,7 +572,7 @@ void createTaskSetConstantValues(void){
 		T[3] = 2000000;
 		
 	}
-	if(NUM_TASKS == 6 && util == 0.8){
+	if(numTasks == 6 && utilization == 0.8){
 	
 		C[0] = ET[20].WCET;
 		B[0] = ET[20].BCET;
@@ -633,7 +605,7 @@ void createTaskSetConstantValues(void){
 		T[5] = 2000000;
 			
 	}
-	if(NUM_TASKS == 8 && util == 0.8){
+	if(numTasks == 8 && utilization == 0.8){
 	
 		C[0] = ET[7].WCET;
 		B[0] = ET[7].BCET;
@@ -676,7 +648,7 @@ void createTaskSetConstantValues(void){
 		T[7] = 4000000;
 		
 	}	
-	if(NUM_TASKS == 10 && util == 0.8){
+	if(numTasks == 10 && utilization == 0.8){
 	
 		C[0] = ET[9].WCET;
 		B[0] = ET[9].BCET;

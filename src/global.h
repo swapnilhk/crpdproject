@@ -13,7 +13,7 @@ extern int NUM_TASKS;
 #define BRT 8e-3
 #define UTIL_START 0.70
 #define UTIL_INCREMENT 0.05
-#define UTIL_END 1
+#define UTIL_END 0.70
 #define MIN_PERIOD 20
 #define MAX_PERIOD 500
 enum flag {NONE, IMP, ALL};

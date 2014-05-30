@@ -279,6 +279,9 @@ int ResponseTimePreMaxKd(){
 		Num_Executed_Tasks[PRE_MAX_KD]++;
 	if(MESSAGE_LEVEL > NONE && fp != NULL)
 		fclose(fp);	
+	free(Response);	
+	free2DintArrayInt(nnpMin, NUM_TASKS);
+	free2DintArrayInt(nnpMax, NUM_TASKS);
 	return sched ? 1 : 0;
 }
 
@@ -507,5 +510,8 @@ int ResponseTimePreMaxKd2(){
 		Num_Executed_Tasks[PRE_MAX_KD2]++;
 	if(MESSAGE_LEVEL > NONE && fp != NULL)
 		fclose(fp);
+	free(Response);
+	free2DintArrayInt(nnpMin, NUM_TASKS);
+	free2DintArrayInt(nnpMax, NUM_TASKS);
 	return sched ? 1 : 0;
 }

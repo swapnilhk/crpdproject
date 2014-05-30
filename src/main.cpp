@@ -66,6 +66,7 @@ int CALL_METHODS(){
 	int sched_vector = 0;
 	for(int methodIndex = 0; methodIndex < NUM_METHODS; methodIndex++)
 		if(methodsMap[methodIndex].func != NULL){
+			if(VERBOSE) fprintf(stdout, "%s\n", methodsMap[methodIndex].methodName);
 			sched = (methodsMap[methodIndex].func)();
 			sched_vector |= sched << methodIndex;
 		}
@@ -99,39 +100,51 @@ void printDominationInfo(int dom[], FILE *fp){
 
 void uniformDistributionBenchmark(FILE *fp){
 	int dom[NUM_METHODS] = {0};
-	fprintf(fp, "Uniform Distribution Benchmark\n");	
-	for(util = UTIL_START; util <= UTIL_END; util += UTIL_INCREMENT){
-		if(VERBOSE) printf("The total util is %f\n", util);
-		clearTaskExecutionStatistics();		
-		for(int taskSetNo = 1; taskSetNo <= NUM_TASK_SETS; taskSetNo++){
-			int schedVector;//vector of bits with each bit corresponding to each method
-			if(VERBOSE) printf("Task set no: %d Util: %.2f\n",taskSetNo, util);
-			createTaskSetUniformDistribution(util, MIN_PERIOD, MAX_PERIOD, fp);
-			schedVector = CALL_METHODS();
-			updateDominationMatrix(schedVector, dom);
-		}
-		if(VERBOSE) printf("\n");
-        printTaskExecutionStatistics(fp);
-	}	
-	printDominationInfo(dom, fp);
-	if(VERBOSE)printDominationInfo(dom, stdout);
+	fprintf(fp, "Uniform Distribution Benchmark\n");
+	if(VERBOSE) fprintf(stdout, "Uniform Distribution Benchmark\n");		
+	if(initBenchmark(4/* = NUM_TASKS, TODO: read from config file*/, fp)){
+		for(util = UTIL_START; util <= UTIL_END; util += UTIL_INCREMENT){
+			if(VERBOSE) printf("The total util is %f\n", util);
+			clearTaskExecutionStatistics();
+			for(int taskSetNo = 1; taskSetNo <= NUM_TASK_SETS; taskSetNo++){
+				int schedVector;//vector of bits with each bit corresponding to each method
+				if(VERBOSE) fprintf(stdout, "Task set no: %d Util: %.2f\n",taskSetNo, util);
+				createTaskSetUniformDistribution(util, MIN_PERIOD, MAX_PERIOD, fp);
+				schedVector = CALL_METHODS();
+				updateDominationMatrix(schedVector, dom);
+			}
+			if(VERBOSE) printf("\n");
+		    printTaskExecutionStatistics(fp);
+		}	
+		printDominationInfo(dom, fp);
+		if(VERBOSE)printDominationInfo(dom, stdout);
+		freeBenchmark();
+	}
 }
 
-/*void constantValuesBenchmark(FILE *fp){
-	int sched;
+void constantValuesBenchmark(FILE *fp){
+	int dom[NUM_METHODS] = {0};	
 	fprintf(fp, "Constant Values Banchmark\n");
-	for(NUM_TASKS = 2; NUM_TASKS <= 8; NUM_TASKS+=2){
-		for(util = 0.5; util <= 0.6; util += 0.1){			
-			initConstantValuesBenchmark(fp);		
-			clearTaskExecutionStatistics();
-			createTaskSetConstantValues();
-			sched = ramaprasadMueller();
-			if(VERBOSE) printf("NUM_TASKS = %d util is %f sched = %d\n", NUM_TASKS, util, sched);
-			fprintf(fp, "NUM_TASKS = %d util is %f sched = %d\n", NUM_TASKS, util, sched);
+	if(VERBOSE) fprintf(stdout, "Constant Values Banchmark\n");
+	for(util = 0.5; util <= 0.6; util += 0.1){			
+		for(int numTasks = 2; numTasks <= (util == 0.8 ? 10 : 2); numTasks+=2){			
+			if(initBenchmark(numTasks, fp)){
+				int schedVector;//vector of bits with each bit corresponding to each method				
+				fprintf(fp, "NUM_TASKS = %d util is %f\n", NUM_TASKS, util);
+				if(VERBOSE)fprintf(stdout, "NUM_TASKS = %d util is %f\n", NUM_TASKS, util);
+				clearTaskExecutionStatistics();
+				createTaskSetConstantValues(numTasks, util);
+				schedVector = CALL_METHODS();
+				updateDominationMatrix(schedVector, dom);
+				printTaskExecutionStatistics(fp);
+				printDominationInfo(dom, fp);
+				if(VERBOSE)printDominationInfo(dom, stdout);
+				freeBenchmark();
+			}
 		}
 		if(VERBOSE) printf("\n");
 	}
-}*/
+}
 
 int main(int argc, char * argv[]) {
 	FILE *fp = NULL;
@@ -158,6 +171,6 @@ int main(int argc, char * argv[]) {
 	}	
 	if(MESSAGE_LEVEL >= IMP) printBaseConfig(fp);
 	uniformDistributionBenchmark(fp);
-	//constantValuesBenchmark(fp);
+	constantValuesBenchmark(fp);
 	fclose(fp);
 }
