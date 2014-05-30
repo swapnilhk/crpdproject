@@ -1,4 +1,4 @@
-#include"uniform_fixed_tasks_ecb_ucb_schemes.h"
+//#include"uniform_fixed_tasks_ecb_ucb_schemes.h"
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -14,20 +14,20 @@ struct map{
 }methodsMap[NUM_METHODS];
 
 void init(){	
-	methodsMap[NO_PREEMPT] = (struct map){"NO_PREEMPT", /*NULL*/Response_time_NO_PREEMPT};
-	methodsMap[ECB_ONLY] = (struct map){"ECB_ONLY", /*NULL*/Response_time_ECB_Only};
-	methodsMap[UCB_ONLY] = (struct map){"UCB_ONLY", /*NULL*/Response_time_UCB_Only};
-	methodsMap[UCB_UNION] = (struct map){"UCB_UNION", /*NULL*/Response_time_UCB_Union};
-	methodsMap[ECB_UNION] = (struct map){"ECB_UNION", /*NULL*/Response_time_ECB_Union};
-	methodsMap[ECB_UNION_MULTISET] = (struct map){"ECB_UNION_MULTISET", /*NULL*/Response_time_ECB_Union_Multiset};
-	methodsMap[UCB_UNION_MULTISET] = (struct map){"UCB_UNION_MULTISET", /*NULL*/Response_time_UCB_Union_Multiset};
-	methodsMap[ECB_UCB_UNION_MULTISET_COMBINED] = (struct map){"ECB_UCB_UNION_MULTISET_COMBINED", /*NULL*/Response_time_ECB_UCB_Union_Multiset_Combined};
-	methodsMap[ECB_UNION_MULTISET_PRE] = (struct map){"ECB_UNION_MULTISET_PRE", /*NULL*/Response_time_ECB_Union_Multiset_PRE};
-	methodsMap[UCB_UNION_MULTISET_PRE] = (struct map){"UCB_UNION_MULTISET_PRE", /*NULL*/Response_time_UCB_Union_Multiset_PRE};
-	methodsMap[ECB_UCB_UNION_MULTISET_COMBINED_PRE] = (struct map){"ECB_UCB_UNION_MULTISET_COMBINED_PRE", /*NULL*/Response_time_ECB_UCB_Union_Multiset_Combined_PRE};
-	methodsMap[STASCHULAT] = (struct map){"STASCHULAT", /*NULL*/Response_time_Staschulat};
-	methodsMap[STASCHULAT_PRE] = (struct map){"STASCHULAT_PRE", /*NULL*/Response_time_Staschulat_PRE};
-	methodsMap[PRE_MAX] = (struct map){"PRE_MAX", /*NULL*/Response_time_PRE_MAX};
+	methodsMap[NO_PREEMPT] = (struct map){"NO_PREEMPT", NULL/*Response_time_NO_PREEMPT*/};
+	methodsMap[ECB_ONLY] = (struct map){"ECB_ONLY", NULL/*Response_time_ECB_Only*/};
+	methodsMap[UCB_ONLY] = (struct map){"UCB_ONLY", NULL/*Response_time_UCB_Only*/};
+	methodsMap[UCB_UNION] = (struct map){"UCB_UNION", NULL/*Response_time_UCB_Union*/};
+	methodsMap[ECB_UNION] = (struct map){"ECB_UNION", NULL/*Response_time_ECB_Union*/};
+	methodsMap[ECB_UNION_MULTISET] = (struct map){"ECB_UNION_MULTISET", NULL/*Response_time_ECB_Union_Multiset*/};
+	methodsMap[UCB_UNION_MULTISET] = (struct map){"UCB_UNION_MULTISET", NULL/*Response_time_UCB_Union_Multiset*/};
+	methodsMap[ECB_UCB_UNION_MULTISET_COMBINED] = (struct map){"ECB_UCB_UNION_MULTISET_COMBINED", NULL/*Response_time_ECB_UCB_Union_Multiset_Combined*/};
+	methodsMap[ECB_UNION_MULTISET_PRE] = (struct map){"ECB_UNION_MULTISET_PRE", NULL/*Response_time_ECB_Union_Multiset_PRE*/};
+	methodsMap[UCB_UNION_MULTISET_PRE] = (struct map){"UCB_UNION_MULTISET_PRE", NULL/*Response_time_UCB_Union_Multiset_PRE*/};
+	methodsMap[ECB_UCB_UNION_MULTISET_COMBINED_PRE] = (struct map){"ECB_UCB_UNION_MULTISET_COMBINED_PRE", NULL/*Response_time_ECB_UCB_Union_Multiset_Combined_PRE*/};
+	methodsMap[STASCHULAT] = (struct map){"STASCHULAT", NULL/*Response_time_Staschulat*/};
+	methodsMap[STASCHULAT_PRE] = (struct map){"STASCHULAT_PRE", NULL/*Response_time_Staschulat_PRE*/};
+	methodsMap[PRE_MAX] = (struct map){"PRE_MAX", NULL/*Response_time_PRE_MAX*/};
 	methodsMap[PRE_MAX_KD] = (struct map){"PRE_MAX_KD", /*NULL*/ResponseTimePreMaxKd};
 	methodsMap[PRE_MAX_KD2] = (struct map){"PRE_MAX_KD2", /*NULL*/ResponseTimePreMaxKd2};
 	methodsMap[LEE_WODC] = (struct map){"LEE_WODC", /*NULL*/ResponseTimeLeeWodc};
@@ -45,20 +45,18 @@ void clearTaskExecutionStatistics(){
 void printTaskExecutionStatistics(FILE *fp){
 	int i;
 	static int heading = 0;
-	if(VERBOSE) printf("Printing task execution statistics\n");
-     	if(heading == 0){
-	     	fprintf(fp, "%-4s\t%-32s\t%s\n", "Util", "Method", "No. of Sched tasks");
-	     	heading = 1;
-     	}
-	else 
-		fprintf(fp, "\n");
-   	fprintf(fp, "%-4.2g", util);
+	if(VERBOSE) printf("Task execution statistics\n");
+    if(heading == 0){
+	  	fprintf(fp, "%-4s\t%-32s\t%s\n", "Util", "Method", "No. of Sched tasks");
+	   	heading = 1;
+    }
+    if(VERBOSE)	fprintf(stdout, "%-4s\t%-32s\t%s\n", "Util", "Method", "No. of Sched tasks");
    	for(int methodIndex = NO_PREEMPT; methodIndex < NUM_METHODS; methodIndex++)
      	if(methodsMap[methodIndex].func != NULL){
 			char str[50] = "\0";
-			sprintf(str, "\t%-32s\t%d\n", methodsMap[methodIndex].methodName , Num_Executed_Tasks[methodIndex]);           	
+			sprintf(str, "%-4.2g\t%-32s\t%d\n", util, methodsMap[methodIndex].methodName , Num_Executed_Tasks[methodIndex]);           	
 			fprintf(fp, "%s", str);
-			if(VERBOSE) printf("%s", str);
+			if(VERBOSE)	fprintf(stdout, "%s", str);
 		}
 	fflush(fp);
 }
@@ -101,16 +99,14 @@ void printDominationInfo(int dom[], FILE *fp){
 
 void uniformDistributionBenchmark(FILE *fp){
 	int dom[NUM_METHODS] = {0};
-	fprintf(fp, "Uniform Distribution Benchmark\n");
-	initUniformDistributionBenchmark(fp);	
-	init_uniform_fixed_tasks_ecb_ucb_schemes();
+	fprintf(fp, "Uniform Distribution Benchmark\n");	
 	for(util = UTIL_START; util <= UTIL_END; util += UTIL_INCREMENT){
 		if(VERBOSE) printf("The total util is %f\n", util);
 		clearTaskExecutionStatistics();		
 		for(int taskSetNo = 1; taskSetNo <= NUM_TASK_SETS; taskSetNo++){
 			int schedVector;//vector of bits with each bit corresponding to each method
 			if(VERBOSE) printf("Task set no: %d Util: %.2f\n",taskSetNo, util);
-			createTaskSetUniformDistribution(util, MIN_PERIOD, MAX_PERIOD);
+			createTaskSetUniformDistribution(util, MIN_PERIOD, MAX_PERIOD, fp);
 			schedVector = CALL_METHODS();
 			updateDominationMatrix(schedVector, dom);
 		}
@@ -121,7 +117,7 @@ void uniformDistributionBenchmark(FILE *fp){
 	if(VERBOSE)printDominationInfo(dom, stdout);
 }
 
-void constantValuesBenchmark(FILE *fp){
+/*void constantValuesBenchmark(FILE *fp){
 	int sched;
 	fprintf(fp, "Constant Values Banchmark\n");
 	for(NUM_TASKS = 2; NUM_TASKS <= 8; NUM_TASKS+=2){
@@ -135,7 +131,7 @@ void constantValuesBenchmark(FILE *fp){
 		}
 		if(VERBOSE) printf("\n");
 	}
-}
+}*/
 
 int main(int argc, char * argv[]) {
 	FILE *fp = NULL;
@@ -161,7 +157,6 @@ int main(int argc, char * argv[]) {
 		exit(1);
 	}	
 	if(MESSAGE_LEVEL >= IMP) printBaseConfig(fp);
-	printBaseConfig(fp);
 	uniformDistributionBenchmark(fp);
 	//constantValuesBenchmark(fp);
 	fclose(fp);

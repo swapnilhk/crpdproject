@@ -36,11 +36,11 @@ static void Read_UCBs(void){
 	for(j=0; j < NUM_TASKS; j++){
 		int newUCBlock, newPos, count, numBlocks, numUCBs;
 		count = 0;
-		if (SIZE_ECB_TASK[j] <= CACHE_SIZE)
+		if(SIZE_ECB_TASK[j] <= CACHE_SIZE)
 			numBlocks = SIZE_ECB_TASK[j];
 		else
 			numBlocks = CACHE_SIZE;
-		if (SIZE_UCB_TASK[j] <= CACHE_SIZE)
+		if(SIZE_UCB_TASK[j] <= CACHE_SIZE)
 			numUCBs = SIZE_UCB_TASK[j];
 		else
 			numUCBs = CACHE_SIZE;
@@ -116,18 +116,6 @@ static void UUniFast(float A[], int n, float sumUtil){
 	A[i-1] = sumUtil;
 }
 
-void createTaskSetUniformDistribution(float totalUtil, int minPeriod, int maxPeriod){
-	int i;
-	float utilsArray[NUM_TASKS], periodsArray[NUM_TASKS];	
-	UUniFast(utilsArray, NUM_TASKS, totalUtil);
-	LogUniformPeriods(periodsArray, NUM_TASKS, minPeriod, maxPeriod);
-	for(i=0; i < NUM_TASKS; i++){
-		T[i] = (long) periodsArray[i];
-		C[i] = utilsArray[i] * T[i];
-		D[i] = T[i];
-	}
-}
-
 static void Set_SizeUCBs_Uniform(){
 	int i;
 	srand((unsigned)time(NULL));
@@ -147,33 +135,82 @@ static void Set_SizeECBs_UUniFast(){
 	}
 }
 
-static void initBenchmark(FILE *fp){
-	C = (double*)malloc(sizeof(*C) * NUM_TASKS);
-	D = (long*)malloc(sizeof(*D) * NUM_TASKS);
-	T = (long*)malloc(sizeof(*T) * NUM_TASKS);
-	TASK_ECB = new std::set<int>[NUM_TASKS];
-	TASK_UCB = new std::set<int>[NUM_TASKS];
-	SIZE_ECB_TASK = (int*)malloc(sizeof(*SIZE_ECB_TASK) * NUM_TASKS);
-	SIZE_UCB_TASK = (int*)malloc(sizeof(*SIZE_UCB_TASK) * NUM_TASKS);
-	ECB_TASK_ARRAY = Make2DintArrayInt(NUM_TASKS, CACHE_SIZE);
-	Set_SizeECBs_UUniFast();
-	Set_SizeUCBs_Uniform();
-	Read_ECBs();
-	Read_UCBs();
-	if(MESSAGE_LEVEL >= ALL){
-		print_ecbs(fp);
-		print_ucbs(fp);
+void freeBenchmark(void){
+	free(C);
+	free(B);	
+	free(T);	
+	free(D);
+	delete [] TASK_ECB;
+	delete [] TASK_UCB;
+	free(SIZE_ECB_TASK);
+	free(SIZE_UCB_TASK);
+	free2DintArrayInt(ECB_TASK_ARRAY, NUM_TASKS);
+	
+}
+
+static int initBenchmark(FILE *fp){
+	static int benchmarkInitialized = 0;
+	static int numTasks = 0;
+	if(numTasks != NUM_TASKS){
+	/*NUM_TASKS was changed, hence variables need to be allocated once more*/
+		if(benchmarkInitialized){
+			freeBenchmark();
+			numTasks = NUM_TASKS;
+		}
+		C = (double*)malloc(sizeof(*C) * NUM_TASKS);
+		B = (double*)malloc(sizeof(*B) * NUM_TASKS);	
+		T = (long*)malloc(sizeof(*T) * NUM_TASKS);	
+		D = (long*)malloc(sizeof(*D) * NUM_TASKS);
+		TASK_ECB = new std::set<int>[NUM_TASKS];
+		TASK_UCB = new std::set<int>[NUM_TASKS];	
+		SIZE_ECB_TASK = (int*)malloc(sizeof(*SIZE_ECB_TASK) * NUM_TASKS);
+		SIZE_UCB_TASK = (int*)malloc(sizeof(*SIZE_UCB_TASK) * NUM_TASKS);
+		ECB_TASK_ARRAY = Make2DintArrayInt(NUM_TASKS, CACHE_SIZE);
+		if(C==NULL||B==NULL||T==NULL||D==NULL||TASK_ECB==NULL||TASK_UCB==NULL||SIZE_ECB_TASK==NULL||SIZE_UCB_TASK==NULL||ECB_TASK_ARRAY==NULL){
+			fprintf(stderr, "Memory allocation error\n");
+			benchmarkInitialized = 0;
+		}
+		else benchmarkInitialized = 1;
 	}
+	if(benchmarkInitialized){
+		Set_SizeECBs_UUniFast();
+		Set_SizeUCBs_Uniform();
+		Read_ECBs();
+		Read_UCBs();
+		if(MESSAGE_LEVEL >= ALL){
+			print_ecbs(fp);
+			print_ucbs(fp);
+		}
+	}
+	return benchmarkInitialized;
 }
 
-void initUniformDistributionBenchmark(FILE* fp){
-	NUM_TASKS = 4;//TODO: read from config file	
-	initBenchmark(fp);
-}
-
-void initConstantValuesBenchmark(FILE* fp){
-	BC = (double*)malloc(sizeof(*C) * NUM_TASKS);
-	initBenchmark(fp);
+void createTaskSetUniformDistribution(float totalUtil, int minPeriod, int maxPeriod, FILE *fp){
+	int i;
+	float utilsArray[NUM_TASKS], periodsArray[NUM_TASKS];	
+	static int first_call = 1;
+	static int numTasks;
+	if(!first_call && numTasks != NUM_TASKS){
+		/* The uniform distribution benchmark had been initialized for NUM_TASKS. Since its value has changed, we have to
+		 * initialize the benchmark again*/
+		fprintf(fp, "NUM_TASKS got changed from previous value %d to new value %d. Initializing uniform benchmark again\n", numTasks, NUM_TASKS);
+		fprintf(stderr, "NUM_TASKS got changed from previous value %d to new value %d. Initializing uniform benchmark again\n", numTasks, NUM_TASKS);
+		first_call = 1;
+	}
+	if(first_call){
+		NUM_TASKS = 4;//TODO: read from config file
+		numTasks = NUM_TASKS;
+		printBaseConfig(fp);
+		initBenchmark(fp);
+		first_call = 0;
+	}
+	UUniFast(utilsArray, NUM_TASKS, totalUtil);
+	LogUniformPeriods(periodsArray, NUM_TASKS, minPeriod, maxPeriod);
+	for(i=0; i < NUM_TASKS; i++){
+		T[i] = (long) periodsArray[i];
+		C[i] = utilsArray[i] * T[i];
+		D[i] = T[i];
+	}
 }
 
 //-----------------Constant Values---------------------
@@ -192,504 +229,504 @@ struct{
 
 void createTaskSetConstantValues(void){
 	if(NUM_TASKS == 2 && util == 0.5){
-	
-		C[0]  = ET[15].WCET;
-		BC[0] = ET[15].BCET;
-		D[0]  =	50000;	
-		T[0]  = 50000;
-		
-		C[1]  = ET[18].WCET;
-		BC[1] = ET[18].BCET;
-		D[1]  =	200000;	
-		T[1]  = 200000;		
-				
+
+		C[0] = ET[15].WCET;
+		B[0] = ET[15].BCET;
+		D[0] = 50000;	
+		T[0] = 50000;
+
+		C[1] = ET[18].WCET;
+		B[1] = ET[18].BCET;
+		D[1] = 200000;	
+		T[1] = 200000;		
+
 	}
 	else if(NUM_TASKS == 4 && util == 0.5){
-	
-		C[0]  = ET[0].WCET;
-		BC[0] = ET[0].BCET;
-		D[0]  =	50000;	
-		T[0]  = 50000;
-		
-		C[1]  = ET[14].WCET;
-		BC[1] = ET[14].BCET;
-		D[1]  =	400000;	
-		T[1]  = 400000;
-		
-		C[2]  = ET[17].WCET;
-		BC[2] = ET[17].BCET;
-		D[2]  =	500000;	
-		T[2]  = 500000;
-		
-		C[3]  = ET[21].WCET;
-		BC[3] = ET[21].BCET;
-		D[3]  =	1000000;	
-		T[3]  = 1000000;
-		
+
+		C[0] = ET[0].WCET;
+		B[0] = ET[0].BCET;
+		D[0] = 50000;	
+		T[0] = 50000;
+
+		C[1] = ET[14].WCET;
+		B[1] = ET[14].BCET;
+		D[1] = 400000;	
+		T[1] = 400000;
+
+		C[2] = ET[17].WCET;
+		B[2] = ET[17].BCET;
+		D[2] = 500000;	
+		T[2] = 500000;
+
+		C[3] = ET[21].WCET;
+		B[3] = ET[21].BCET;
+		D[3] = 1000000;	
+		T[3] = 1000000;
+
 	}
 	else if(NUM_TASKS == 6 && util == 0.5){
-	
-		C[0]  = ET[22].WCET;
-		BC[0] = ET[22].BCET;
-		D[0]  =	100000;	
-		T[0]  = 100000;
-		
-		C[1]  = ET[2].WCET;
-		BC[1] = ET[2].BCET;
-		D[1]  =	400000;	
-		T[1]  = 400000;
-		
-		C[2]  = ET[5].WCET;
-		BC[2] = ET[5].BCET;
-		D[2]  =	500000;	
-		T[2]  = 500000;
-		
-		C[3]  = ET[10].WCET;
-		BC[3] = ET[10].BCET;
-		D[3]  =	1000000;	
-		T[3]  = 1000000;
-		
-		C[4]  = ET[18].WCET;
-		BC[4] = ET[18].BCET;
-		D[4]  =	1000000;	
-		T[4]  = 1000000;
-		
-		C[5]  = ET[25].WCET;
-		BC[5] = ET[25].BCET;
-		D[5]  =	2000000;	
-		T[5]  = 2000000;
-			
+
+		C[0] = ET[22].WCET;
+		B[0] = ET[22].BCET;
+		D[0] = 100000;	
+		T[0] = 100000;
+
+		C[1] = ET[2].WCET;
+		B[1] = ET[2].BCET;
+		D[1] = 400000;	
+		T[1] = 400000;
+
+		C[2] = ET[5].WCET;
+		B[2] = ET[5].BCET;
+		D[2] = 500000;	
+		T[2] = 500000;
+
+		C[3] = ET[10].WCET;
+		B[3] = ET[10].BCET;
+		D[3] = 1000000;	
+		T[3] = 1000000;
+
+		C[4] = ET[18].WCET;
+		B[4] = ET[18].BCET;
+		D[4] = 1000000;	
+		T[4] = 1000000;
+
+		C[5] = ET[25].WCET;
+		B[5] = ET[25].BCET;
+		D[5] = 2000000;	
+		T[5] = 2000000;
+
 	}
 	else if(NUM_TASKS == 8 && util == 0.5){
-	
-		C[0]  = ET[1].WCET;
-		BC[0] = ET[1].BCET;
-		D[0]  =	100000;	
-		T[0]  = 100000;
-		
-		C[1]  = ET[2].WCET;
-		BC[1] = ET[2].BCET;
-		D[1]  =	400000;	
-		T[1]  = 400000;
-		
-		C[2]  = ET[3].WCET;
-		BC[2] = ET[3].BCET;
-		D[2]  =	500000;	
-		T[2]  = 500000;
-		
-		C[3]  = ET[10].WCET;
-		BC[3] = ET[10].BCET;
-		D[3]  =	800000;	
-		T[3]  = 800000;
-		
-		C[4]  = ET[14].WCET;
-		BC[4] = ET[14].BCET;
-		D[4]  =	1000000;	
-		T[4]  = 1000000;
-		
-		C[5]  = ET[17].WCET;
-		BC[5] = ET[17].BCET;
-		D[5]  =	2000000;	
-		T[5]  = 2000000;
-				
-		C[6]  = ET[6].WCET;
-		BC[6] = ET[6].BCET;
-		D[6]  =	2000000;	
-		T[6]  = 2000000;
-		
-		C[7]  = ET[26].WCET;
-		BC[7] = ET[26].BCET;
-		D[7]  =	4000000;	
-		T[7]  = 4000000;
-		
+
+		C[0] = ET[1].WCET;
+		B[0] = ET[1].BCET;
+		D[0] = 100000;	
+		T[0] = 100000;
+
+		C[1] = ET[2].WCET;
+		B[1] = ET[2].BCET;
+		D[1] = 400000;	
+		T[1] = 400000;
+
+		C[2] = ET[3].WCET;
+		B[2] = ET[3].BCET;
+		D[2] = 500000;	
+		T[2] = 500000;
+
+		C[3] = ET[10].WCET;
+		B[3] = ET[10].BCET;
+		D[3] = 800000;	
+		T[3] = 800000;
+
+		C[4] = ET[14].WCET;
+		B[4] = ET[14].BCET;
+		D[4] = 1000000;	
+		T[4] = 1000000;
+
+		C[5] = ET[17].WCET;
+		B[5] = ET[17].BCET;
+		D[5] = 2000000;	
+		T[5] = 2000000;
+
+		C[6] = ET[6].WCET;
+		B[6] = ET[6].BCET;
+		D[6] = 2000000;	
+		T[6] = 2000000;
+
+		C[7] = ET[26].WCET;
+		B[7] = ET[26].BCET;
+		D[7] = 4000000;	
+		T[7] = 4000000;
+
 	}
 	else if(NUM_TASKS == 2 && util == 0.6){
-	
-		C[0]  = ET[20].WCET;
-		BC[0] = ET[20].BCET;
-		D[0]  =	300000;	
-		T[0]  = 300000;
-		
-		C[1]  = ET[26].WCET;
-		BC[1] = ET[26].BCET;
-		D[1]  =	500000;	
-		T[1]  = 500000;		
-				
+
+		C[0] = ET[20].WCET;
+		B[0] = ET[20].BCET;
+		D[0] = 300000;	
+		T[0] = 300000;
+
+		C[1] = ET[26].WCET;
+		B[1] = ET[26].BCET;
+		D[1] = 500000;	
+		T[1] = 500000;		
+
 	}
 	else if(NUM_TASKS == 4 && util == 0.6){
-	
-		C[0]  = ET[0].WCET;
-		BC[0] = ET[0].BCET;
-		D[0]  =	50000;	
-		T[0]  = 50000;
-		
-		C[1]  = ET[14].WCET;
-		BC[1] = ET[14].BCET;
-		D[1]  =	400000;	
-		T[1]  = 400000;
-		
-		C[2]  = ET[7].WCET;
-		BC[2] = ET[7].BCET;
-		D[2]  =	500000;	
-		T[2]  = 500000;
-		
-		C[3]  = ET[26].WCET;
-		BC[3] = ET[26].BCET;
-		D[3]  =	1000000;	
-		T[3]  = 1000000;
-		
+
+		C[0] = ET[0].WCET;
+		B[0] = ET[0].BCET;
+		D[0] = 50000;	
+		T[0] = 50000;
+
+		C[1] = ET[14].WCET;
+		B[1] = ET[14].BCET;
+		D[1] = 400000;	
+		T[1] = 400000;
+
+		C[2] = ET[7].WCET;
+		B[2] = ET[7].BCET;
+		D[2] = 500000;	
+		T[2] = 500000;
+
+		C[3] = ET[26].WCET;
+		B[3] = ET[26].BCET;
+		D[3] = 1000000;	
+		T[3] = 1000000;
+
 	}
 	else if(NUM_TASKS == 6 && util == 0.6){
-	
-		C[0]  = ET[2].WCET;
-		BC[0] = ET[2].BCET;
-		D[0]  =	100000;	
-		T[0]  = 100000;
-		
-		C[1]  = ET[3].WCET;
-		BC[1] = ET[3].BCET;
-		D[1]  =	400000;	
-		T[1]  = 400000;
-		
-		C[2]  = ET[5].WCET;
-		BC[2] = ET[5].BCET;
-		D[2]  =	500000;	
-		T[2]  = 100000;
-		
-		C[3]  = ET[10].WCET;
-		BC[3] = ET[10].BCET;
-		D[3]  =	1000000;	
-		T[3]  = 1000000;
-		
-		C[4]  = ET[18].WCET;
-		BC[4] = ET[18].BCET;
-		D[4]  =	1000000;	
-		T[4]  = 1000000;
-		
-		C[5]  = ET[25].WCET;
-		BC[5] = ET[25].BCET;
-		D[5]  =	2000000;	
-		T[5]  = 2000000;
-			
+
+		C[0] = ET[2].WCET;
+		B[0] = ET[2].BCET;
+		D[0] = 100000;	
+		T[0] = 100000;
+
+		C[1] = ET[3].WCET;
+		B[1] = ET[3].BCET;
+		D[1] = 400000;	
+		T[1] = 400000;
+
+		C[2] = ET[5].WCET;
+		B[2] = ET[5].BCET;
+		D[2] = 500000;	
+		T[2] = 100000;
+
+		C[3] = ET[10].WCET;
+		B[3] = ET[10].BCET;
+		D[3] = 1000000;	
+		T[3] = 1000000;
+
+		C[4] = ET[18].WCET;
+		B[4] = ET[18].BCET;
+		D[4] = 1000000;	
+		T[4] = 1000000;
+
+		C[5] = ET[25].WCET;
+		B[5] = ET[25].BCET;
+		D[5] = 2000000;	
+		T[5] = 2000000;
+
 	}
 	else if(NUM_TASKS == 8 && util == 0.6){
-	
-		C[0]  = ET[1].WCET;
-		BC[0] = ET[1].BCET;
-		D[0]  =	100000;	
-		T[0]  = 100000;
-		
-		C[1]  = ET[4].WCET;
-		BC[1] = ET[4].BCET;
-		D[1]  =	400000;	
-		T[1]  = 400000;
-		
-		C[2]  = ET[5].WCET;
-		BC[2] = ET[5].BCET;
-		D[2]  =	500000;	
-		T[2]  = 500000;
-		
-		C[3]  = ET[10].WCET;
-		BC[3] = ET[10].BCET;
-		D[3]  =	800000;	
-		T[3]  = 800000;
-		
-		C[4]  = ET[14].WCET;
-		BC[4] = ET[14].BCET;
-		D[4]  =	1000000;	
-		T[4]  = 1000000;
-		
-		C[5]  = ET[17].WCET;
-		BC[5] = ET[17].BCET;
-		D[5]  =	2000000;	
-		T[5]  = 2000000;
-				
-		C[6]  = ET[6].WCET;
-		BC[6] = ET[6].BCET;
-		D[6]  =	2000000;	
-		T[6]  = 2000000;
-		
-		C[7]  = ET[26].WCET;
-		BC[7] = ET[26].BCET;
-		D[7]  =	4000000;	
-		T[7]  = 4000000;
-		
+
+		C[0] = ET[1].WCET;
+		B[0] = ET[1].BCET;
+		D[0] = 100000;	
+		T[0] = 100000;
+
+		C[1] = ET[4].WCET;
+		B[1] = ET[4].BCET;
+		D[1] = 400000;	
+		T[1] = 400000;
+
+		C[2] = ET[5].WCET;
+		B[2] = ET[5].BCET;
+		D[2] = 500000;	
+		T[2] = 500000;
+
+		C[3] = ET[10].WCET;
+		B[3] = ET[10].BCET;
+		D[3] = 800000;	
+		T[3] = 800000;
+
+		C[4] = ET[14].WCET;
+		B[4] = ET[14].BCET;
+		D[4] = 1000000;	
+		T[4] = 1000000;
+
+		C[5] = ET[17].WCET;
+		B[5] = ET[17].BCET;
+		D[5] = 2000000;	
+		T[5] = 2000000;
+
+		C[6] = ET[6].WCET;
+		B[6] = ET[6].BCET;
+		D[6] = 2000000;	
+		T[6] = 2000000;
+
+		C[7] = ET[26].WCET;
+		B[7] = ET[26].BCET;
+		D[7] = 4000000;	
+		T[7] = 4000000;
+
 	}
-	/*if(NUM_TASKS == 2 && util == 0.7){
+	if(NUM_TASKS == 2 && util == 0.7){
 	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
+		C[0] = ET[26].WCET;
+		B[0] = ET[26].BCET;
+		D[0] = 300000;	
+		T[0] = 300000;
 		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;		
+		C[1] = ET[20].WCET;
+		B[1] = ET[20].BCET;
+		D[1] = 500000;	
+		T[1] = 500000;		
 				
 	}
 	if(NUM_TASKS == 4 && util == 0.7){
 	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
+		C[0] = ET[15].WCET;
+		B[0] = ET[15].BCET;
+		D[0] = 50000;	
+		T[0] = 50000;
 		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;
+		C[1] = ET[8].WCET;
+		B[1] = ET[8].BCET;
+		D[1] = 400000;	
+		T[1] = 400000;
 		
-		C[2]  = ET[].WCET;
-		BC[2] = ET[].BCET;
-		D[2]  =	;	
-		T[2]  = ;
+		C[2] = ET[6].WCET;
+		B[2] = ET[6].BCET;
+		D[2] = 500000;	
+		T[2] = 500000;
 		
-		C[3]  = ET[].WCET;
-		BC[3] = ET[].BCET;
-		D[3]  =	;	
-		T[3]  = ;
+		C[3] = ET[26].WCET;
+		B[3] = ET[26].BCET;
+		D[3] = 1000000;	
+		T[3] = 1000000;
 		
 	}
 	if(NUM_TASKS == 6 && util == 0.7){
 	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
+		C[0] = ET[2].WCET;
+		B[0] = ET[2].BCET;
+		D[0] = 100000;	
+		T[0] = 100000;
 		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;
+		C[1] = ET[16].WCET;
+		B[1] = ET[16].BCET;
+		D[1] = 400000;	
+		T[1] = 400000;
 		
-		C[2]  = ET[].WCET;
-		BC[2] = ET[].BCET;
-		D[2]  =	;	
-		T[2]  = ;
+		C[2] = ET[7].WCET;
+		B[2] = ET[7].BCET;
+		D[2] = 500000;	
+		T[2] = 500000;
 		
-		C[3]  = ET[].WCET;
-		BC[3] = ET[].BCET;
-		D[3]  =	;	
-		T[3]  = ;
+		C[3] = ET[6].WCET;
+		B[3] = ET[6].BCET;
+		D[3] = 1000000;	
+		T[3] = 1000000;
 		
-		C[4]  = ET[].WCET;
-		BC[4] = ET[].BCET;
-		D[4]  =	;	
-		T[4]  = ;
+		C[4] = ET[19].WCET;
+		B[4] = ET[19].BCET;
+		D[4] = 1000000;	
+		T[4] = 1000000;
 		
-		C[5]  = ET[].WCET;
-		BC[5] = ET[].BCET;
-		D[5]  =	;	
-		T[5]  = ;
+		C[5] = ET[26].WCET;
+		B[5] = ET[26].BCET;
+		D[5] = 2000000;	
+		T[5] = 2000000;
 			
 	}
 	if(NUM_TASKS == 8 && util == 0.7){
 	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
+		C[0] = ET[2].WCET;
+		B[0] = ET[2].BCET;
+		D[0] = 100000;	
+		T[0] = 100000;
 		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;
+		C[1] = ET[4].WCET;
+		B[1] = ET[4].BCET;
+		D[1] = 400000;	
+		T[1] = 400000;
 		
-		C[2]  = ET[].WCET;
-		BC[2] = ET[].BCET;
-		D[2]  =	;	
-		T[2]  = ;
+		C[2] = ET[19].WCET;
+		B[2] = ET[19].BCET;
+		D[2] = 500000;	
+		T[2] = 500000;
 		
-		C[3]  = ET[].WCET;
-		BC[3] = ET[].BCET;
-		D[3]  =	;	
-		T[3]  = ;
+		C[3] = ET[10].WCET;
+		B[3] = ET[10].BCET;
+		D[3] = 800000;	
+		T[3] = 800000;
 		
-		C[4]  = ET[].WCET;
-		BC[4] = ET[].BCET;
-		D[4]  =	;	
-		T[4]  = ;
+		C[4] = ET[14].WCET;
+		B[4] = ET[14].BCET;
+		D[4] = 1000000;	
+		T[4] = 1000000;
 		
-		C[5]  = ET[].WCET;
-		BC[5] = ET[].BCET;
-		D[5]  =	;	
-		T[5]  = ;
+		C[5] = ET[18].WCET;
+		B[5] = ET[18].BCET;
+		D[5] = 2000000;	
+		T[5] = 2000000;
 				
-		C[6]  = ET[].WCET;
-		BC[6] = ET[].BCET;
-		D[6]  =	;	
-		T[6]  = ;
+		C[6] = ET[7].WCET;
+		B[6] = ET[7].BCET;
+		D[6] = 2000000;	
+		T[6] = 2000000;
 		
-		C[7]  = ET[].WCET;
-		BC[7] = ET[].BCET;
-		D[7]  =	;	
-		T[7]  = ;
+		C[7] = ET[25].WCET;
+		B[7] = ET[25].BCET;
+		D[7] = 4000000;	
+		T[7] = 4000000;
 		
 	}	
 	if(NUM_TASKS == 2 && util == 0.8){
 	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
+		C[0] = ET[26].WCET;
+		B[0] = ET[26].BCET;
+		D[0] = 300000;	
+		T[0] = 300000;
 		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;		
+		C[1] = ET[27].WCET;
+		B[1] = ET[27].BCET;
+		D[1] = 500000;	
+		T[1] = 500000;		
 				
 	}
 	if(NUM_TASKS == 4 && util == 0.8){
 	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
+		C[0] = ET[27].WCET;
+		B[0] = ET[27].BCET;
+		D[0] = 500000;	
+		T[0] = 500000;
 		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;
+		C[1] = ET[12].WCET;
+		B[1] = ET[12].BCET;
+		D[1] = 500000;	
+		T[1] = 500000;
 		
-		C[2]  = ET[].WCET;
-		BC[2] = ET[].BCET;
-		D[2]  =	;	
-		T[2]  = ;
+		C[2] = ET[26].WCET;
+		B[2] = ET[26].BCET;
+		D[2] = 1000000;	
+		T[2] = 1000000;
 		
-		C[3]  = ET[].WCET;
-		BC[3] = ET[].BCET;
-		D[3]  =	;	
-		T[3]  = ;
+		C[3] = ET[18].WCET;
+		B[3] = ET[18].BCET;
+		D[3] = 2000000;	
+		T[3] = 2000000;
 		
 	}
 	if(NUM_TASKS == 6 && util == 0.8){
 	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
+		C[0] = ET[20].WCET;
+		B[0] = ET[20].BCET;
+		D[0] = 400000;	
+		T[0] = 400000;
 		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;
+		C[1] = ET[7].WCET;
+		B[1] = ET[7].BCET;
+		D[1] = 500000;	
+		T[1] = 500000;
 		
-		C[2]  = ET[].WCET;
-		BC[2] = ET[].BCET;
-		D[2]  =	;	
-		T[2]  = ;
+		C[2] = ET[19].WCET;
+		B[2] = ET[19].BCET;
+		D[2] = 500000;	
+		T[2] = 500000;
 		
-		C[3]  = ET[].WCET;
-		BC[3] = ET[].BCET;
-		D[3]  =	;	
-		T[3]  = ;
+		C[3] = ET[12].WCET;
+		B[3] = ET[12].BCET;
+		D[3] = 1000000;	
+		T[3] = 1000000;
 		
-		C[4]  = ET[].WCET;
-		BC[4] = ET[].BCET;
-		D[4]  =	;	
-		T[4]  = ;
+		C[4] = ET[24].WCET;
+		B[4] = ET[24].BCET;
+		D[4] = 1000000;	
+		T[4] = 1000000;
 		
-		C[5]  = ET[].WCET;
-		BC[5] = ET[].BCET;
-		D[5]  =	;	
-		T[5]  = ;
+		C[5] = ET[18].WCET;
+		B[5] = ET[18].BCET;
+		D[5] = 2000000;	
+		T[5] = 2000000;
 			
 	}
 	if(NUM_TASKS == 8 && util == 0.8){
 	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
+		C[0] = ET[7].WCET;
+		B[0] = ET[7].BCET;
+		D[0] = 400000;
+		T[0] = 400000;
 		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;
+		C[1] = ET[25].WCET;
+		B[1] = ET[25].BCET;
+		D[1] = 500000;	
+		T[1] = 500000;
 		
-		C[2]  = ET[].WCET;
-		BC[2] = ET[].BCET;
-		D[2]  =	;	
-		T[2]  = ;
+		C[2] = ET[19].WCET;
+		B[2] = ET[19].BCET;
+		D[2] = 800000;	
+		T[2] = 800000;
 		
-		C[3]  = ET[].WCET;
-		BC[3] = ET[].BCET;
-		D[3]  =	;	
-		T[3]  = ;
+		C[3] = ET[14].WCET;
+		B[3] = ET[14].BCET;
+		D[3] = 800000;	
+		T[3] = 800000;
 		
-		C[4]  = ET[].WCET;
-		BC[4] = ET[].BCET;
-		D[4]  =	;	
-		T[4]  = ;
+		C[4] = ET[8].WCET;
+		B[4] = ET[8].BCET;
+		D[4] = 1000000;	
+		T[4] = 1000000;
 		
-		C[5]  = ET[].WCET;
-		BC[5] = ET[].BCET;
-		D[5]  =	;	
-		T[5]  = ;
+		C[5] = ET[10].WCET;
+		B[5] = ET[10].BCET;
+		D[5] = 2000000;	
+		T[5] = 2000000;
 				
-		C[6]  = ET[].WCET;
-		BC[6] = ET[].BCET;
-		D[6]  =	;	
-		T[6]  = ;
+		C[6] = ET[7].WCET;
+		B[6] = ET[7].BCET;
+		D[6] = 2000000;	
+		T[6] = 2000000;
 		
-		C[7]  = ET[].WCET;
-		BC[7] = ET[].BCET;
-		D[7]  =	;	
-		T[7]  = ;
+		C[7] = ET[20].WCET;
+		B[7] = ET[20].BCET;
+		D[7] = 4000000;	
+		T[7] = 4000000;
 		
 	}	
 	if(NUM_TASKS == 10 && util == 0.8){
 	
-		C[0]  = ET[].WCET;
-		BC[0] = ET[].BCET;
-		D[0]  =	;	
-		T[0]  = ;
+		C[0] = ET[9].WCET;
+		B[0] = ET[9].BCET;
+		D[0] = 100000;	
+		T[0] = 100000;
 		
-		C[1]  = ET[].WCET;
-		BC[1] = ET[].BCET;
-		D[1]  =	;	
-		T[1]  = ;
+		C[1] = ET[7].WCET;
+		B[1] = ET[7].BCET;
+		D[1] = 625000;	
+		T[1] = 625000;
 		
-		C[2]  = ET[].WCET;
-		BC[2] = ET[].BCET;
-		D[2]  =	;	
-		T[2]  = ;
+		C[2] = ET[14].WCET;
+		B[2] = ET[14].BCET;
+		D[2] = 625000;	
+		T[2] = 625000;
 		
-		C[3]  = ET[].WCET;
-		BC[3] = ET[].BCET;
-		D[3]  =	;	
-		T[3]  = ;
+		C[3] = ET[8].WCET;
+		B[3] = ET[8].BCET;
+		D[3] = 625000;	
+		T[3] = 625000;
 		
-		C[4]  = ET[].WCET;
-		BC[4] = ET[].BCET;
-		D[4]  =	;	
-		T[4]  = ;
+		C[4] = ET[4].WCET;
+		B[4] = ET[4].BCET;
+		D[4] = 1000000;	
+		T[4] = 1000000;
 		
-		C[5]  = ET[].WCET;
-		BC[5] = ET[].BCET;
-		D[5]  =	;	
-		T[5]  = ;
+		C[5] = ET[10].WCET;
+		B[5] = ET[10].BCET;
+		D[5] = 1000000;	
+		T[5] = 1000000;
 				
-		C[6]  = ET[].WCET;
-		BC[6] = ET[].BCET;
-		D[6]  =	;	
-		T[6]  = ;
+		C[6] = ET[19].WCET;
+		B[6] = ET[19].BCET;
+		D[6] = 1250000;	
+		T[6] = 1250000;
 		
-		C[7]  = ET[].WCET;
-		BC[7] = ET[].BCET;
-		D[7]  =	;	
-		T[7]  = ;
+		C[7] = ET[26].WCET;
+		B[7] = ET[26].BCET;
+		D[7] = 1250000;	
+		T[7] = 1250000;
 		
-		C[8]  = ET[].WCET;
-		BC[8] = ET[].BCET;
-		D[8]  =	;	
-		T[8]  = ;
+		C[8] = ET[21].WCET;
+		B[8] = ET[21].BCET;
+		D[8] = 2500000;	
+		T[8] = 2500000;
 		
-		C[9]  = ET[].WCET;
-		BC[9] = ET[].BCET;
-		D[9]  =	;	
-		T[9]  = ;
+		C[9] = ET[16].WCET;
+		B[9] = ET[16].BCET;
+		D[9] = 5000000;	
+		T[9] = 5000000;
 		
-	}*/
+	}
 }

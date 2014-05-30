@@ -9,7 +9,7 @@ extern int NUM_TASKS;
 #define CACHE_SIZE 256
 #define Total_ECBs_CU 10
 #define RF 0.8
-#define NUM_TASK_SETS 10
+#define NUM_TASK_SETS 2
 #define BRT 8e-3
 #define UTIL_START 0.70
 #define UTIL_INCREMENT 0.05
@@ -42,10 +42,10 @@ enum METHOD_NAMES {
 };
 extern int MESSAGE_LEVEL;
 extern int VERBOSE;
-extern double *C;//Worst case execution time
-extern double *BC;//Best case execution time
-extern long *D;
-extern long *T;
+extern double *C;// Worst case execution time
+extern double *B;// Best case execution time
+extern long *T;// Period
+extern long *D;// Deadline
 extern double util;
 extern std::set<int> *TASK_ECB;
 extern std::set<int> *TASK_UCB;
@@ -58,6 +58,7 @@ void print_ucbs(FILE *fp);
 int** Make2DintArrayInt(int arraySizeX, int arraySizeY);
 double** Make2DintArrayDouble(int arraySizeX, int arraySizeY);
 long** Make2DintArrayLong(int arraySizeX, int arraySizeY);
+void free2DintArrayInt(int ** twoDArray, int n);
 double sigmaTda(int thisTask, double Response[]);
 double wcrt(int thisTask, double Response[], FILE *fp, double (*PC)(int, double[], FILE*));
 #endif
