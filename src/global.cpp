@@ -24,7 +24,8 @@ void printBaseConfig(FILE *fp){
 	fprintf(fp, "Cache size = %d\n", CACHE_SIZE);
 	fprintf(fp, "BRT = %g\n", BRT);
 	fprintf(fp, "RF = %g\n", RF);
-	fprintf(fp, "Num Tasks = %d\n\n", NUM_TASKS);
+	fprintf(fp, "Num Tasks = %d\n", NUM_TASKS);
+	fprintf(fp, "Num Task Sets = %d\n\n", NUM_TASK_SETS);
 	fflush(fp);
 }
 

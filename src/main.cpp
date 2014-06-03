@@ -85,6 +85,7 @@ static void printTaskExecutionStatistics(FILE *fp){
 	   	heading = 1;
     	}
 	if(VERBOSE) fprintf(stdout, "%-4s\t%-32s\t%s\n", "Util", "Method", "No. of Sched tasks");
+	fprintf(fp, "\n");
    	for(int methodIndex = NO_PREEMPT; methodIndex < NUM_METHODS; methodIndex++)
      		if(methodsMap[methodIndex].func != NULL){
 			char str[50] = "\0";
@@ -136,7 +137,9 @@ static void uniformDistributionBenchmark(FILE *fp){
 	int dom[NUM_METHODS] = {0};
 	fprintf(fp, "Uniform Distribution Benchmark\n");
 	if(VERBOSE) fprintf(stdout, "Uniform Distribution Benchmark\n");		
-	if(initBenchmark(4/* = NUM_TASKS, TODO: read from config file*/, fp)){
+	readConfig();
+	if(initBenchmark(NUM_TASKS, fp)){
+		printBaseConfig(fp);
 		for(util = UTIL_START; util <= UTIL_END; util += UTIL_INCREMENT){
 			if(VERBOSE) printf("The total util is %f\n", util);
 			clearTaskExecutionStatistics();
