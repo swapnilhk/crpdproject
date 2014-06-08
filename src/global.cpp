@@ -9,6 +9,8 @@ int NUM_TASK_SETS;
 double UTIL_START;
 double UTIL_INCREMENT;
 double UTIL_END;
+int MIN_PERIOD;
+int MAX_PERIOD;
 double *C;//Worst case execution time
 double *B;//Best case execution time
 long *T;// Period

@@ -11,11 +11,12 @@ extern int NUM_TASK_SETS;
 extern double UTIL_START;
 extern double UTIL_INCREMENT;
 extern double UTIL_END;
+extern int MIN_PERIOD;
+extern int MAX_PERIOD;
 #define Total_ECBs_CU 10
 #define RF 0.8
 #define BRT 8e-3
-#define MIN_PERIOD 20
-#define MAX_PERIOD 500
+
 enum flag {NONE, IMP, ALL};
 enum METHOD_NAMES {
 	NO_PREEMPT,

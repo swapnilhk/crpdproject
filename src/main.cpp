@@ -42,6 +42,10 @@ static int readConfig(void){
 			UTIL_INCREMENT = atof(paramValue);
 		if(!strcmp(paramName,"UTIL_END"))
 			UTIL_END = atof(paramValue);
+		if(!strcmp(paramName,"MIN_PERIOD"))
+			MIN_PERIOD = atof(paramValue);
+		if(!strcmp(paramName,"MAX_PERIOD"))
+			MAX_PERIOD = atof(paramValue);
 	}
 	return 1;
 }
