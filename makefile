@@ -2,8 +2,8 @@ LIBPATH=lib/lp_solve_ux64
 OUTPATH=bin
 SRCPATH=src
 CC=g++
-LARG=-ldl -lm -O3 -g
-CARG=-c -g -Wno-write-strings
+LARG=-ldl -lm -O3
+CARG=-c -Wno-write-strings
 
 all: $(OUTPATH)/crpd
 

@@ -181,6 +181,7 @@ void createTaskSetUniformDistribution(float totalUtil, int minPeriod, int maxPer
 	for(i=0; i < NUM_TASKS; i++){
 		T[i] = (long) periodsArray[i];
 		C[i] = utilsArray[i] * T[i];
+		B[i] = 0.6 * C[i];// TODO: Replace it with comething else
 		D[i] = T[i];
 	}
 }
@@ -199,7 +200,7 @@ struct{
 	{92536,112636},{105536,135636},{118536,158636},{131536, 181636}
 };
 
-void createTaskSetConstantValues(int numTasks, double utilization){
+int createTaskSetConstantValues(int numTasks, double utilization){
 	if(numTasks == 2 && utilization == 0.5){
 
 		C[0] = ET[15].WCET;
@@ -211,7 +212,7 @@ void createTaskSetConstantValues(int numTasks, double utilization){
 		B[1] = ET[18].BCET;
 		D[1] = 200000;	
 		T[1] = 200000;		
-
+		return 1;	
 	}
 	else if(numTasks == 4 && utilization == 0.5){
 
@@ -234,7 +235,7 @@ void createTaskSetConstantValues(int numTasks, double utilization){
 		B[3] = ET[21].BCET;
 		D[3] = 1000000;	
 		T[3] = 1000000;
-
+		return 1;
 	}
 	else if(numTasks == 6 && utilization == 0.5){
 
@@ -267,7 +268,7 @@ void createTaskSetConstantValues(int numTasks, double utilization){
 		B[5] = ET[25].BCET;
 		D[5] = 2000000;	
 		T[5] = 2000000;
-
+		return 1;	
 	}
 	else if(numTasks == 8 && utilization == 0.5){
 
@@ -310,7 +311,7 @@ void createTaskSetConstantValues(int numTasks, double utilization){
 		B[7] = ET[26].BCET;
 		D[7] = 4000000;	
 		T[7] = 4000000;
-
+		return 1;	
 	}
 	else if(numTasks == 2 && utilization == 0.6){
 
@@ -323,7 +324,7 @@ void createTaskSetConstantValues(int numTasks, double utilization){
 		B[1] = ET[26].BCET;
 		D[1] = 500000;	
 		T[1] = 500000;		
-
+		return 1;	
 	}
 	else if(numTasks == 4 && utilization == 0.6){
 
@@ -346,7 +347,7 @@ void createTaskSetConstantValues(int numTasks, double utilization){
 		B[3] = ET[26].BCET;
 		D[3] = 1000000;	
 		T[3] = 1000000;
-
+		return 1;	
 	}
 	else if(numTasks == 6 && utilization == 0.6){
 
@@ -379,7 +380,7 @@ void createTaskSetConstantValues(int numTasks, double utilization){
 		B[5] = ET[25].BCET;
 		D[5] = 2000000;	
 		T[5] = 2000000;
-
+		return 1;	
 	}
 	else if(numTasks == 8 && utilization == 0.6){
 
@@ -422,9 +423,9 @@ void createTaskSetConstantValues(int numTasks, double utilization){
 		B[7] = ET[26].BCET;
 		D[7] = 4000000;	
 		T[7] = 4000000;
-
+		return 1;	
 	}
-	if(numTasks == 2 && utilization == 0.7){
+	else if(numTasks == 2 && utilization == 0.7){
 	
 		C[0] = ET[26].WCET;
 		B[0] = ET[26].BCET;
@@ -435,9 +436,9 @@ void createTaskSetConstantValues(int numTasks, double utilization){
 		B[1] = ET[20].BCET;
 		D[1] = 500000;	
 		T[1] = 500000;		
-				
+		return 1;	
 	}
-	if(numTasks == 4 && utilization == 0.7){
+	else if(numTasks == 4 && utilization == 0.7){
 	
 		C[0] = ET[15].WCET;
 		B[0] = ET[15].BCET;
@@ -458,9 +459,9 @@ void createTaskSetConstantValues(int numTasks, double utilization){
 		B[3] = ET[26].BCET;
 		D[3] = 1000000;	
 		T[3] = 1000000;
-		
+		return 1;	
 	}
-	if(numTasks == 6 && utilization == 0.7){
+	else if(numTasks == 6 && utilization == 0.7){
 	
 		C[0] = ET[2].WCET;
 		B[0] = ET[2].BCET;
@@ -491,9 +492,9 @@ void createTaskSetConstantValues(int numTasks, double utilization){
 		B[5] = ET[26].BCET;
 		D[5] = 2000000;	
 		T[5] = 2000000;
-			
+		return 1;	
 	}
-	if(numTasks == 8 && utilization == 0.7){
+	else if(numTasks == 8 && utilization == 0.7){
 	
 		C[0] = ET[2].WCET;
 		B[0] = ET[2].BCET;
@@ -534,9 +535,9 @@ void createTaskSetConstantValues(int numTasks, double utilization){
 		B[7] = ET[25].BCET;
 		D[7] = 4000000;	
 		T[7] = 4000000;
-		
+		return 1;	
 	}	
-	if(numTasks == 2 && utilization == 0.8){
+	else if(numTasks == 2 && utilization == 0.8){
 	
 		C[0] = ET[26].WCET;
 		B[0] = ET[26].BCET;
@@ -547,9 +548,9 @@ void createTaskSetConstantValues(int numTasks, double utilization){
 		B[1] = ET[27].BCET;
 		D[1] = 500000;	
 		T[1] = 500000;		
-				
+		return 1;	
 	}
-	if(numTasks == 4 && utilization == 0.8){
+	else if(numTasks == 4 && utilization == 0.8){
 	
 		C[0] = ET[27].WCET;
 		B[0] = ET[27].BCET;
@@ -570,9 +571,9 @@ void createTaskSetConstantValues(int numTasks, double utilization){
 		B[3] = ET[18].BCET;
 		D[3] = 2000000;	
 		T[3] = 2000000;
-		
+		return 1;	
 	}
-	if(numTasks == 6 && utilization == 0.8){
+	else if(numTasks == 6 && utilization == 0.8){
 	
 		C[0] = ET[20].WCET;
 		B[0] = ET[20].BCET;
@@ -603,9 +604,9 @@ void createTaskSetConstantValues(int numTasks, double utilization){
 		B[5] = ET[18].BCET;
 		D[5] = 2000000;	
 		T[5] = 2000000;
-			
+		return 1;	
 	}
-	if(numTasks == 8 && utilization == 0.8){
+	else if(numTasks == 8 && utilization == 0.8){
 	
 		C[0] = ET[7].WCET;
 		B[0] = ET[7].BCET;
@@ -646,9 +647,9 @@ void createTaskSetConstantValues(int numTasks, double utilization){
 		B[7] = ET[20].BCET;
 		D[7] = 4000000;	
 		T[7] = 4000000;
-		
+		return 1;	
 	}	
-	if(numTasks == 10 && utilization == 0.8){
+	else if(numTasks == 10 && utilization == 0.8){
 	
 		C[0] = ET[9].WCET;
 		B[0] = ET[9].BCET;
@@ -699,6 +700,10 @@ void createTaskSetConstantValues(int numTasks, double utilization){
 		B[9] = ET[16].BCET;
 		D[9] = 5000000;	
 		T[9] = 5000000;
-		
+		return 1;	
+	}
+	else{
+		fprintf(stderr, "Invalid case: numTasks = %d, utilization = %g\n", numTasks, utilization);	
+		return 0;
 	}
 }

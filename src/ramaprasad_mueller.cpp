@@ -17,13 +17,15 @@ typedef struct{
 	long inTime;
 	double remTime;
 	int priority; // Priority <=> Task Name
+	int hpTasks;
+	int firstExec;
 }JOB;
 
 typedef struct{
 	int rear;
 	int size;
 	JOB** data;
-	int (*compare)(JOB*, JOB*);
+	int (*compare)(JOB*, JOB*);	
 }PRIORITY_QUEUE;
 
 void levelwisePrint(PRIORITY_QUEUE* q){
@@ -153,15 +155,38 @@ long getHyperperiod(int numTasks){
 }
 
 int ramaprasadMueller(void){
+
+	/*C[0] = 7;
+	B[0] = 5;
+	D[0] = 20;
+	T[0] = 20;
+	
+	C[1] = 12;
+	B[1] = 10;
+	D[1] = 50;
+	T[1] = 50;
+	
+	C[2] = 30;
+	B[2] = 25;
+	D[2] = 200;
+	T[2] = 200;*/
+
+
 	JOB *j;	
 	int i, qsize = 0, thisTask, sched = 1, numPreemptionPoints = 0;
 	long hyperperiod = getHyperperiod(NUM_TASKS);
 	double time, timeBc, timeWc, preemptionPoint = 0, prevPreemptionPoint, idleBeforePreemptionPoint, finTime;
 	PRIORITY_QUEUE *inQBcet, *inQWcet, *readyQBcet, *readyQWcet;
-	std::set<int> cache;
-	FILE *fp1 = fopen("out/timelinebect.txt", "w"), *fp2 = fopen("out/timelinewect.txt", "w"), *fp3 = fopen("out/ramaprasad_mueller.txt", "w");
+	static int first_call = 1;
+	static FILE *fp1, *fp2, *fp3;
 	
-	cache.clear();	
+	if(first_call){
+		fp1 = fopen("out/timelinebect.txt", "w");
+		fp2 = fopen("out/timelinewect.txt", "w");
+		fp3 = fopen("out/ramaprasad_mueller.txt", "w");
+		first_call = 0;
+	}
+	
 	if(MESSAGE_LEVEL >= ALL)
 		fprintf(fp3, "Current Task,Previous Preemption Point,Current Preemption Point,Idle Time Before Preemption Point,Finish Time,Valid/Invalid Preemption Point\n");
 	for(thisTask = 1; thisTask < NUM_TASKS && sched; thisTask++){				
@@ -188,22 +213,26 @@ int ramaprasadMueller(void){
 		for(i = 0; i < thisTask; i++){
 			long inTime = 0;
 			do{
-				j = (JOB*)malloc(sizeof(JOB));
+				j = new JOB;//(JOB*)malloc(sizeof(JOB));
 				j->inTime = inTime;
 				j->remTime = B[i];
 				j->priority = i;				
-				insertIntoQueue(inQBcet, j);	
-				inTime += T[j->priority];
+				j->hpTasks = 0;
+				j->firstExec = 1;
+				insertIntoQueue(inQBcet, j);					
+				inTime += T[j->priority];				
 			}while(inTime < hyperperiod);
 		}
 		
 		for(i = 0; i <= thisTask; i++){
 			long inTime = 0;
 			do{
-				j = (JOB*)malloc(sizeof(JOB));
+				j = new JOB;//(JOB*)malloc(sizeof(JOB));
 				j->inTime = inTime;			
 				j->remTime = C[i];			
-				j->priority = i;				
+				j->priority = i;
+				j->hpTasks = 0;
+				j->firstExec = 1;
 				insertIntoQueue(inQWcet, j);	
 				inTime += T[j->priority];
 			}while(inTime < hyperperiod);
@@ -223,9 +252,43 @@ int ramaprasadMueller(void){
 			preemptionPoint = (!isEmpty(inQBcet)) ? topOfQueue(inQBcet)->inTime : hyperperiod;//newTime is the arrival time for next job.
 			idleBeforePreemptionPoint = -INFINITY;// -INFINITY indicates the point where idle time begind in this interval has not been encountered yet
 			finTime = (finTime == INFINITY) ? finTime : -INFINITY;
+
 			while(timeBc < preemptionPoint && sched){
 				if(!isEmpty(readyQBcet)){				
-					j = deleteFromQueue(readyQBcet);//j is the job that needs to be executed now									
+					j = deleteFromQueue(readyQBcet);//j is the job that needs to be executed now
+
+					//---------------------------Cache Related Computations------------------------------------------------					
+					/*if(j->firstExec){ // j is executing for the first time
+						// Load the cache blocks
+						Set_Union(j->cacheBlocks, TASK_ECB[j->priority], j->cacheBlocks);
+						j->firstExec = 0;
+					}
+					else{ // j is not executing for the first time
+						std::set<int> temp;
+						Set_Difference(TASK_UCB[j->priority], j->cacheBlocks, temp);
+						j->remTime += BRT * SET_MOD(temp);
+						Set_Union(j->cacheBlocks, temp, j->cacheBlocks);
+					}
+					// In either case, for all jobs in the ready queue, remove the cache blocks belonging to this task
+					for(int i = 1; i <= readyQBcet->rear; i++)
+						Set_Difference(readyQBcet->data[i]->cacheBlocks, j->cacheBlocks, readyQBcet->data[i]->cacheBlocks);
+					*/
+					if(j->firstExec)// j is executing for the first time
+						j->firstExec = 0;// Do nothong
+					else{
+						std::set<int> temp;
+						temp.clear();
+						// Union of ECBs of all HP tasks that have jth bit in j->hpTasks set
+						for(int i = 0; i < j->priority && ((j->hpTasks >> i) & 1); i++)
+							Set_Union(TASK_ECB[i], temp, temp);
+						// Intersection of UCB of this task
+						Set_Intersect(TASK_UCB[j->priority], temp, temp);
+						j->remTime += BRT * SET_MOD(temp);
+					}
+					for(int i = 1; i <= readyQBcet->rear; i++)
+							readyQBcet->data[i]->hpTasks |= (1<<j->priority);
+					//-----------------------------------------------------------------------------------------------------
+					
 					if(j->remTime <= preemptionPoint - timeBc){//ie. j will finish in this interval
 						if(MESSAGE_LEVEL >= ALL)
 							fprintf(fp1, "->T%d(%g,%g)", j->priority, timeBc, timeBc + j->remTime);
@@ -257,7 +320,40 @@ int ramaprasadMueller(void){
 				nextInTime = (!isEmpty(inQWcet)) ? topOfQueue(inQWcet)->inTime : hyperperiod;
 				while(timeWc < nextInTime){
 					if(!isEmpty(readyQWcet)){					
-						j = deleteFromQueue(readyQWcet);//j is the job that needs to be executed now						
+						j = deleteFromQueue(readyQWcet);//j is the job that needs to be executed now			
+						
+						//---------------------------Cache Related Computations------------------------------------------------					
+						/*if(j->firstExec){ // j is executing for the first time
+							// Load the cache blocks
+							Set_Union(j->cacheBlocks, TASK_ECB[j->priority], j->cacheBlocks);
+							j->firstExec = 0;
+						}
+						else{ // j is not executing for the first time
+							std::set<int> temp;
+							Set_Difference(TASK_UCB[j->priority], j->cacheBlocks, temp);
+							j->remTime += BRT * SET_MOD(temp);
+							Set_Union(j->cacheBlocks, temp, j->cacheBlocks);
+						}
+						// In either case, for all jobs in the ready queue, remove the cache blocks belonging to this task
+						for(int i = 1; i <= readyQWcet->rear; i++)
+							Set_Difference(readyQWcet->data[i]->cacheBlocks, j->cacheBlocks, readyQWcet->data[i]->cacheBlocks);
+						*/
+						if(j->firstExec)// j is executing for the first time
+							j->firstExec = 0;// Do nothong
+						else{
+							std::set<int> temp;
+							temp.clear();
+							// Union of ECBs of all HP tasks that have jth bit in j->hpTasks set
+							for(int i = 0; i < j->priority && ((j->hpTasks >> i) & 1); i++)
+								Set_Union(TASK_ECB[i], temp, temp);
+							// Intersection of UCB of this task
+							Set_Intersect(TASK_UCB[j->priority], temp, temp);
+							j->remTime += BRT * SET_MOD(temp);
+						}
+						for(int i = 1; i <= readyQWcet->rear; i++)
+								readyQWcet->data[i]->hpTasks |= (1<<j->priority);
+						//-----------------------------------------------------------------------------------------------------
+									
 						if(j->remTime <= nextInTime - timeWc){//ie. j will finish in this interval
 							if(MESSAGE_LEVEL >= ALL)
 								fprintf(fp2, "->T%d(%g,%g)", j->priority, timeWc, timeWc + j->remTime);						
@@ -266,7 +362,6 @@ int ramaprasadMueller(void){
 								finTime = timeWc;
 								if(finTime > j->inTime + D[thisTask])
 									sched = 0;
-								cache.clear();
 								if(MESSAGE_LEVEL >= IMP)
 									fprintf(fp3, "Task:%d,Intime:%ld,FinishTime=%g,ResponseTime=%g,NumPreemptionPts=%d,Deadline=%ld,%sSchedulable\n",thisTask, j->inTime, finTime, finTime - j->inTime, numPreemptionPoints, j->inTime + D[thisTask],sched?"":"NOT ");
 								numPreemptionPoints = 0;
@@ -283,8 +378,6 @@ int ramaprasadMueller(void){
 								if(timeWc >= j->inTime + D[thisTask])
 									sched = 0;
 							}
-							else
-								Set_Difference(cache, TASK_ECB[thisTask], cache);
 							timeWc = nextInTime;
 						}
 					}
@@ -303,11 +396,6 @@ int ramaprasadMueller(void){
 					fprintf(fp3, "V\n");
 					numPreemptionPoints++;
 				}
-				// Adding preemption cost for this task
-				std::set<int> temp;
-				Set_Difference(TASK_UCB[thisTask], cache, temp);
-				j->remTime += BRT * SET_MOD(temp);
-				Set_Union(cache, TASK_UCB[thisTask], cache);//Restore cache
 			}
 			else
 				if(MESSAGE_LEVEL >= ALL)
@@ -332,9 +420,11 @@ int ramaprasadMueller(void){
 		freeQueue(readyQBcet);
 		freeQueue(readyQWcet);
 	}
-	fclose(fp1);
-	fclose(fp2);
-	fclose(fp3);		
+	if(sched)
+		Num_Executed_Tasks[RAMAPRASAD_MUELLER]++;
+	//fclose(fp1);
+	//fclose(fp2);
+	//fclose(fp3);		
 	return sched;
 }
 

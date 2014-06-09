@@ -66,9 +66,10 @@ static int init(void){
 	methodsMap[STASCHULAT_PRE] = (struct map){"STASCHULAT_PRE", NULL/*Response_time_Staschulat_PRE*/};
 	methodsMap[PRE_MAX] = (struct map){"PRE_MAX", NULL/*Response_time_PRE_MAX*/};
 	methodsMap[PRE_MAX_KD] = (struct map){"PRE_MAX_KD", /*NULL*/ResponseTimePreMaxKd};
-	methodsMap[PRE_MAX_KD2] = (struct map){"PRE_MAX_KD2", /*NULL*/ResponseTimePreMaxKd2};
+	methodsMap[PRE_MAX_KD2] = (struct map){"PRE_MAX_KD2", NULL/*ResponseTimePreMaxKd2*/};
 	methodsMap[LEE_WODC] = (struct map){"LEE_WODC", /*NULL*/ResponseTimeLeeWodc};
 	methodsMap[LEE_WDC] = (struct map){"LEE_WDC", /*NULL*/ResponseTimeLeeWdc};
+	methodsMap[RAMAPRASAD_MUELLER] = (struct map){"RAMAPRASAD_MUELLER", /*NULL*/ramaprasadMueller};
 	return readConfig();	
 }
 
@@ -167,20 +168,22 @@ static void constantValuesBenchmark(FILE *fp){
 	int dom[NUM_METHODS] = {0};	
 	fprintf(fp, "Constant Values Banchmark\n");
 	if(VERBOSE) fprintf(stdout, "Constant Values Banchmark\n");
-	for(util = 0.5; util <= 0.6; util += 0.1){			
-		for(int numTasks = 2; numTasks <= (util == 0.8 ? 10 : 2); numTasks+=2){			
+	for(util = 50; util <= 80; util += 10){			
+		for(int numTasks = 2; numTasks <= (util == 80 ? 10 : 8); numTasks+=2){			
 			if(initBenchmark(numTasks, fp)){
 				int schedVector;//vector of bits with each bit corresponding to each method				
-				fprintf(fp, "NUM_TASKS = %d util is %f\n", NUM_TASKS, util);
-				if(VERBOSE)fprintf(stdout, "NUM_TASKS = %d util is %f\n", NUM_TASKS, util);
+				fprintf(fp, "NUM_TASKS = %d util is %f\n", NUM_TASKS, util/100);
+				if(VERBOSE)fprintf(stdout, "NUM_TASKS = %d util is %f\n", NUM_TASKS, util/100);
 				clearTaskExecutionStatistics();
-				createTaskSetConstantValues(numTasks, util);
-				schedVector = CALL_METHODS();
-				updateDominationMatrix(schedVector, dom);
-				printTaskExecutionStatistics(fp);
-				printDominationInfo(dom, fp);
-				if(VERBOSE)printDominationInfo(dom, stdout);
+				if(createTaskSetConstantValues(numTasks, util/100)){
+					schedVector = CALL_METHODS();
+					updateDominationMatrix(schedVector, dom);
+					printTaskExecutionStatistics(fp);
+					printDominationInfo(dom, fp);
+					if(VERBOSE)printDominationInfo(dom, stdout);
+				}
 				freeBenchmark();
+				
 			}
 		}
 		if(VERBOSE) printf("\n");
@@ -212,7 +215,7 @@ int main(int argc, char * argv[]) {
 		}	
 		if(MESSAGE_LEVEL >= IMP) printBaseConfig(fp);
 		uniformDistributionBenchmark(fp);
-		constantValuesBenchmark(fp);
+		//constantValuesBenchmark(fp);
 		fclose(fp);
 	}
 }
