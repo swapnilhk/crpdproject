@@ -1,0 +1,214 @@
+
+Base Config
+Cache size = 256
+BRT = 0.008
+RF = 0.8
+Num Tasks = 3
+Num Task Sets = 1
+
+Constant Values Banchmark
+NUM_TASKS = 2 util is 0.500000
+Util	Method                          	No. of Sched tasks
+
+50  	PRE_MAX_KD                      	1
+50  	LEE_WODC                        	1
+50  	LEE_WDC                         	1
+50  	RAMAPRASAD_MUELLER              	1
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD and RAMAPRASAD_MUELLER are equal
+LEE_WODC and LEE_WDC are equal
+LEE_WODC and RAMAPRASAD_MUELLER are equal
+LEE_WDC and RAMAPRASAD_MUELLER are equal
+NUM_TASKS = 4 util is 0.500000
+
+50  	PRE_MAX_KD                      	1
+50  	LEE_WODC                        	1
+50  	LEE_WDC                         	1
+50  	RAMAPRASAD_MUELLER              	1
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD and RAMAPRASAD_MUELLER are equal
+LEE_WODC and LEE_WDC are equal
+LEE_WODC and RAMAPRASAD_MUELLER are equal
+LEE_WDC and RAMAPRASAD_MUELLER are equal
+NUM_TASKS = 6 util is 0.500000
+
+50  	PRE_MAX_KD                      	1
+50  	LEE_WODC                        	1
+50  	LEE_WDC                         	1
+50  	RAMAPRASAD_MUELLER              	1
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD and RAMAPRASAD_MUELLER are equal
+LEE_WODC and LEE_WDC are equal
+LEE_WODC and RAMAPRASAD_MUELLER are equal
+LEE_WDC and RAMAPRASAD_MUELLER are equal
+NUM_TASKS = 8 util is 0.500000
+
+50  	PRE_MAX_KD                      	1
+50  	LEE_WODC                        	1
+50  	LEE_WDC                         	1
+50  	RAMAPRASAD_MUELLER              	1
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD and RAMAPRASAD_MUELLER are equal
+LEE_WODC and LEE_WDC are equal
+LEE_WODC and RAMAPRASAD_MUELLER are equal
+LEE_WDC and RAMAPRASAD_MUELLER are equal
+NUM_TASKS = 2 util is 0.600000
+
+60  	PRE_MAX_KD                      	1
+60  	LEE_WODC                        	1
+60  	LEE_WDC                         	1
+60  	RAMAPRASAD_MUELLER              	1
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD and RAMAPRASAD_MUELLER are equal
+LEE_WODC and LEE_WDC are equal
+LEE_WODC and RAMAPRASAD_MUELLER are equal
+LEE_WDC and RAMAPRASAD_MUELLER are equal
+NUM_TASKS = 4 util is 0.600000
+
+60  	PRE_MAX_KD                      	1
+60  	LEE_WODC                        	1
+60  	LEE_WDC                         	1
+60  	RAMAPRASAD_MUELLER              	1
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD and RAMAPRASAD_MUELLER are equal
+LEE_WODC and LEE_WDC are equal
+LEE_WODC and RAMAPRASAD_MUELLER are equal
+LEE_WDC and RAMAPRASAD_MUELLER are equal
+NUM_TASKS = 6 util is 0.600000
+
+60  	PRE_MAX_KD                      	0
+60  	LEE_WODC                        	0
+60  	LEE_WDC                         	0
+60  	RAMAPRASAD_MUELLER              	0
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD and RAMAPRASAD_MUELLER are equal
+LEE_WODC and LEE_WDC are equal
+LEE_WODC and RAMAPRASAD_MUELLER are equal
+LEE_WDC and RAMAPRASAD_MUELLER are equal
+NUM_TASKS = 8 util is 0.600000
+
+60  	PRE_MAX_KD                      	1
+60  	LEE_WODC                        	1
+60  	LEE_WDC                         	1
+60  	RAMAPRASAD_MUELLER              	1
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD and RAMAPRASAD_MUELLER are equal
+LEE_WODC and LEE_WDC are equal
+LEE_WODC and RAMAPRASAD_MUELLER are equal
+LEE_WDC and RAMAPRASAD_MUELLER are equal
+NUM_TASKS = 2 util is 0.700000
+
+70  	PRE_MAX_KD                      	1
+70  	LEE_WODC                        	1
+70  	LEE_WDC                         	1
+70  	RAMAPRASAD_MUELLER              	1
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD and RAMAPRASAD_MUELLER are equal
+LEE_WODC and LEE_WDC are equal
+LEE_WODC and RAMAPRASAD_MUELLER are equal
+LEE_WDC and RAMAPRASAD_MUELLER are equal
+NUM_TASKS = 4 util is 0.700000
+
+70  	PRE_MAX_KD                      	1
+70  	LEE_WODC                        	1
+70  	LEE_WDC                         	1
+70  	RAMAPRASAD_MUELLER              	1
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD and RAMAPRASAD_MUELLER are equal
+LEE_WODC and LEE_WDC are equal
+LEE_WODC and RAMAPRASAD_MUELLER are equal
+LEE_WDC and RAMAPRASAD_MUELLER are equal
+NUM_TASKS = 6 util is 0.700000
+
+70  	PRE_MAX_KD                      	1
+70  	LEE_WODC                        	1
+70  	LEE_WDC                         	1
+70  	RAMAPRASAD_MUELLER              	1
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD and RAMAPRASAD_MUELLER are equal
+LEE_WODC and LEE_WDC are equal
+LEE_WODC and RAMAPRASAD_MUELLER are equal
+LEE_WDC and RAMAPRASAD_MUELLER are equal
+NUM_TASKS = 8 util is 0.700000
+
+70  	PRE_MAX_KD                      	1
+70  	LEE_WODC                        	1
+70  	LEE_WDC                         	1
+70  	RAMAPRASAD_MUELLER              	1
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD and RAMAPRASAD_MUELLER are equal
+LEE_WODC and LEE_WDC are equal
+LEE_WODC and RAMAPRASAD_MUELLER are equal
+LEE_WDC and RAMAPRASAD_MUELLER are equal
+NUM_TASKS = 2 util is 0.800000
+
+80  	PRE_MAX_KD                      	1
+80  	LEE_WODC                        	1
+80  	LEE_WDC                         	1
+80  	RAMAPRASAD_MUELLER              	1
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD and RAMAPRASAD_MUELLER are equal
+LEE_WODC and LEE_WDC are equal
+LEE_WODC and RAMAPRASAD_MUELLER are equal
+LEE_WDC and RAMAPRASAD_MUELLER are equal
+NUM_TASKS = 4 util is 0.800000
+
+80  	PRE_MAX_KD                      	1
+80  	LEE_WODC                        	1
+80  	LEE_WDC                         	1
+80  	RAMAPRASAD_MUELLER              	1
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD and RAMAPRASAD_MUELLER are equal
+LEE_WODC and LEE_WDC are equal
+LEE_WODC and RAMAPRASAD_MUELLER are equal
+LEE_WDC and RAMAPRASAD_MUELLER are equal
+NUM_TASKS = 6 util is 0.800000
+
+80  	PRE_MAX_KD                      	1
+80  	LEE_WODC                        	1
+80  	LEE_WDC                         	1
+80  	RAMAPRASAD_MUELLER              	1
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD and RAMAPRASAD_MUELLER are equal
+LEE_WODC and LEE_WDC are equal
+LEE_WODC and RAMAPRASAD_MUELLER are equal
+LEE_WDC and RAMAPRASAD_MUELLER are equal
+NUM_TASKS = 8 util is 0.800000
+
+80  	PRE_MAX_KD                      	1
+80  	LEE_WODC                        	1
+80  	LEE_WDC                         	1
+80  	RAMAPRASAD_MUELLER              	1
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD and RAMAPRASAD_MUELLER are equal
+LEE_WODC and LEE_WDC are equal
+LEE_WODC and RAMAPRASAD_MUELLER are equal
+LEE_WDC and RAMAPRASAD_MUELLER are equal
+NUM_TASKS = 10 util is 0.800000
+
+80  	PRE_MAX_KD                      	1
+80  	LEE_WODC                        	1
+80  	LEE_WDC                         	1
+80  	RAMAPRASAD_MUELLER              	1
+PRE_MAX_KD and LEE_WODC are equal
+PRE_MAX_KD and LEE_WDC are equal
+PRE_MAX_KD and RAMAPRASAD_MUELLER are equal
+LEE_WODC and LEE_WDC are equal
+LEE_WODC and RAMAPRASAD_MUELLER are equal
+LEE_WDC and RAMAPRASAD_MUELLER are equal

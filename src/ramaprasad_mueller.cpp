@@ -279,13 +279,16 @@ int ramaprasadMueller(void){
 						std::set<int> temp;
 						temp.clear();
 						// Union of ECBs of all HP tasks that have jth bit in j->hpTasks set
-						for(int i = 0; i < j->priority && ((j->hpTasks >> i) & 1); i++)
-							Set_Union(TASK_ECB[i], temp, temp);
+						for(int i = 0; i < j->priority; i++)
+							if((j->hpTasks >> i) & 1)
+								Set_Union(TASK_ECB[i], temp, temp);
+						j->hpTasks = 0;
 						// Intersection of UCB of this task
 						Set_Intersect(TASK_UCB[j->priority], temp, temp);
 						j->remTime += BRT * SET_MOD(temp);
 					}
-					for(int i = 1; i <= readyQBcet->rear; i++)
+					for(int i = 1; i <= readyQBcet->rear; i++)// For all jobs in the ready queue do
+						if(!readyQBcet->data[i]->firstExec)// Do nothing for new jobs ie those who have not executed even once
 							readyQBcet->data[i]->hpTasks |= (1<<j->priority);
 					//-----------------------------------------------------------------------------------------------------
 					
@@ -344,13 +347,16 @@ int ramaprasadMueller(void){
 							std::set<int> temp;
 							temp.clear();
 							// Union of ECBs of all HP tasks that have jth bit in j->hpTasks set
-							for(int i = 0; i < j->priority && ((j->hpTasks >> i) & 1); i++)
-								Set_Union(TASK_ECB[i], temp, temp);
+							for(int i = 0; i < j->priority; i++)
+								if((j->hpTasks >> i) & 1)
+									Set_Union(TASK_ECB[i], temp, temp);
+							j->hpTasks = 0;
 							// Intersection of UCB of this task
 							Set_Intersect(TASK_UCB[j->priority], temp, temp);
 							j->remTime += BRT * SET_MOD(temp);
 						}
-						for(int i = 1; i <= readyQWcet->rear; i++)
+						for(int i = 1; i <= readyQWcet->rear; i++)// For all jobs in the ready queue do
+							if(!readyQWcet->data[i]->firstExec)// Do nothing for new jobs ie those who have not executed even once
 								readyQWcet->data[i]->hpTasks |= (1<<j->priority);
 						//-----------------------------------------------------------------------------------------------------
 									

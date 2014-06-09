@@ -27,7 +27,9 @@ void printBaseConfig(FILE *fp){
 	fprintf(fp, "BRT = %g\n", BRT);
 	fprintf(fp, "RF = %g\n", RF);
 	fprintf(fp, "Num Tasks = %d\n", NUM_TASKS);
-	fprintf(fp, "Num Task Sets = %d\n\n", NUM_TASK_SETS);
+	fprintf(fp, "Num Task Sets = %d\n", NUM_TASK_SETS);
+	fprintf(fp, "MIN_PERIOD = %d\n", MIN_PERIOD);
+	fprintf(fp, "MAX_PERIOD = %d\n\n", MAX_PERIOD);
 	fflush(fp);
 }
 
