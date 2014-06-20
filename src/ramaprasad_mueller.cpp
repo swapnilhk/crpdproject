@@ -156,7 +156,7 @@ long getHyperperiod(int numTasks){
 
 int ramaprasadMueller(void){
 
-	/*C[0] = 7;
+	C[0] = 7;
 	B[0] = 5;
 	D[0] = 20;
 	T[0] = 20;
@@ -169,7 +169,7 @@ int ramaprasadMueller(void){
 	C[2] = 30;
 	B[2] = 25;
 	D[2] = 200;
-	T[2] = 200;*/
+	T[2] = 200;
 
 
 	JOB *j;	
@@ -177,13 +177,13 @@ int ramaprasadMueller(void){
 	long hyperperiod = getHyperperiod(NUM_TASKS);
 	double time, timeBc, timeWc, preemptionPoint = 0, prevPreemptionPoint, idleBeforePreemptionPoint, finTime;
 	PRIORITY_QUEUE *inQBcet, *inQWcet, *readyQBcet, *readyQWcet;
-	static int first_call = 1;
+	static int first_call = 1, finFlag = 0;
 	static FILE *fp1, *fp2, *fp3;
 	
 	if(first_call){
 		fp1 = fopen("out/timelinebect.txt", "w");
 		fp2 = fopen("out/timelinewect.txt", "w");
-		fp3 = fopen("out/ramaprasad_mueller.txt", "w");
+		fp3 = stdout/*fopen("out/ramaprasad_mueller.txt", "w")*/;
 		first_call = 0;
 	}
 	
@@ -344,6 +344,7 @@ int ramaprasadMueller(void){
 						if(j->firstExec)// j is executing for the first time
 							j->firstExec = 0;// Do nothong
 						else{
+							fprintf(stdout, "******************Adding Cost\n");
 							std::set<int> temp;
 							temp.clear();
 							// Union of ECBs of all HP tasks that have jth bit in j->hpTasks set
@@ -365,14 +366,14 @@ int ramaprasadMueller(void){
 								fprintf(fp2, "->T%d(%g,%g)", j->priority, timeWc, timeWc + j->remTime);						
 							timeWc = timeWc + j->remTime;
 							if(j->priority == thisTask){
+								finFlag = 1;
 								finTime = timeWc;
 								if(finTime > j->inTime + D[thisTask])
 									sched = 0;
-								if(MESSAGE_LEVEL >= IMP)
-									fprintf(fp3, "Task:%d,Intime:%ld,FinishTime=%g,ResponseTime=%g,NumPreemptionPts=%d,Deadline=%ld,%sSchedulable\n",thisTask, j->inTime, finTime, finTime - j->inTime, numPreemptionPoints, j->inTime + D[thisTask],sched?"":"NOT ");
 								numPreemptionPoints = 0;
 							}					
-							free(j);//j finishes, hence deallocating memory
+							else
+								free(j);//j finishes, hence deallocating memory
 						}
 						else{//ie. j will not finish in this interval				
 							if(MESSAGE_LEVEL >= ALL)
@@ -388,8 +389,10 @@ int ramaprasadMueller(void){
 						}
 					}
 					else{
-						if(MESSAGE_LEVEL >= ALL)
+						if(MESSAGE_LEVEL >= ALL){
 							fprintf(fp2, "->I(%g,%g)", timeWc, nextInTime);
+						}
+							
 						timeWc = nextInTime;
 					}				
 				}
@@ -406,6 +409,11 @@ int ramaprasadMueller(void){
 			else
 				if(MESSAGE_LEVEL >= ALL)
 					fprintf(fp3, "I\n");
+			if(MESSAGE_LEVEL >= IMP && finFlag){
+					fprintf(fp3, "Task:%d,Intime:%ld,FinishTime=%g,ResponseTime=%g,NumPreemptionPts=%d,Deadline=%ld,%sSchedulable\n",thisTask, j->inTime, finTime, finTime - j->inTime, numPreemptionPoints, j->inTime + D[thisTask],sched?"":"NOT ");
+					free(j);//j finishes, hence deallocating memory
+					finFlag = 0;
+			}
 		}		
 		if(!isEmpty(readyQBcet)){
 			if(MESSAGE_LEVEL >= IMP)
