@@ -12,7 +12,17 @@
 
 #define isFull(q) ((q)->rear == (q)->size)) ? 1 : 0
 #define isEmpty(q) ((q)->rear == 0) ? 1 : 0
-
+/**
+ * @brief Sreucture describing job
+ * @element inTime :- Arrival time of the job
+ * @element remTime:- Remaining time of the job
+ * @element priority:- Priority of the job. It also corresponds to the task name
+ * @element hpTasks:- Vector (of bits) indicating the set of tasks that executed
+ * during the preemption of this task
+ * @element firstExec :- Value 1 indiactes that  the job is executing for the
+ * first time and 0 indicates that the job is remuming from a previous
+ * preemption
+ */
 typedef struct{
 	long inTime;
 	double remTime;
@@ -21,6 +31,11 @@ typedef struct{
 	int firstExec;
 }JOB;
 
+/**
+ * @brief Structure for priority queue
+ * @element rear :- index refering to the rear of the queue
+ * @element size
+ */
 typedef struct{
 	int rear;
 	int size;
@@ -28,6 +43,11 @@ typedef struct{
 	int (*compare)(JOB*, JOB*);	
 }PRIORITY_QUEUE;
 
+/**
+ * @brief This function prints the priority queue, which is in
+ * the form of a heap, levelwise.
+ * @param q :- The priority queue to be printed levelwise
+ */
 void levelwisePrint(PRIORITY_QUEUE* q){
 	int index = 1;
 	int level = 0;
@@ -43,26 +63,41 @@ void levelwisePrint(PRIORITY_QUEUE* q){
 	}
 }
 
-double cost(void){
-	return 1;
-}
-
+/**
+ * @brief Compares two jobs on the basis of their in time
+ * @param j1 :- The first job
+ * @param j2 :- The second job
+ * @return negative value if j1.inTime < j2.intime,
+ * 0 if j1.inTime == j2.intime,
+ * positive value if j1.inTime > j2.intime
+ */
 int compareByInTime(JOB* j1, JOB* j2){
-	if(j1->inTime < j2->inTime)
-		return -1;
-	else if(j1->inTime > j2->inTime)
-		return 1;
-	else return 0;
+	return j1->inTime - j2->inTime;
 }
 
-int compareByPriorityAndInTime(JOB* j1, JOB* j2){
-	if(j1->priority < j2->priority)
-		return -1;
-	else if(j1->priority > j2->priority)
-		return 1;
+/**
+ * @brief Compares two jobs on the basis of their priorities.
+ * If priorities are equal then compares the jobs by their in
+ * times.
+ * @param j1 :- The first job
+ * @param j2 :- The second job
+ * @return negative value if j1 < j2,
+ * 0 if j1 == j2,
+ * positive value if j1 > j2
+ */
+int compareByPriorityAndInTime(JOB* j1, JOB* j2){	
+	if(j1->priority - j2->priority)
+		return j1->priority - j2->priority;
 	else return compareByInTime(j1, j2);
 }
 
+/**
+ * @brief Min-Heapify the priority 
+ * @param q :- Queue to be heapified
+ * @param i :- adjust the element at this index 
+ * by following a downword direction in the tree so that the heap
+ * property is maintained
+ */
 void minHeapifyUpwards(PRIORITY_QUEUE* q, int i){
 	int p = parentOf(i);	
 	if(p >= 1 && q->compare(q->data[i], q->data[p]) < 0){// q->data[i] is larger than its parent's data
@@ -73,6 +108,13 @@ void minHeapifyUpwards(PRIORITY_QUEUE* q, int i){
 	}
 }
 
+/**
+ * @brief Min-Heapify the priority 
+ * @param q :- Queue to be heapified
+ * @param i :- Adjust the element at this index by following
+ * a upword direction in the tree so that the heap property
+ * is maintained
+ */
 void minHeapifyDownwards(PRIORITY_QUEUE* q, int i){
 	int smallest;
 	int l = leftChildOf(i);
@@ -90,21 +132,41 @@ void minHeapifyDownwards(PRIORITY_QUEUE* q, int i){
 	}
 }
 
+/**
+ * @brief Initializes the priority queue
+ * @param maxElements :- Size of the queue
+ * @param compare :- Pointer to the function to be used to
+ * compare the elements of the queue
+ * @return PRIORITY_QUEUE :- Initiaized priority queue
+ */
 PRIORITY_QUEUE * initQueue(int maxElements, int (*compare)(JOB*, JOB*)){
 	PRIORITY_QUEUE * q;
 	q = (PRIORITY_QUEUE *)malloc(sizeof(PRIORITY_QUEUE));
 	q->rear = 0;
-	q->size = maxElements+1;// maxElements+1 because we ignore 0th index in a queue implemented as heap, so we require one more array element
+	/**
+	 * maxElements+1 because we ignore 0th index in a queue
+	 * implemented as heap, so we require one more array element
+	 */
+	q->size = maxElements+1;
 	q->data = (JOB**)malloc(q->size * sizeof(JOB*));
 	q->compare = compare;
 	return q;
 }
 
+/**
+ * @brief Frees the space allocated to the queue
+ * @param q :- Queue to be freed
+ */
 void freeQueue(PRIORITY_QUEUE * q){
 	free(q->data);
 	free(q);
 }
 
+/**
+ * @brief Inserts an element into the priority queue
+ * @param q :- Queue in which element is to be inserted
+ * @param j :- Job to be inseted into quque
+ */
 void insertIntoQueue(PRIORITY_QUEUE* q, JOB* j){
 	if(q->rear == q->size)
 		fprintf(stderr, "Queue full\n");
@@ -114,6 +176,11 @@ void insertIntoQueue(PRIORITY_QUEUE* q, JOB* j){
 	}
 }
 
+/**
+ * @brief Delete top element from the priority queue
+ * @param q :- Queue from which element is to be deleted
+ * @return Deleted job is returned
+ */
 JOB* deleteFromQueue(PRIORITY_QUEUE* q){
 	JOB* ret;
 	if(q->rear == 0)
@@ -127,12 +194,24 @@ JOB* deleteFromQueue(PRIORITY_QUEUE* q){
 	}
 }
 
+/**
+ * @brief Returns top element from the priority queue.
+ * This element is not deleted from the queue
+ * @param q :- Queue from which element is to be deleted
+ * @return Top element is returned
+ */
 JOB* topOfQueue(PRIORITY_QUEUE* q){
 	if(q->rear == 0)
 		fprintf(stderr, "Queue empty\n");
 	else return q->data[1];
 }
 
+/**
+ * @brief Finds lcm of two numbers
+ * @param n1 :- The first number
+ * @param n2 :- The second number
+ * @return lcm of n1 and n2
+ */
 long lcm(long n1, long n2){
 	long temp1 = n1, temp2 = n2;
 	while(temp1 != temp2)
@@ -143,6 +222,11 @@ long lcm(long n1, long n2){
 	return n1 * n2 / temp1;
 }
 
+/**
+ * @brief Finds hyperperiod of the task set under consideration
+ * @param numTasks :- The number of tasks in the set
+ * @return The hyperperiod of the taskset
+ */
 long getHyperperiod(int numTasks){
 	int i;
 	long hyperperiod;	
@@ -154,36 +238,24 @@ long getHyperperiod(int numTasks){
 	}
 }
 
+/**
+ * @brief This function tests the schedulability of the task set under
+ * consideration using the method by Ramaprasad and Mueller
+ * @return 1 if the task set is schedulable, 0 if not
+ */
 int ramaprasadMueller(void){
-
-	C[0] = 7;
-	B[0] = 5;
-	D[0] = 20;
-	T[0] = 20;
-	
-	C[1] = 12;
-	B[1] = 10;
-	D[1] = 50;
-	T[1] = 50;
-	
-	C[2] = 30;
-	B[2] = 25;
-	D[2] = 200;
-	T[2] = 200;
-
-
-	JOB *j;	
+		JOB *j;	
 	int i, qsize = 0, thisTask, sched = 1, numPreemptionPoints = 0;
 	long hyperperiod = getHyperperiod(NUM_TASKS);
 	double time, timeBc, timeWc, preemptionPoint = 0, prevPreemptionPoint, idleBeforePreemptionPoint, finTime;
 	PRIORITY_QUEUE *inQBcet, *inQWcet, *readyQBcet, *readyQWcet;
-	static int first_call = 1, finFlag = 0;
+	static int first_call = 1;
 	static FILE *fp1, *fp2, *fp3;
 	
 	if(first_call){
 		fp1 = fopen("out/timelinebect.txt", "w");
 		fp2 = fopen("out/timelinewect.txt", "w");
-		fp3 = stdout/*fopen("out/ramaprasad_mueller.txt", "w")*/;
+		fp3 = fopen("out/ramaprasad_mueller.txt", "w");
 		first_call = 0;
 	}
 	
@@ -344,7 +416,6 @@ int ramaprasadMueller(void){
 						if(j->firstExec)// j is executing for the first time
 							j->firstExec = 0;// Do nothong
 						else{
-							fprintf(stdout, "******************Adding Cost\n");
 							std::set<int> temp;
 							temp.clear();
 							// Union of ECBs of all HP tasks that have jth bit in j->hpTasks set
@@ -366,14 +437,14 @@ int ramaprasadMueller(void){
 								fprintf(fp2, "->T%d(%g,%g)", j->priority, timeWc, timeWc + j->remTime);						
 							timeWc = timeWc + j->remTime;
 							if(j->priority == thisTask){
-								finFlag = 1;
 								finTime = timeWc;
 								if(finTime > j->inTime + D[thisTask])
 									sched = 0;
+								if(MESSAGE_LEVEL >= IMP)
+									fprintf(fp3, "Task:%d,Intime:%ld,FinishTime=%g,ResponseTime=%g,NumPreemptionPts=%d,Deadline=%ld,%sSchedulable\n",thisTask, j->inTime, finTime, finTime - j->inTime, numPreemptionPoints, j->inTime + D[thisTask],sched?"":"NOT ");
 								numPreemptionPoints = 0;
 							}					
-							else
-								free(j);//j finishes, hence deallocating memory
+							free(j);//j finishes, hence deallocating memory
 						}
 						else{//ie. j will not finish in this interval				
 							if(MESSAGE_LEVEL >= ALL)
@@ -389,10 +460,8 @@ int ramaprasadMueller(void){
 						}
 					}
 					else{
-						if(MESSAGE_LEVEL >= ALL){
+						if(MESSAGE_LEVEL >= ALL)
 							fprintf(fp2, "->I(%g,%g)", timeWc, nextInTime);
-						}
-							
 						timeWc = nextInTime;
 					}				
 				}
@@ -409,11 +478,6 @@ int ramaprasadMueller(void){
 			else
 				if(MESSAGE_LEVEL >= ALL)
 					fprintf(fp3, "I\n");
-			if(MESSAGE_LEVEL >= IMP && finFlag){
-					fprintf(fp3, "Task:%d,Intime:%ld,FinishTime=%g,ResponseTime=%g,NumPreemptionPts=%d,Deadline=%ld,%sSchedulable\n",thisTask, j->inTime, finTime, finTime - j->inTime, numPreemptionPoints, j->inTime + D[thisTask],sched?"":"NOT ");
-					free(j);//j finishes, hence deallocating memory
-					finFlag = 0;
-			}
 		}		
 		if(!isEmpty(readyQBcet)){
 			if(MESSAGE_LEVEL >= IMP)
@@ -435,10 +499,6 @@ int ramaprasadMueller(void){
 		freeQueue(readyQWcet);
 	}
 	if(sched)
-		Num_Executed_Tasks[RAMAPRASAD_MUELLER]++;
-	//fclose(fp1);
-	//fclose(fp2);
-	//fclose(fp3);		
+		Num_Executed_Tasks[RAMAPRASAD_MUELLER]++;		
 	return sched;
 }
-

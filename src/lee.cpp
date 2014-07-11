@@ -10,11 +10,16 @@ static int WDC;
 
 #define min(a, b) (a) < (b) ? (a) : (b)
 
-/* Returns the cost of cache perrmption as:
+/**
+ * @brief Returns the cache related preemption cost. It is calculated as follows
  * UCB[this_task] INTERSECT (UNION( ECB[T] | T is a set of tasks that execute during this_task's preemption))
+ * @param this_task :- task under consideration fhoe which preemption cost is to be calculated
+ * @param var_on :- The variable number
  * Example for var number: For this task = T4, variables have been nubmered from 1 to 11 as follows:
  * g2({T1}),g3({T1}),g3({T2}),g3({T1,T2}),g4({T1}),g4({T2}),g4({T1,T2}),g4({T3}),g4({T1,T3}),g4({T2,T3}),g4({T1,T2,T3})
  * Corresponding to this var bumber preemption cost is generated
+ * @return Corst which this_task has to pay due to its preemption, during which, tasks corresponding to 
+ * var_no execute.
  */
 static double varNoToCost(const int this_task, const int var_no){
 	int i, lp_task = 1, offset = 0, hp_task;
@@ -32,6 +37,11 @@ static double varNoToCost(const int this_task, const int var_no){
 	return BRT * SET_MOD(workingSet2);
 }
 
+/**
+ * @breif Reverses a string
+ * @param s :- the string to be reversed. The reversed string
+ * is present in s itself.
+ */
 static void strrev(char * s){
 	int len = strlen(s), j = 0;
 	while(j < len/2){
@@ -42,6 +52,11 @@ static void strrev(char * s){
 	}
 }
 
+/**
+ * @brief converts integer to its ASCII string
+ * @param i :- The integer to be converted to ASCII scting
+ * @param s :- String into which the converted value is to be written
+ */
 static void itoa(int i, char s[10]){
 	int j = 0;
 	do{
@@ -51,10 +66,17 @@ static void itoa(int i, char s[10]){
 	strrev(s);
 }
 
-/* Example: For this task = T4, variables have been nubmered from 1 to 11 as follows:
-* g2({T1}),g3({T1}),g3({T2}),g3({T1,T2}),g4({T1}),g4({T2}),g4({T1,T2}),g4({T3}),g4({T1,T3}),g4({T2,T3}),g4({T1,T2,T3})
-* Given a var_no, the following function creates variable accoeding to the above order
-*/
+/** 
+ * @brief Converts var_no to string name
+ * Example: For this task = T4, variables have been nubmered from
+ * 1 to 11 as follows: g2({T1}),g3({T1}),g3({T2}),g3({T1,T2}),
+ * g4({T1}),g4({T2}),g4({T1,T2}),g4({T3}),g4({T1,T3}),g4({T2,T3}),
+ * g4({T1,T2,T3}). Given a var_no, the following function creates
+ * string according to the above order.
+ * @param this_task :- The task under consideration
+ * @param var_no :- var_no to be converted to string
+ * @param var_name :- Pointer to the string where the conversion is strord
+ */
 static void var_no_to_name(const int this_task, const int var_no, char * var_name){
 	int i, lp_task = 1, offset = 0, hp_task;
 	// Append this task nmae to var_name
@@ -82,8 +104,15 @@ static void var_no_to_name(const int this_task, const int var_no, char * var_nam
 	strcat(var_name,"})");
 }
 
-/*Find set difference a - b. In place of elements that are removed, 
- *0 is inserted and then and then nonzero elements are shifted left*/
+/**
+ * @brief Finds set difference a = a - b. In place of
+ * elements that are removed, 0 is inserted and then
+ * the nonzero elements are shifted left. The final
+ * result is present in array 'a'
+ * @param a :- The first set
+ * @param b :- The second set
+ * @param n :- size of arraya a and b
+ */
 static void set_difference(int a[],int b[], int n){
 	int i = 0, j = 0;
 	while(i < n && j < n && a[i] != 0 && b[j] != 0){
@@ -110,6 +139,15 @@ static void set_difference(int a[],int b[], int n){
 	}
 }
 
+/**
+ * @brief This function finds the preemption delay for 'this_task'.
+ * @param this_task :- The task for which preemption delay is to be found.
+ * @param Response :- Vector containing the response times of all the tasks
+ * in the set
+ * @param fp :- File pointer where logs of output of intermediate stpeps
+ * is maintained
+ * @return preemption delay for 'this_task'
+ */
 static double solve_constraints_lee(int this_task, double *Response, FILE *fp)
 {
 	lprec *lp;
@@ -355,7 +393,16 @@ static double solve_constraints_lee(int this_task, double *Response, FILE *fp)
 	return ret == 0 ? obj : INFINITY;
 }
 
-// Returns preemption cost for task 'this_task'
+/**
+ * @brief This Function calls solve constraints method
+ * @param this_task :- The task for which preemption delay is to be found.
+ * @param Response :- Vector containing the response times of all
+ * the tasks in the set
+ * @param fp :- File pointer where logs of output of intermediate stpeps
+ * is maintained
+ * @return preemption delay for 'this_task'
+ *
+ */
 static double PC_LEE(int this_task, double *Response, FILE *fp){
 	int hp_task;
 	if (this_task >= 1)
@@ -363,6 +410,11 @@ static double PC_LEE(int this_task, double *Response, FILE *fp){
 	else return 0;
 }
 
+/**
+ * @brief This is the main method which iteartively calls the time demand
+ * analysis function for each task in the set
+ * @return 1 if the task set is schedulable, 0 if not
+ */
 int ResponseTimeLeeWdc(){
 	int task_no;
 	bool sched = true;	

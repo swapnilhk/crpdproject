@@ -1,4 +1,3 @@
-//#include"uniform_fixed_tasks_ecb_ucb_schemes.h"
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -8,18 +7,29 @@
 #include"lee.h"
 #include"ramaprasad_mueller.h"
 
+using namespace std;
+
+/**
+ * @brief This structure maps the indexes in enum 'METHOD_NAMES'
+ * to strings containing corresponding method name and pointer
+ * to corresponding function.
+ */
 struct map{
 	char * methodName;
 	int (*func)();
 }methodsMap[NUM_METHODS];
 
+/**
+ * @brief This function reads base configuration from file 'config'
+ * @return 1 if successful, 0 if unable to open file
+ */
 static int readConfig(void){
 	FILE *fp = fopen("config", "r");
 	if(fp == NULL){
 		fprintf(stderr, "Unable to open config file\n");
 		return 0;
 	}
-	char *line;
+	char *line = (char*)malloc(15);
 	int len;
 	size_t n;
 	n = 50;
@@ -50,37 +60,35 @@ static int readConfig(void){
 	return 1;
 }
 
+/**
+ * @brief This function sets the structure 'struct map' with 
+ * proper values.
+ * @return 1 if reading base config is successful, 0 if
+ * failure
+ */
 static int init(void){
-	methodsMap[NO_PREEMPT] = (struct map){"NO_PREEMPT", NULL/*Response_time_NO_PREEMPT*/};
-	methodsMap[ECB_ONLY] = (struct map){"ECB_ONLY", NULL/*Response_time_ECB_Only*/};
-	methodsMap[UCB_ONLY] = (struct map){"UCB_ONLY", NULL/*Response_time_UCB_Only*/};
-	methodsMap[UCB_UNION] = (struct map){"UCB_UNION", NULL/*Response_time_UCB_Union*/};
-	methodsMap[ECB_UNION] = (struct map){"ECB_UNION", NULL/*Response_time_ECB_Union*/};
-	methodsMap[ECB_UNION_MULTISET] = (struct map){"ECB_UNION_MULTISET", NULL/*Response_time_ECB_Union_Multiset*/};
-	methodsMap[UCB_UNION_MULTISET] = (struct map){"UCB_UNION_MULTISET", NULL/*Response_time_UCB_Union_Multiset*/};
-	methodsMap[ECB_UCB_UNION_MULTISET_COMBINED] = (struct map){"ECB_UCB_UNION_MULTISET_COMBINED", NULL/*Response_time_ECB_UCB_Union_Multiset_Combined*/};
-	methodsMap[ECB_UNION_MULTISET_PRE] = (struct map){"ECB_UNION_MULTISET_PRE", NULL/*Response_time_ECB_Union_Multiset_PRE*/};
-	methodsMap[UCB_UNION_MULTISET_PRE] = (struct map){"UCB_UNION_MULTISET_PRE", NULL/*Response_time_UCB_Union_Multiset_PRE*/};
-	methodsMap[ECB_UCB_UNION_MULTISET_COMBINED_PRE] = (struct map){"ECB_UCB_UNION_MULTISET_COMBINED_PRE", NULL/*Response_time_ECB_UCB_Union_Multiset_Combined_PRE*/};
-	methodsMap[STASCHULAT] = (struct map){"STASCHULAT", NULL/*Response_time_Staschulat*/};
-	methodsMap[STASCHULAT_PRE] = (struct map){"STASCHULAT_PRE", NULL/*Response_time_Staschulat_PRE*/};
-	methodsMap[PRE_MAX] = (struct map){"PRE_MAX", NULL/*Response_time_PRE_MAX*/};
-	methodsMap[PRE_MAX_KD] = (struct map){"PRE_MAX_KD", /*NULL*/ResponseTimePreMaxKd};
-	methodsMap[PRE_MAX_KD2] = (struct map){"PRE_MAX_KD2", NULL/*ResponseTimePreMaxKd2*/};
-	methodsMap[LEE_WODC] = (struct map){"LEE_WODC", /*NULL*/ResponseTimeLeeWodc};
-	methodsMap[LEE_WDC] = (struct map){"LEE_WDC", /*NULL*/ResponseTimeLeeWdc};
-	methodsMap[RAMAPRASAD_MUELLER] = (struct map){"RAMAPRASAD_MUELLER", /*NULL*/ramaprasadMueller};
+	methodsMap[PRE_MAX_KD] = (struct map){"PRE_MAX_KD", ResponseTimePreMaxKd};
+	methodsMap[PRE_MAX_KD2] = (struct map){"PRE_MAX_KD2", ResponseTimePreMaxKd2};
+	methodsMap[LEE_WODC] = (struct map){"LEE_WODC", ResponseTimeLeeWodc};
+	methodsMap[LEE_WDC] = (struct map){"LEE_WDC", ResponseTimeLeeWdc};
+	methodsMap[RAMAPRASAD_MUELLER] = (struct map){"RAMAPRASAD_MUELLER", ramaprasadMueller};
 	return readConfig();	
 }
 
-using namespace std;
-
+/**
+ * @brief Clears the array 'Num_Executed_Tasks'
+ */
 static void clearTaskExecutionStatistics(){
      int i;     
      for(i = 0; i < NUM_METHODS; i++)
           Num_Executed_Tasks[i] = 0;
 }
 
+/**
+ * @brief Prints task execution statistics, i.e. number of executable
+ * task sets by each method, into output file in proper format.
+ * @param fp :- file pointer to the output file
+ */
 static void printTaskExecutionStatistics(FILE *fp){
 	int i;
 	static int heading = 0;
@@ -88,11 +96,11 @@ static void printTaskExecutionStatistics(FILE *fp){
 	if(heading == 0){
 		fprintf(fp, "%-4s\t%-32s\t%s\n", "Util", "Method", "No. of Sched tasks");
 	   	heading = 1;
-    	}
+    }
 	if(VERBOSE) fprintf(stdout, "%-4s\t%-32s\t%s\n", "Util", "Method", "No. of Sched tasks");
 	fprintf(fp, "\n");
-   	for(int methodIndex = NO_PREEMPT; methodIndex < NUM_METHODS; methodIndex++)
-     		if(methodsMap[methodIndex].func != NULL){
+   	for(int methodIndex = 0; methodIndex < NUM_METHODS; methodIndex++)
+    	if(methodsMap[methodIndex].func != NULL){
 			char str[50] = "\0";
 			sprintf(str, "%-4.2g\t%-32s\t%d\n", util, methodsMap[methodIndex].methodName , Num_Executed_Tasks[methodIndex]);           	
 			fprintf(fp, "%s", str);
@@ -101,6 +109,14 @@ static void printTaskExecutionStatistics(FILE *fp){
 	fflush(fp);
 }
 
+/**
+ * @brief This method calls each method and collects their status into
+ * variable 'sched_vector'. Each method sets/resets corresponding bits
+ * of the variable 'sched_vector' according to the method's schedulab-
+ * ility status.
+ * @return vector (of bits) containing the schedulability status of all
+ * the methods.
+*/
 static int CALL_METHODS(){
 	int WDC, sched;
 	int sched_vector = 0;
@@ -113,12 +129,28 @@ static int CALL_METHODS(){
 	return sched_vector;
 }
 
+/**
+ * @brief This function updated the domination relation between the
+ * methods. It recieves the schedulability status of all the methods
+ * It uses this information to update the domination relation.
+ * @param schedVector :- Vector (of bits) containing schedulability
+ * status of all the methods
+ * @param dom :- Matrix (of bits) containing the domination relation
+ * which needs to be updated.
+*/
 static void updateDominationMatrix(int schedVector, int dom[]){
 	for(int methodIndex = 0; methodIndex < NUM_METHODS; methodIndex++)
 		if(schedVector >> methodIndex & 1)// if(sched_vectpr has bit corresponding to the method set)
 			dom[methodIndex] |= ~schedVector; // Add to dom[this_method] all methods that this_method domonates, ie are zero
 }
 
+/**
+ * @brief This function prints the domination relation from the matrix
+ * (of bits) and writes it into a file.
+ * @param dom :- matrix (of bits) containing the domination relation
+ * @param fp :- File pointed to the file where domination relation is
+ * to be printed
+ */
 static void printDominationInfo(int dom[], FILE *fp){
 	for(int method1 = 0; method1 < NUM_METHODS - 1; method1++)
 		if(methodsMap[method1].func != NULL)
@@ -138,6 +170,13 @@ static void printDominationInfo(int dom[], FILE *fp){
 				}
 }
 
+/**
+ * @brief This function generates uniformly distributed task sets.
+ * Each generated task set is tested againt every method and the
+ * domination elation between the methods is updated.
+ * @param fp :- File pointer to the file in which the final output
+ * is to be written.
+ */
 static void uniformDistributionBenchmark(FILE *fp){
 	int dom[NUM_METHODS] = {0};
 	fprintf(fp, "Uniform Distribution Benchmark\n");
@@ -164,58 +203,29 @@ static void uniformDistributionBenchmark(FILE *fp){
 	}
 }
 
-static void constantValuesBenchmark(FILE *fp){
-	int dom[NUM_METHODS] = {0};	
-	fprintf(fp, "Constant Values Banchmark\n");
-	if(VERBOSE) fprintf(stdout, "Constant Values Banchmark\n");
-	for(util = 50; util <= 80; util += 10){			
-		for(int numTasks = 2; numTasks <= (util == 80 ? 10 : 8); numTasks+=2){			
-			if(initBenchmark(numTasks, fp)){
-				int schedVector;//vector of bits with each bit corresponding to each method				
-				fprintf(fp, "NUM_TASKS = %d util is %f\n", NUM_TASKS, util/100);
-				if(VERBOSE)fprintf(stdout, "NUM_TASKS = %d util is %f\n", NUM_TASKS, util/100);
-				clearTaskExecutionStatistics();
-				if(createTaskSetConstantValues(numTasks, util/100)){
-					schedVector = CALL_METHODS();
-					updateDominationMatrix(schedVector, dom);
-					printTaskExecutionStatistics(fp);
-					printDominationInfo(dom, fp);
-					if(VERBOSE)printDominationInfo(dom, stdout);
-				}
-				freeBenchmark();
-				
-			}
-		}
-		if(VERBOSE) printf("\n");
-	}
-}
-
 int main(int argc, char * argv[]) {
 	FILE *fp = NULL;
 	char * filename = "out/statistics.txt";
+	
 	for(int i = 1; i < argc; i++){
-		if(!strcmp(argv[i], "-v"))
-			VERBOSE = 1;
-		else if(!strcmp(argv[i], "-a"))
-			MESSAGE_LEVEL = ALL;
-		else if(!strcmp(argv[i], "-i"))
-			MESSAGE_LEVEL = IMP;
-		else if(!strcmp(argv[i], "-n"))
-			MESSAGE_LEVEL = NONE;
+		if(!strcmp(argv[i], "-v"))VERBOSE = 1;
+		else if(!strcmp(argv[i], "-a"))MESSAGE_LEVEL = ALL;
+		else if(!strcmp(argv[i], "-i"))MESSAGE_LEVEL = IMP;
+		else if(!strcmp(argv[i], "-n"))MESSAGE_LEVEL = NONE;
 		else{
 			fprintf(stderr, "***Invalid parameter %s\nUsage\n-v Verbose\n-a Message Level All\n-i Message Level Imp\n-n Message Level None\n", argv[i]);
 			exit(1);
-		}		
+		}
 	}
 	if(init()){
 		fp = fopen(filename, "w");
 		if(fp == NULL){
 			fprintf(stderr, "***Unable to open file %s\n", filename);
 			exit(1);
-		}	
+		}
 		if(MESSAGE_LEVEL >= IMP) printBaseConfig(fp);
 		uniformDistributionBenchmark(fp);
-		//constantValuesBenchmark(fp);
 		fclose(fp);
 	}
 }
+

@@ -11,6 +11,15 @@ static int **nnpMin;
 
 #define min3(a,b,c) ((a) < (b) ? ((a) < (c) ? (a) : (c)) : ((b) < (c) ? (b) : (c)))
 
+/**
+ * @brief This functions inv_max/inv_min find the value for the
+ * maximum/minimum number of invocations of job of task 'hp_task'
+ *  during the response time of a job of task 'lp_task.
+ * @param hp_task :- The higher priority task
+ * @param lp_task :- The lower priority task
+ * @param Response :- Vector containing the response times of
+ * all the tasks in the set
+ */
 static double inv_max(int hp_task, int lp_task, double Response[]){
 	return ceil(Response[lp_task] / T[hp_task]);
 }
@@ -19,6 +28,15 @@ static double inv_min(int hp_task, int lp_task, double Response[]){
 	return floor(Response[lp_task] / T[hp_task]);
 }
 
+/**
+ * @brief This functions calc_nnpMax/calc_nnpMin find the value for the
+ * maximum/minimum voalue of the number of non nested preemptions faced
+ * tas 'lp_task' due to task 'hp_task.
+ * @param hp_task :- The higher priority task
+ * @param lp_task :- The lower priority task
+ * @param Response :- Vector containing the response times of all the
+ * tasks in the set
+ */
 static double calc_nnpMax(int hp_task, int lp_task, double Response[]){
 	int i;
 	double ret_val = inv_max(hp_task, lp_task, Response);
@@ -35,6 +53,12 @@ static double calc_nnpMin(int hp_task, int lp_task, double Response[]){
 	return ret_val > 0 ? ret_val : 0;
 }
 
+/**
+ * @brief This function gets the value of nnp_max and nnp_min
+ * @param this_task : the task for which nnp values are to be found
+ * @param Response :- Vector containing the response times of all
+ * the tasks in the set
+*/
 static void getNnp(int this_task, double Response[]){
 	int hp_task;
 	if (this_task >= 1)	
@@ -44,6 +68,17 @@ static void getNnp(int this_task, double Response[]){
 		}
 }
 
+/**
+ * @brief This function finds the preemption cost for 'this_task' due to
+ * preemption by 'hp_task' by the method Ecb Union.
+ * @param hpTask :- The higher priority preemption task
+ * @param lp_task :- The lower priority preempted task for which cost is to be
+ * found
+ * @param Response :- Vector containing the response times of all
+ * the tasks in the set
+ * @return preemption cost for 'this_task' due to preemption by 'hp_task' by
+ * the method Ecb Union.
+ */
 static double costEcbUnion(int hpTask, int lpTask, double Response[]){
 	std::set<int> workingSet1, workingSet2, workingSet3;
 	int i;	
@@ -55,6 +90,15 @@ static double costEcbUnion(int hpTask, int lpTask, double Response[]){
 	return BRT * SET_MOD(workingSet2);
 }
 
+/**
+ * @brief This function finds the preemption delay for 'this_task'.
+ * @param this_task :- The task for which preemption delay is to be found.
+ * @param Response :- Vector containing the response times of all
+ * the tasks in the set
+ * @param fp :- File pointer where logs of output of intermediate stpeps
+ * is maintained
+ * @return preemption delay for 'this_task'
+ */
 static double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FILE *fp)
 {
 	lprec *lp;
@@ -233,7 +277,17 @@ static double solve_constraints_PRE_MAX_KD(int this_task, double Response[], FIL
 	return ret == 0 ? obj : INFINITY;
 }
 
-// Returns preemption cost for task 'this_task'
+/**
+ * @brief This Function gets the value of non nested preemption for
+ * 'this_task' and calls solve constraints method
+ * @param this_task :- The task for which preemption delay is to be found.
+ * @param Response :- Vector containing the response times of all
+ * the tasks in the set
+ * @param fp :- File pointer where logs of output of intermediate stpeps
+ * is maintained
+ * @return preemption delay for 'this_task'
+ *
+ */
 static double PC_PRE_MAX_KD(int this_task, double Response[], FILE *fp){
 	int hp_task;
 	if (this_task >= 1){
@@ -243,6 +297,11 @@ static double PC_PRE_MAX_KD(int this_task, double Response[], FILE *fp){
 	else return 0;
 }
 
+/**
+ * @brief This is the main method which iteartively calls the time demand
+ * analysis function for each task in the set
+ * @return 1 if the task set is schedulable, 0 if not
+ */
 int ResponseTimePreMaxKd(){
 	int task_no;
 	bool sched = true;
@@ -285,6 +344,15 @@ int ResponseTimePreMaxKd(){
 	return sched ? 1 : 0;
 }
 
+/**
+ * @brief This function finds the preemption delay for 'this_task'.
+ * @param this_task :- The task for which preemption delay is to be found.
+ * @param Response :- Vector containing the response times of all the tasks
+ * in the set
+ * @param fp :- File pointer where logs of output of intermediate stpeps
+ * is maintained
+ * @return preemption delay for 'this_task'
+ */
 static double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], FILE *fp)
 {
 	lprec *lp;
@@ -463,7 +531,17 @@ static double solve_constraints_PRE_MAX_KD2(int this_task, double Response[], FI
 	return ret == 0 ? obj : INFINITY;
 }
 
-// Returns preemption cost for task 'this_task'
+/**
+ * @brief This Function gets the value of non nested preemption for
+ * 'this_task' and calls solve constraints method
+ * @param this_task :- The task for which preemption delay is to be found.
+ * @param Response :- Vector containing the response times of all
+ * the tasks in the set
+ * @param fp :- File pointer where logs of output of intermediate stpeps
+ * is maintained
+ * @return preemption delay for 'this_task'
+ *
+ */
 static double PC_PRE_MAX_KD2(int this_task, double Response[], FILE *fp){
 	int hp_task;
 	if (this_task >= 1){
@@ -474,6 +552,11 @@ static double PC_PRE_MAX_KD2(int this_task, double Response[], FILE *fp){
 	else return 0;
 }
 
+/**
+ * @brief This is the main method which iteartively calls the time demand
+ * analysis function for each task in the set
+ * @return 1 if the task set is schedulable, 0 if not
+ */
 int ResponseTimePreMaxKd2(){
 	int task_no;
 	bool sched = true;

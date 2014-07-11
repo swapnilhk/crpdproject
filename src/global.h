@@ -4,7 +4,6 @@
 #include<set>
 #include<stdio.h>
 
-//#define NUM_TASKS 4
 extern int NUM_TASKS;
 extern int CACHE_SIZE;
 extern int NUM_TASK_SETS;
@@ -18,25 +17,13 @@ extern int MAX_PERIOD;
 #define BRT 8e-3
 
 enum flag {NONE, IMP, ALL};
+/**
+ * @brief The following enum define an integer constant
+ * corrsponding to each of the methods.
+ */
 enum METHOD_NAMES {
-	NO_PREEMPT,
-	ECB_ONLY,
-	UCB_ONLY,
-	UCB_UNION,
-	ECB_UNION,
-	ECB_UNION_MULTISET,
-	UCB_UNION_MULTISET,
-	ECB_UCB_UNION_MULTISET_COMBINED,
-	ECB_UNION_MULTISET_PRE,
-	UCB_UNION_MULTISET_PRE,
-	ECB_UCB_UNION_MULTISET_COMBINED_PRE,
-	STASCHULAT,
-	STASCHULAT_PRE,
-	PRE_MAX,
 	PRE_MAX_KD,
 	PRE_MAX_KD2,
-	PRE_MAX_KD3,
-	PRE_MAX_KD4,
 	LEE_WODC,
 	LEE_WDC,
 	RAMAPRASAD_MUELLER,

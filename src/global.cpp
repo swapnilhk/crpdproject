@@ -21,6 +21,11 @@ int Num_Executed_Tasks[NUM_METHODS];
 int MESSAGE_LEVEL = NONE;
 int VERBOSE = 0;
 
+/**
+ * @brief Prints the variables that from the base config
+ * @param fp :- Pointer to the file where values are to be
+ * written
+ */
 void printBaseConfig(FILE *fp){
 	fprintf(fp, "\nBase Config\n");	
 	fprintf(fp, "Cache size = %d\n", CACHE_SIZE);
@@ -33,6 +38,11 @@ void printBaseConfig(FILE *fp){
 	fflush(fp);
 }
 
+/**
+ * @brief Prints the parameters on the task in the set
+ * @param fp :- Pointer to the file where values are to be
+ * written
+ */
 void printTaskInfo(FILE *fp){
 	int i;
 	double util = 0;
@@ -45,6 +55,12 @@ void printTaskInfo(FILE *fp){
 	fflush(fp);
 }
 
+/**
+ * @brief Prints all the elements of a set
+ * @param Set1 :- The set whose element are to be printed
+ * @param fp :- Pointer to the file where values are to be
+ * written
+ */
 void print_SET(std::set<int> & Set1, FILE *fp){
     std::set<int>::iterator it;
     for(it=Set1.begin(); it!= Set1.end(); ++it)       
@@ -52,6 +68,11 @@ void print_SET(std::set<int> & Set1, FILE *fp){
     fprintf(fp, "\n");
 }
 
+/**
+ * @brief Prints ECBs of all tasks in the set
+ * @param fp :- Pointer to the file where values are to be
+ * written
+ */
 void print_ecbs(FILE *fp){
 	int i;
 	fprintf(fp, "\nECB Sets\n");	
@@ -62,6 +83,11 @@ void print_ecbs(FILE *fp){
 	}
 }
 
+/**
+ * @brief Prints UCBs of all tasks in the set
+ * @param fp :- Pointer to the file where values are to be
+ * written
+ */
 void print_ucbs(FILE *fp){
 	int i;
 	fprintf(fp, "\nUCB Sets\n");	
@@ -72,6 +98,12 @@ void print_ucbs(FILE *fp){
 	}
 }
 
+/**
+ * @brief Creates a two dimentional array of integers
+ * @param arraySizeX :- Number of rows in the array
+ * @param arraySizeY :- Number of columns in the array
+ * @retuen pointes to the two dimentional array created
+ */
 int** Make2DintArrayInt(int arraySizeX, int arraySizeY){	
     int i;
     int** theArray;
@@ -81,30 +113,25 @@ int** Make2DintArrayInt(int arraySizeX, int arraySizeY){
     return theArray;
 }
 
-double** Make2DintArrayDouble(int arraySizeX, int arraySizeY){	
-    int i;
-    double** theArray;
-    theArray = (double**) malloc(arraySizeX*sizeof(double*));
-    for (i = 0; i < arraySizeX; i++)
-        theArray[i] = (double*) malloc(arraySizeY*sizeof(double));
-    return theArray;
-}
-
-long** Make2DintArrayLong(int arraySizeX, int arraySizeY){	
-    int i;
-    long** theArray;
-    theArray = (long**) malloc(arraySizeX*sizeof(long*));
-    for (i = 0; i < arraySizeX; i++)
-        theArray[i] = (long*) malloc(arraySizeY*sizeof(long));
-    return theArray;
-}
-
+/**
+ * @brief Frees the memory assigned to a two dimentional array
+ * of integers
+ * @param twoDArray :- The two dimentional array to be freed
+ * @param n :- Number of columns in the matrix
+ */
 void free2DintArrayInt(int ** twoDArray, int n){
 	while(n--)
 		free(twoDArray[n]);
 	free(twoDArray);
 }
 
+/**
+ * @brief Sumation function of the Time Demand Analysis equation
+ * @param thisTask :- The task under consideration
+ * @param Response:- Array containing the response times of all
+ * the tasks
+ * @return Value of the new response time calculated
+ */
 double sigmaTda(int thisTask, double Response[]){
 	double RNew = 0;
 	int hpTask = thisTask - 1;
@@ -115,6 +142,18 @@ double sigmaTda(int thisTask, double Response[]){
 	return RNew;
 }
 
+/**
+ * @brief This function implements the complete time demand
+ * equation and the iteartions involved in its solution
+ * @param thisTask :- The task under consideration
+ * @param Response:- Array containing the response times of
+ * all the tasks
+ * @param fp :- Pointer to the file where intermediate logs
+ * are to be written
+ * @param PC :- Pointer to the function to calculate the
+ * preemption cost in the Time Demand Analysis equation
+ * @return The response time for this task.
+ */
 double wcrt(int thisTask, double Response[], FILE *fp, double (*PC)(int, double[], FILE*)){
 	double RNew;
 	RNew = C[thisTask];

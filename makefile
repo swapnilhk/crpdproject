@@ -7,8 +7,8 @@ CARG=-c -Wno-write-strings
 
 all: $(OUTPATH)/crpd
 
-$(OUTPATH)/crpd: $(OUTPATH)/main.o $(OUTPATH)/global.o $(OUTPATH)/benchmarks.o $(OUTPATH)/kd.o $(OUTPATH)/lee.o $(OUTPATH)/ramaprasad_mueller.o $(OUTPATH)/set_operations.o $(OUTPATH)/uniform_fixed_tasks_ecb_ucb_schemes.o
-	$(CC) $(OUTPATH)/main.o $(OUTPATH)/global.o $(OUTPATH)/set_operations.o $(OUTPATH)/benchmarks.o $(OUTPATH)/kd.o $(OUTPATH)/lee.o $(OUTPATH)/ramaprasad_mueller.o $(OUTPATH)/uniform_fixed_tasks_ecb_ucb_schemes.o $(LIBPATH)/liblpsolve55.a $(LARG) -o $(OUTPATH)/crpd
+$(OUTPATH)/crpd: $(OUTPATH)/main.o $(OUTPATH)/global.o $(OUTPATH)/benchmarks.o $(OUTPATH)/kd.o $(OUTPATH)/lee.o $(OUTPATH)/ramaprasad_mueller.o $(OUTPATH)/set_operations.o
+	$(CC) $(OUTPATH)/main.o $(OUTPATH)/global.o $(OUTPATH)/set_operations.o $(OUTPATH)/benchmarks.o $(OUTPATH)/kd.o $(OUTPATH)/lee.o $(OUTPATH)/ramaprasad_mueller.o $(LIBPATH)/liblpsolve55.a $(LARG) -o $(OUTPATH)/crpd
 	
 $(OUTPATH)/main.o: $(SRCPATH)/main.cpp $(SRCPATH)/global.h $(SRCPATH)/benchmarks.h $(SRCPATH)/kd.h $(SRCPATH)/lee.h $(SRCPATH)/ramaprasad_mueller.h
 	$(CC) $(CARG) $(SRCPATH)/main.cpp -o $(OUTPATH)/main.o
@@ -24,9 +24,6 @@ $(OUTPATH)/lee.o: $(SRCPATH)/lee.cpp $(SRCPATH)/lee.h $(SRCPATH)/global.h $(SRCP
 
 $(OUTPATH)/ramaprasad_mueller.o: $(SRCPATH)/ramaprasad_mueller.cpp $(SRCPATH)/ramaprasad_mueller.h $(SRCPATH)/global.h $(SRCPATH)/set_operations.h
 	$(CC) $(CARG) $(SRCPATH)/ramaprasad_mueller.cpp -I $(LIBPATH) -o $(OUTPATH)/ramaprasad_mueller.o
-
-$(OUTPATH)/uniform_fixed_tasks_ecb_ucb_schemes.o: $(SRCPATH)/uniform_fixed_tasks_ecb_ucb_schemes.cpp $(SRCPATH)/uniform_fixed_tasks_ecb_ucb_schemes.h $(SRCPATH)/global.h $(SRCPATH)/set_operations.h
-	$(CC) $(CARG) $(SRCPATH)/uniform_fixed_tasks_ecb_ucb_schemes.cpp -I $(LIBPATH) -o $(OUTPATH)/uniform_fixed_tasks_ecb_ucb_schemes.o
 
 $(OUTPATH)/global.o: $(SRCPATH)/global.cpp $(SRCPATH)/global.h
 	$(CC) $(CARG) $(SRCPATH)/global.cpp -o $(OUTPATH)/global.o
