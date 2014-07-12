@@ -8,4 +8,4 @@ domintion relation and running times.
 The methods used in this analysis are
 -Two methods by Lee et al.
 -Non-nested preemption base method 
--Method by Ramaprasad and Mueller
+-Method by Ramaprasad and Mueller.
